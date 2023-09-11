@@ -13,6 +13,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import * as Styled from "@/styles/Register.styled";
 import { api } from "@/http/api";
 import Spinner from "@/components/Spinner";
+import { emailRegEx } from "@/emailRegex";
 
 type FormValues = {
   email: string;
@@ -20,9 +21,6 @@ type FormValues = {
   password: string;
   repeatPassword: string;
 };
-
-const emailRegex =
-  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 function Register() {
   const [showPassword, setShowPassword] = useState(false);
@@ -72,7 +70,7 @@ function Register() {
               variant="outlined"
               {...register("email", {
                 required: true,
-                pattern: emailRegex,
+                pattern: emailRegEx,
               })}
               helperText={
                 errors.email &&
@@ -131,7 +129,7 @@ function Register() {
             <Button
               variant="contained"
               type="submit"
-              startIcon={isSubmitting ? <Spinner /> : null}
+              endIcon={isSubmitting ? <Spinner /> : null}
             >
               Register
             </Button>

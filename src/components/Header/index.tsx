@@ -6,11 +6,11 @@ function Header() {
     <AppBar>
       <Toolbar>
         <Box sx={{ ml: "auto" }}>
-          {/* <Button
+          <Button
             variant="text"
             component={RouterLink}
             sx={{ color: "#fff", mr: "10px" }}
-            to="/login"
+            href="/login"
           >
             Login
           </Button>
@@ -18,10 +18,10 @@ function Header() {
             variant="text"
             component={RouterLink}
             sx={{ color: "#fff" }}
-            to="/login"
+            href="/register"
           >
             Signup
-          </Button> */}
+          </Button>
         </Box>
       </Toolbar>
     </AppBar>

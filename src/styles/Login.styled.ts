@@ -1,10 +1,10 @@
-import styled from "styled-components";
+import styled from "@emotion/styled";
 
 export const Wrapper = styled.div({
-  flexGrow: 1,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
 });
 
 export const Inputs = styled.div({
@@ -17,4 +17,9 @@ export const Inputs = styled.div({
 export const ButtonWrapper = styled.div({
   display: "flex",
   justifyContent: "flex-end",
+});
+
+export const ErrorWrapper = styled.div({
+  marginTop: "30px",
+  textAlign: "center",
 });
