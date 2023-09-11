@@ -13,7 +13,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import * as Styled from "@/styles/Login.styled";
 import { api } from "@/http/api";
 import Spinner from "@/components/Spinner";
-import { emailRegEx } from "@/emailRegex";
+import { emailRegEx } from "@/emailRegEx";
 
 type FormValues = {
   email: string;
@@ -61,7 +61,6 @@ function Login() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <Styled.Inputs>
             <TextField
-              id="standard-basic"
               label="Email"
               variant="outlined"
               {...register("email", { required: true, pattern: emailRegEx })}
@@ -73,7 +72,6 @@ function Login() {
             />
             <TextField
               error={Boolean(errors.password)}
-              id="standard-basic"
               label="Password"
               variant="outlined"
               type={showPassword ? "text" : "password"}

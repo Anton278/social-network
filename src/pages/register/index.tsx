@@ -13,7 +13,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import * as Styled from "@/styles/Register.styled";
 import { api } from "@/http/api";
 import Spinner from "@/components/Spinner";
-import { emailRegEx } from "@/emailRegex";
+import { emailRegEx } from "@/emailRegEx";
 
 type FormValues = {
   email: string;
@@ -65,7 +65,6 @@ function Register() {
           <Styled.Inputs>
             <TextField
               error={Boolean(errors.email)}
-              id="standard-basic"
               label="Email"
               variant="outlined"
               {...register("email", {
@@ -79,7 +78,6 @@ function Register() {
             />
             <TextField
               error={Boolean(errors.fullName)}
-              id="standard-basic"
               label="Full name"
               variant="outlined"
               {...register("fullName", { required: true })}
@@ -87,7 +85,6 @@ function Register() {
             />
             <TextField
               error={Boolean(errors.password)}
-              id="standard-basic"
               label="Password"
               variant="outlined"
               type={showPassword ? "text" : "password"}
@@ -109,7 +106,6 @@ function Register() {
             />
             <TextField
               type="password"
-              id="standard-basic"
               label="Repeat password"
               variant="outlined"
               {...register("repeatPassword", {
