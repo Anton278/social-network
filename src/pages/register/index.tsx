@@ -1,10 +1,18 @@
 import { useState } from "react";
 import Layout from "@/components/Layout";
-import { TextField, InputAdornment, IconButton, Button } from "@mui/material";
+import {
+  TextField,
+  InputAdornment,
+  IconButton,
+  Button,
+  Typography,
+} from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useForm, SubmitHandler } from "react-hook-form";
 import * as Styled from "@/styles/Register.styled";
+import { api } from "@/http/api";
+import Spinner from "@/components/Spinner";
 
 type FormValues = {
   email: string;
@@ -18,6 +26,9 @@ const emailRegex =
 
 function Register() {
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
   const {
     register,
     handleSubmit,
@@ -30,7 +41,23 @@ function Register() {
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const onSubmit: SubmitHandler<FormValues> = async (values) => {
+    setIsSubmitting(true);
+    setError("");
+
     const { email, password } = values;
+
+    try {
+      const res = await api.post("/register", { email, password });
+      console.log("client side user ===> ", res.data.user);
+    } catch (e: any) {
+      if (e.response.data.message === "auth/email-already-in-use") {
+        setError("Error: Email already in use");
+      } else {
+        setError("Failed to create user");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -101,11 +128,18 @@ function Register() {
             />
           </Styled.Inputs>
           <Styled.ButtonWrapper>
-            <Button variant="contained" type="submit">
+            <Button
+              variant="contained"
+              type="submit"
+              startIcon={isSubmitting ? <Spinner /> : null}
+            >
               Register
             </Button>
           </Styled.ButtonWrapper>
         </form>
+        <Styled.ErrorWrapper>
+          <Typography color="error">{error}</Typography>
+        </Styled.ErrorWrapper>
       </Styled.Wrapper>
     </Layout>
   );

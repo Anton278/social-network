@@ -18,3 +18,8 @@ export const ButtonWrapper = styled.div({
   display: "flex",
   justifyContent: "flex-end",
 });
+
+export const ErrorWrapper = styled.div({
+  marginTop: "30px",
+  textAlign: "center",
+});
