@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { initializeApp } from "firebase/app";
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore";
 
 import { getFirebaseConfig } from "@/firebaseCfg";
 
@@ -12,24 +12,24 @@ export default async function handler(
     return res.status(405).json({ message: "Method not allowed" });
   }
   if (!process.env.FIREBASE_API_KEY) {
-    return res.status(500).json({ message: "Something went wrong" });
+    return res
+      .status(500)
+      .json({ message: "Firebase api key is not provided" });
   }
 
   const firebaseConfig = getFirebaseConfig(process.env.FIREBASE_API_KEY);
   const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const { email, password } = req.body;
+  const db = getFirestore(app);
+
+  const { email, username, userId } = req.body;
 
   try {
-    const createUserRes = await createUserWithEmailAndPassword(
-      auth,
+    const docRef = await addDoc(collection(db, "users"), {
       email,
-      password
-    );
-    console.log(auth.currentUser);
-
-    const { user } = createUserRes;
-    res.status(200).json(user);
+      username,
+      userId,
+    });
+    res.status(200).json(docRef);
   } catch (e: any) {
     res.status(500).json({ message: e.code });
   }

@@ -14,9 +14,19 @@ import * as Styled from "@/styles/Register.styled";
 import { api } from "@/http/api";
 import Spinner from "@/components/Spinner";
 import { emailRegEx } from "@/emailRegEx";
+import UsersController from "@/controllers/UsersController";
+
+import type {
+  DocumentData,
+  Firestore,
+  QueryDocumentSnapshot,
+  QuerySnapshot,
+} from "firebase/firestore";
+import { User } from "@/models/User";
 
 type FormValues = {
   email: string;
+  username: string;
   fullName: string;
   password: string;
   repeatPassword: string;
@@ -42,17 +52,35 @@ function Register() {
     setIsSubmitting(true);
     setError("");
 
-    const { email, password } = values;
+    const { email, password, username } = values;
 
     try {
+      const users = await api.get<User[]>("/users");
+
+      const userWithSameUsername = users.data.find(
+        (user) => user.username === username
+      );
+
+      if (userWithSameUsername) {
+        return setError("User with this username already exist");
+      }
+
       const res = await api.post("/register", { email, password });
-      console.log("client side user ===> ", res.data.user);
+
+      const createUserRes = await api.post("/users", {
+        email,
+        username,
+        userId: res.data.uid,
+      });
+      console.log("created user ", createUserRes);
     } catch (e: any) {
-      if (e.response.data.message === "auth/email-already-in-use") {
+      if (e.response?.data?.message === "auth/email-already-in-use") {
         setError("Error: Email already in use");
       } else {
         setError("Failed to create user");
       }
+      console.log("del on error  ", e);
+      const res = await api.delete("/auth/delete");
     } finally {
       setIsSubmitting(false);
     }
@@ -75,6 +103,15 @@ function Register() {
                 errors.email &&
                 (errors.email.type === "pattern" ? "Invalid email" : "Required")
               }
+            />
+            <TextField
+              error={Boolean(errors.username)}
+              label="Username"
+              variant="outlined"
+              {...register("username", {
+                required: true,
+              })}
+              helperText={errors.username && "Required"}
             />
             <TextField
               error={Boolean(errors.fullName)}
