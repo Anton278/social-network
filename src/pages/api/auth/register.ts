@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { initializeApp } from "firebase/app";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 
-import { getFirebaseConfig } from "@/firebaseCfg";
+import { getFirebaseConfig } from "@/utils/getFirebaseConfig";
 
 export default async function handler(
   req: NextApiRequest,
@@ -26,7 +26,6 @@ export default async function handler(
       email,
       password
     );
-    console.log(auth.currentUser);
 
     const { user } = createUserRes;
     res.status(200).json(user);

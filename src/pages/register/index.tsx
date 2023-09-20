@@ -13,15 +13,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import * as Styled from "@/styles/Register.styled";
 import { api } from "@/http/api";
 import Spinner from "@/components/Spinner";
-import { emailRegEx } from "@/emailRegEx";
-import UsersController from "@/controllers/UsersController";
-
-import type {
-  DocumentData,
-  Firestore,
-  QueryDocumentSnapshot,
-  QuerySnapshot,
-} from "firebase/firestore";
+import { emailRegEx } from "@/utils/consts";
 import { User } from "@/models/User";
 
 type FormValues = {
@@ -65,22 +57,24 @@ function Register() {
         return setError("User with this username already exist");
       }
 
-      const res = await api.post("/register", { email, password });
+      const registerRes = await api.post("/auth/register", { email, password });
 
-      const createUserRes = await api.post("/users", {
+      await api.post("/users", {
         email,
         username,
-        userId: res.data.uid,
+        userId: registerRes.data.uid,
       });
-      console.log("created user ", createUserRes);
     } catch (e: any) {
       if (e.response?.data?.message === "auth/email-already-in-use") {
         setError("Error: Email already in use");
       } else {
         setError("Failed to create user");
+
+        if (e.response?.data?.code === "users/create-user-error") {
+          // when create user req fails, delete user in firebase auth
+          await api.delete("/auth/delete");
+        }
       }
-      console.log("del on error  ", e);
-      const res = await api.delete("/auth/delete");
     } finally {
       setIsSubmitting(false);
     }

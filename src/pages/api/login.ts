@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { getFbAuth } from "@/firebaseCfg";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getFirebaseConfig } from "@/utils/getFirebaseConfig";
+import { initializeApp } from "firebase/app";
 
 export default async function handler(
   req: NextApiRequest,
@@ -13,7 +14,9 @@ export default async function handler(
     return res.status(500).json({ message: "Something went wrong" });
   }
 
-  const auth = getFbAuth(process.env.FIREBASE_API_KEY);
+  const firebaseConfig = getFirebaseConfig(process.env.FIREBASE_API_KEY);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
   const { email, password } = req.body;
 
   try {

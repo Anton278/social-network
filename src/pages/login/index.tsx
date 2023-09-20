@@ -13,7 +13,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import * as Styled from "@/styles/Login.styled";
 import { api } from "@/http/api";
 import Spinner from "@/components/Spinner";
-import { emailRegEx } from "@/emailRegEx";
+import { emailRegEx } from "@/utils/consts";
 
 type FormValues = {
   email: string;

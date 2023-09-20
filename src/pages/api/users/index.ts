@@ -1,20 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { initializeApp } from "firebase/app";
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
-import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore";
-import type {
-  DocumentData,
-  Firestore,
-  QuerySnapshot,
-} from "firebase/firestore";
+import { getFirestore } from "firebase/firestore";
 
-import { getFirebaseConfig } from "@/firebaseCfg";
+import { getFirebaseConfig } from "@/utils/getFirebaseConfig";
 import UsersController from "@/controllers/UsersController";
-import { User } from "@/models/User";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<User[] | { message: string } | any>
+  res: NextApiResponse
 ) {
   if (!process.env.FIREBASE_API_KEY) {
     return res

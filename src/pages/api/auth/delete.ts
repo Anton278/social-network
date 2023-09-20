@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { initializeApp } from "firebase/app";
 import { getAuth, deleteUser } from "firebase/auth";
 
-import { getFirebaseConfig } from "@/firebaseCfg";
+import { getFirebaseConfig } from "@/utils/getFirebaseConfig";
 
 export default async function handler(
   req: NextApiRequest,
@@ -26,7 +26,7 @@ export default async function handler(
   const userId = user.uid;
 
   try {
-    const createUserRes = await deleteUser(user);
+    await deleteUser(user);
     res.status(200).json({
       message: `Successfully deleted user #${userId} from auth system`,
     });
