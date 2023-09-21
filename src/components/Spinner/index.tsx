@@ -43,7 +43,7 @@ type SpinnerProps = {
 
 function Spinner({ size = 24 }: SpinnerProps) {
   return (
-    <Wrapper size={size}>
+    <Wrapper size={size} data-testid="spinner">
       <div></div>
       <div></div>
       <div></div>

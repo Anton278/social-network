@@ -157,14 +157,19 @@ function Register() {
               variant="contained"
               type="submit"
               endIcon={isSubmitting ? <Spinner /> : null}
+              data-testid="submit-btn"
             >
               Register
             </Button>
           </Styled.ButtonWrapper>
         </form>
-        <Styled.ErrorWrapper>
-          <Typography color="error">{error}</Typography>
-        </Styled.ErrorWrapper>
+        {error && (
+          <Styled.ErrorWrapper>
+            <Typography color="error" data-testid="error-txt">
+              {error}
+            </Typography>
+          </Styled.ErrorWrapper>
+        )}
       </Styled.Wrapper>
     </Layout>
   );
