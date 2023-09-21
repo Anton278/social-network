@@ -20,13 +20,8 @@ export default async function handler(
   const { email, password } = req.body;
 
   try {
-    const createUserRes = await signInWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-    const { user } = createUserRes;
-    console.log("server side user ", user);
+    const loginRes = await signInWithEmailAndPassword(auth, email, password);
+    const { user } = loginRes;
 
     res.status(200).json(user);
   } catch (e: any) {

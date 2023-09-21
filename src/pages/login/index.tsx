@@ -14,9 +14,10 @@ import * as Styled from "@/styles/Login.styled";
 import { api } from "@/http/api";
 import Spinner from "@/components/Spinner";
 import { emailRegEx } from "@/utils/consts";
+import { User } from "@/models/User";
 
 type FormValues = {
-  email: string;
+  emailOrUsername: string;
   password: string;
 };
 
@@ -37,9 +38,29 @@ function Login() {
     setIsSubmitting(true);
     setError("");
 
+    const { emailOrUsername, password } = values;
+
+    const isEmail = emailRegEx.test(emailOrUsername);
+
     try {
-      const res = await api.post("/login", values);
-      console.log("client side user ===> ", res.data);
+      if (isEmail) {
+        const res = await api.post("/auth/login", {
+          email: emailOrUsername,
+          password,
+        });
+      } else {
+        const users = await api.get<User[]>("/users");
+        const user = users.data.find(
+          (user) => user.username === emailOrUsername
+        );
+        if (!user) {
+          return setError("Wrong username or password");
+        }
+        const res = await api.post("/auth/login", {
+          email: user.email,
+          password,
+        });
+      }
     } catch (e: any) {
       if (
         ["auth/user-not-found", "auth/wrong-password"].includes(
@@ -61,14 +82,13 @@ function Login() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <Styled.Inputs>
             <TextField
-              label="Email"
+              label="Email or Username"
               variant="outlined"
-              {...register("email", { required: true, pattern: emailRegEx })}
-              error={Boolean(errors.email)}
-              helperText={
-                errors.email &&
-                (errors.email.type === "pattern" ? "Invalid email" : "Required")
-              }
+              {...register("emailOrUsername", {
+                required: true,
+              })}
+              error={Boolean(errors.emailOrUsername)}
+              helperText={errors.emailOrUsername && "Required"}
             />
             <TextField
               error={Boolean(errors.password)}
