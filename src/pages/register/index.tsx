@@ -14,7 +14,11 @@ import * as Styled from "@/styles/Register.styled";
 import { api } from "@/http/api";
 import Spinner from "@/components/Spinner";
 import { emailRegEx } from "@/utils/consts";
-import { User } from "@/models/User";
+// import { User } from "@/models/User";
+import { getDocs, collection, addDoc } from "firebase/firestore";
+import { auth, db } from "@/firebase";
+import { createUserWithEmailAndPassword, deleteUser } from "firebase/auth";
+import type { User } from "firebase/auth";
 
 type FormValues = {
   email: string;
@@ -47,34 +51,47 @@ function Register() {
     const { email, password, username } = values;
 
     try {
-      const users = await api.get<User[]>("/users");
+      const usersDocs = (await getDocs(collection(db, "users"))).docs;
 
-      const userWithSameUsername = users.data.find(
-        (user) => user.username === username
-      );
+      const userWithSameUsername = usersDocs.find((userDoc) => {
+        const user = userDoc.data();
+        return user.username === username;
+      });
 
       if (userWithSameUsername) {
-        return setError("User with this username already exist");
+        setIsSubmitting(false);
+        setError("User with this username already exist");
+        return;
       }
 
-      const registerRes = await api.post("/auth/register", { email, password });
-
-      await api.post("/users", {
+      const createUserRes = await createUserWithEmailAndPassword(
+        auth,
         email,
-        username,
-        userId: registerRes.data.uid,
-      });
+        password
+      );
+
+      console.log("registered user ", createUserRes.user);
     } catch (e: any) {
-      if (e.response?.data?.message === "auth/email-already-in-use") {
+      if (e.code === "auth/email-already-in-use") {
         setError("Error: Email already in use");
       } else {
         setError("Failed to create user");
-
-        if (e.response?.data?.code === "users/create-user-error") {
-          // when create user req fails, delete user in firebase auth
-          await api.delete("/auth/delete");
-        }
       }
+
+      return setIsSubmitting(false);
+    }
+
+    try {
+      const userDocRef = await addDoc(collection(db, "users"), {
+        email,
+        username,
+        userId: auth.currentUser?.uid,
+      });
+
+      console.log("created user ", userDocRef);
+    } catch (e: any) {
+      setError("Failed to create user");
+      await deleteUser(auth.currentUser as User);
     } finally {
       setIsSubmitting(false);
     }

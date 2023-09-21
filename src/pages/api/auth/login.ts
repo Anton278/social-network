@@ -17,6 +17,9 @@ export default async function handler(
   const firebaseConfig = getFirebaseConfig(process.env.FIREBASE_API_KEY);
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+
+  console.log("api login current user", auth.currentUser);
+
   const { email, password } = req.body;
 
   try {

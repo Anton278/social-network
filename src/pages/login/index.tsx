@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "../../components/Layout";
 import {
   TextField,
@@ -15,6 +15,17 @@ import { api } from "@/http/api";
 import Spinner from "@/components/Spinner";
 import { emailRegEx } from "@/utils/consts";
 import { User } from "@/models/User";
+
+import { auth } from "@/firebase";
+
+import type { NextApiRequest, NextApiResponse } from "next";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+} from "firebase/auth";
+import { getFirebaseConfig } from "@/utils/getFirebaseConfig";
+import { initializeApp } from "firebase/app";
 
 type FormValues = {
   emailOrUsername: string;
@@ -35,46 +46,53 @@ function Login() {
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const onSubmit: SubmitHandler<FormValues> = async (values) => {
-    setIsSubmitting(true);
-    setError("");
-
+    // setIsSubmitting(true);
+    // setError("");
     const { emailOrUsername, password } = values;
+    // const isEmail = emailRegEx.test(emailOrUsername);
+    // try {
+    //   if (isEmail) {
+    //     const res = await api.post("/auth/login", {
+    //       email: emailOrUsername,
+    //       password,
+    //     });
+    //   } else {
+    //     const users = await api.get<User[]>("/users");
+    //     const user = users.data.find(
+    //       (user) => user.username === emailOrUsername
+    //     );
+    //     if (!user) {
+    //       return setError("Wrong username or password");
+    //     }
+    //     const res = await api.post("/auth/login", {
+    //       email: user.email,
+    //       password,
+    //     });
+    //   }
+    // } catch (e: any) {
+    //   if (
+    //     ["auth/user-not-found", "auth/wrong-password"].includes(
+    //       e.response.data.message
+    //     )
+    //   ) {
+    //     setError("Wrong email or password");
+    //   } else {
+    //     setError("Failed to login");
+    //   }
+    // } finally {
+    //   setIsSubmitting(false);
+    // }
 
-    const isEmail = emailRegEx.test(emailOrUsername);
-
-    try {
-      if (isEmail) {
-        const res = await api.post("/auth/login", {
-          email: emailOrUsername,
-          password,
-        });
-      } else {
-        const users = await api.get<User[]>("/users");
-        const user = users.data.find(
-          (user) => user.username === emailOrUsername
-        );
-        if (!user) {
-          return setError("Wrong username or password");
-        }
-        const res = await api.post("/auth/login", {
-          email: user.email,
-          password,
-        });
-      }
-    } catch (e: any) {
-      if (
-        ["auth/user-not-found", "auth/wrong-password"].includes(
-          e.response.data.message
-        )
-      ) {
-        setError("Wrong email or password");
-      } else {
-        setError("Failed to login");
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
+    signInWithEmailAndPassword(auth, emailOrUsername, password);
   };
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      console.log("current user", auth.currentUser);
+    }, 2000);
+
+    return () => clearInterval(id);
+  }, []);
 
   return (
     <Layout>
