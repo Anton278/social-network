@@ -17,6 +17,7 @@ import { getDocs, collection, addDoc } from "firebase/firestore";
 import { auth, db } from "@/firebase";
 import { createUserWithEmailAndPassword, deleteUser } from "firebase/auth";
 import type { User } from "firebase/auth";
+import { withPublic } from "@/hocs/withPublic";
 
 type FormValues = {
   email: string;
@@ -190,4 +191,4 @@ function Register() {
   );
 }
 
-export default Register;
+export default withPublic(Register);

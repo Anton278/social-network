@@ -16,6 +16,7 @@ import { emailRegEx } from "@/utils/consts";
 import { auth, db } from "@/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { getDocs, collection } from "firebase/firestore";
+import { withPublic } from "@/hocs/withPublic";
 
 type FormValues = {
   emailOrUsername: string;
@@ -123,4 +124,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default withPublic(Login);
