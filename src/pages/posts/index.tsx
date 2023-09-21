@@ -1,5 +1,7 @@
+import { withProtected } from "@/hocs/withProtected";
+
 function Posts() {
   return <div>Posts</div>;
 }
 
-export default Posts;
+export default withProtected(Posts);
