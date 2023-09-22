@@ -33,7 +33,7 @@ export const TopBarLeft = styled.div({
 });
 
 export const ActionsBar = styled.div({
-  margin: "45px 0",
+  margin: "45px 0 65px",
   display: "flex",
   justifyContent: "space-around",
 });

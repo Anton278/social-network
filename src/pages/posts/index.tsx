@@ -1,12 +1,13 @@
 import { withProtected } from "@/hocs/withProtected";
 import Layout from "@/components/Layout";
-import type { Post } from "@/models/Post";
+// import type { Post } from "@/models/Post";
 import * as Styled from "@/styles/Posts.styled";
 import { stringToColor } from "@/utils/stringToColor";
 import { Avatar, Box } from "@mui/material";
 import Link from "next/link";
+import Post from "@/components/Post";
 
-const posts: Post[] = [
+const posts = [
   {
     author: "Anton Nakonechnyi",
     authorId: "1",
@@ -34,22 +35,7 @@ function Posts() {
     <Layout>
       <div>
         {posts.map((post, i) => (
-          <div key={i}>
-            <Link
-              href="#"
-              style={{
-                color: "#000",
-                textDecoration: "none",
-                display: "flex",
-                alignItems: "center",
-                width: "fit-content",
-              }}
-            >
-              <Avatar {...stringAvatar(post.author)} />
-              <h5>{post.author}</h5>
-            </Link>
-            <p>{post.post}</p>
-          </div>
+          <Post key={i} author={post.author} text={post.post} />
         ))}
       </div>
     </Layout>

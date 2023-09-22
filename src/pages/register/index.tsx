@@ -91,6 +91,8 @@ function Register() {
         username,
         userId: auth.currentUser?.uid,
         fullName,
+        posts: [],
+        friends: [],
       });
 
       router.push("/posts");

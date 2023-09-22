@@ -15,6 +15,10 @@ import * as Styled from "@/styles/Profile.styled";
 import AddIcon from "@mui/icons-material/Add";
 import MessageIcon from "@mui/icons-material/Message";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { withProtected } from "@/hocs/withProtected";
+import Post from "@/components/Post";
+
+const posts = ["My first post", "My second post"];
 
 function Profile() {
   const router = useRouter();
@@ -38,6 +42,8 @@ function Profile() {
         const q = query(collection(db, "users"), where("userId", "==", userId));
 
         const querySnapshot = (await getDocs(q)).docs;
+        console.log("querySnapshot ", querySnapshot);
+
         if (querySnapshot[0]) {
           setUser(querySnapshot[0].data() as User);
           console.log("user ", querySnapshot[0].data());
@@ -56,61 +62,67 @@ function Profile() {
 
   return (
     <Layout maxWidth="md">
-      {isLoading ? (
-        <div>loading...</div>
-      ) : (
-        <>
-          <Styled.TopBar>
-            <Styled.TopBarLeft>
-              {user && (
-                <Avatar
-                  sx={{
-                    width: "100px",
-                    height: "100px",
-                    bgcolor: stringToColor("Anton Nakonechnyi"),
-                  }}
+      <>
+        {isLoading ? (
+          <div>loading...</div>
+        ) : (
+          <>
+            <Styled.TopBar>
+              <Styled.TopBarLeft>
+                {user && (
+                  <Avatar
+                    sx={{
+                      width: "100px",
+                      height: "100px",
+                      bgcolor: stringToColor("Anton Nakonechnyi"),
+                    }}
+                  >
+                    {user.fullName.split(" ")[0][0]}
+                    {user.fullName.split(" ")[1][0]}
+                  </Avatar>
+                )}
+                <Typography
+                  component="h5"
+                  sx={{ fontSize: 18, marginTop: "10px" }}
                 >
-                  {user.fullName.split(" ")[0][0]}
-                  {user.fullName.split(" ")[1][0]}
-                </Avatar>
-              )}
-              <Typography
-                component="h5"
-                sx={{ fontSize: 18, marginTop: "10px" }}
-              >
-                {user?.fullName}
-              </Typography>
-            </Styled.TopBarLeft>
-            <Styled.TopBarRight>
-              <Styled.PostsButton>
-                <Typography component="b" sx={{ fontWeight: "bold" }}>
-                  2
+                  {user?.fullName}
                 </Typography>
-                <Typography sx={{ marginTop: "5px" }}>posts</Typography>
-              </Styled.PostsButton>
-              <Styled.FriendsLink href="#">
-                <Typography component="b" sx={{ fontWeight: "bold" }}>
-                  12
-                </Typography>
-                <Typography sx={{ marginTop: "5px" }}>friends</Typography>
-              </Styled.FriendsLink>
-            </Styled.TopBarRight>
-          </Styled.TopBar>
-          <Styled.ActionsBar>
-            <Button variant="contained" startIcon={<AddIcon />}>
-              Add friend
-            </Button>
-            {/* <Button variant="outlined" startIcon={<DeleteIcon />} color="error">
+              </Styled.TopBarLeft>
+              <Styled.TopBarRight>
+                <Styled.PostsButton>
+                  <Typography component="b" sx={{ fontWeight: "bold" }}>
+                    {user?.posts.length}
+                  </Typography>
+                  <Typography sx={{ marginTop: "5px" }}>posts</Typography>
+                </Styled.PostsButton>
+                <Styled.FriendsLink href="#">
+                  <Typography component="b" sx={{ fontWeight: "bold" }}>
+                    {user?.friends.length}
+                  </Typography>
+                  <Typography sx={{ marginTop: "5px" }}>friends</Typography>
+                </Styled.FriendsLink>
+              </Styled.TopBarRight>
+            </Styled.TopBar>
+            <Styled.ActionsBar>
+              <Button variant="contained" startIcon={<AddIcon />}>
+                Add friend
+              </Button>
+              {/* <Button variant="outlined" startIcon={<DeleteIcon />} color="error">
               Delete friend
             </Button> */}
-            <Button variant="outlined" startIcon={<MessageIcon />}>
-              Message
-            </Button>
-          </Styled.ActionsBar>
-        </>
-      )}
+              <Button variant="outlined" startIcon={<MessageIcon />}>
+                Message
+              </Button>
+            </Styled.ActionsBar>
+          </>
+        )}
+        {user &&
+          posts.map((post) => (
+            <Post key={post} author={user.fullName} text={post} />
+          ))}
+      </>
     </Layout>
   );
 }
 
-export default Profile;
+export default withProtected(Profile);
