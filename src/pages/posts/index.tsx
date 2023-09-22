@@ -6,6 +6,8 @@ import { stringToColor } from "@/utils/stringToColor";
 import { Avatar, Box } from "@mui/material";
 import Link from "next/link";
 import Post from "@/components/Post";
+import { Fab, Tooltip } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 
 const posts = [
   {
@@ -33,11 +35,22 @@ function Posts() {
 
   return (
     <Layout>
-      <div>
-        {posts.map((post, i) => (
-          <Post key={i} author={post.author} text={post.post} />
-        ))}
-      </div>
+      <>
+        <div>
+          {posts.map((post, i) => (
+            <Post key={i} author={post.author} text={post.post} />
+          ))}
+        </div>
+        <Tooltip title="Add post" placement="left">
+          <Fab
+            color="primary"
+            aria-label="add"
+            sx={{ position: "fixed", bottom: "20px", right: "20px" }}
+          >
+            <AddIcon />
+          </Fab>
+        </Tooltip>
+      </>
     </Layout>
   );
 }
