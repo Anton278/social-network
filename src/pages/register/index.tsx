@@ -14,10 +14,11 @@ import * as Styled from "@/styles/Register.styled";
 import Spinner from "@/components/Spinner";
 import { emailRegEx } from "@/utils/consts";
 import { getDocs, collection, addDoc } from "firebase/firestore";
-import { auth, db } from "@/firebase";
+import { useFirebaseDB } from "@/hooks/useFirebaseDB";
 import { createUserWithEmailAndPassword, deleteUser } from "firebase/auth";
 import type { User } from "firebase/auth";
 import { withPublic } from "@/hocs/withPublic";
+import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
 
 type FormValues = {
   email: string;
@@ -28,6 +29,8 @@ type FormValues = {
 };
 
 function Register() {
+  const { auth } = useFirebaseAuth();
+  const { db } = useFirebaseDB();
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");

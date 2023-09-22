@@ -13,10 +13,11 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import * as Styled from "@/styles/Login.styled";
 import Spinner from "@/components/Spinner";
 import { emailRegEx } from "@/utils/consts";
-import { auth, db } from "@/firebase";
+import { useFirebaseDB } from "@/hooks/useFirebaseDB";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { getDocs, collection } from "firebase/firestore";
 import { withPublic } from "@/hocs/withPublic";
+import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
 
 type FormValues = {
   emailOrUsername: string;
@@ -24,6 +25,8 @@ type FormValues = {
 };
 
 function Login() {
+  const { auth } = useFirebaseAuth();
+  const { db } = useFirebaseDB();
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
