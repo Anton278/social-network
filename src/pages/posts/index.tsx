@@ -4,6 +4,7 @@ import type { Post } from "@/models/Post";
 import * as Styled from "@/styles/Posts.styled";
 import { stringToColor } from "@/utils/stringToColor";
 import { Avatar, Box } from "@mui/material";
+import Link from "next/link";
 
 const posts: Post[] = [
   {
@@ -34,10 +35,19 @@ function Posts() {
       <div>
         {posts.map((post, i) => (
           <div key={i}>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Link
+              href="#"
+              style={{
+                color: "#000",
+                textDecoration: "none",
+                display: "flex",
+                alignItems: "center",
+                width: "fit-content",
+              }}
+            >
               <Avatar {...stringAvatar(post.author)} />
               <h5>{post.author}</h5>
-            </Box>
+            </Link>
             <p>{post.post}</p>
           </div>
         ))}
