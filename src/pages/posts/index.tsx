@@ -2,6 +2,8 @@ import { withProtected } from "@/hocs/withProtected";
 import Layout from "@/components/Layout";
 import type { Post } from "@/models/Post";
 import * as Styled from "@/styles/Posts.styled";
+import { stringToColor } from "@/utils/stringToColor";
+import { Avatar, Box } from "@mui/material";
 
 const posts: Post[] = [
   {
@@ -17,12 +19,25 @@ const posts: Post[] = [
 ];
 
 function Posts() {
+  function stringAvatar(name: string) {
+    return {
+      sx: {
+        marginRight: "5px",
+        bgcolor: stringToColor(name),
+      },
+      children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
+    };
+  }
+
   return (
     <Layout>
       <div>
         {posts.map((post, i) => (
           <div key={i}>
-            <h5>{post.author}</h5>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Avatar {...stringAvatar(post.author)} />
+              <h5>{post.author}</h5>
+            </Box>
             <p>{post.post}</p>
           </div>
         ))}
