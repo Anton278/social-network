@@ -52,7 +52,7 @@ function Register() {
     setIsSubmitting(true);
     setError("");
 
-    const { email, password, username } = values;
+    const { email, password, username, fullName } = values;
 
     try {
       const usersDocs = (await getDocs(collection(db, "users"))).docs;
@@ -90,6 +90,7 @@ function Register() {
         email,
         username,
         userId: auth.currentUser?.uid,
+        fullName,
       });
 
       router.push("/posts");

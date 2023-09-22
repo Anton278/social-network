@@ -21,7 +21,7 @@ function Profile() {
   const userId = router.query.id;
   const { db } = useFirebaseDB();
   const [user, setUser] = useState<User>();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
   function stringAvatar(name: string) {
@@ -30,30 +30,29 @@ function Profile() {
     };
   }
 
-  // useEffect(() => {
-  //   console.log("userId ", userId);
-  //   async function getUser() {
-  //     setIsLoading(true);
+  useEffect(() => {
+    async function getUser() {
+      setIsLoading(true);
 
-  //     try {
-  //       const q = query(collection(db, "users"), where("userId", "==", userId));
+      try {
+        const q = query(collection(db, "users"), where("userId", "==", userId));
 
-  //       const querySnapshot = (await getDocs(q)).docs;
-  //       if (querySnapshot[0]) {
-  //         setUser(querySnapshot[0].data() as User);
-  //         console.log("user ", querySnapshot[0].data());
-  //       } else {
-  //         setError("Failed to get user");
-  //       }
-  //     } catch (e) {
-  //       setError("Failed to get user");
-  //     } finally {
-  //       setIsLoading(true);
-  //     }
-  //   }
+        const querySnapshot = (await getDocs(q)).docs;
+        if (querySnapshot[0]) {
+          setUser(querySnapshot[0].data() as User);
+          console.log("user ", querySnapshot[0].data());
+        } else {
+          setError("Failed to get user");
+        }
+      } catch (e) {
+        setError("Failed to get user");
+      } finally {
+        setIsLoading(false);
+      }
+    }
 
-  //   getUser();
-  // }, []);
+    getUser();
+  }, []);
 
   return (
     <Layout maxWidth="md">
@@ -63,19 +62,23 @@ function Profile() {
         <>
           <Styled.TopBar>
             <Styled.TopBarLeft>
-              <Avatar
-                {...stringAvatar(user ? user.fullName : "Anton Nakonechnyi")}
-                sx={{
-                  width: "100px",
-                  height: "100px",
-                  bgcolor: stringToColor("Anton Nakonechnyi"),
-                }}
-              />
+              {user && (
+                <Avatar
+                  sx={{
+                    width: "100px",
+                    height: "100px",
+                    bgcolor: stringToColor("Anton Nakonechnyi"),
+                  }}
+                >
+                  {user.fullName.split(" ")[0][0]}
+                  {user.fullName.split(" ")[1][0]}
+                </Avatar>
+              )}
               <Typography
                 component="h5"
                 sx={{ fontSize: 18, marginTop: "10px" }}
               >
-                Anton Nakonechnyi
+                {user?.fullName}
               </Typography>
             </Styled.TopBarLeft>
             <Styled.TopBarRight>
