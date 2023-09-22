@@ -36,7 +36,10 @@ export default function App({ Component, pageProps }: AppProps) {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         store.dispatch(setIsAuthed(true));
+      } else {
+        store.dispatch(setIsAuthed(false));
       }
+
       setIsAuthStateLoading(false);
     });
   }, []);

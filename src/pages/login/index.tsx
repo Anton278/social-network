@@ -18,6 +18,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { getDocs, collection } from "firebase/firestore";
 import { withPublic } from "@/hocs/withPublic";
 import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
+import { useRouter } from "next/router";
 
 type FormValues = {
   emailOrUsername: string;
@@ -25,6 +26,7 @@ type FormValues = {
 };
 
 function Login() {
+  const router = useRouter();
   const { auth } = useFirebaseAuth();
   const { db } = useFirebaseDB();
   const [showPassword, setShowPassword] = useState(false);
@@ -62,6 +64,7 @@ function Login() {
 
         await signInWithEmailAndPassword(auth, emailOrUsername, password);
       }
+      router.push("/posts");
     } catch (e: any) {
       if (["auth/user-not-found", "auth/wrong-password"].includes(e.code)) {
         setError("Wrong email or password");

@@ -6,7 +6,6 @@ import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
 import { selectIsAuthed } from "@/redux/slices/auth/selectors";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
-import { setIsAuthed } from "@/redux/slices/auth/slice";
 
 function Header() {
   const router = useRouter();
@@ -16,8 +15,7 @@ function Header() {
 
   async function handleLogout() {
     await signOut(auth);
-    await router.push("/login");
-    dispatch(setIsAuthed(false));
+    router.push("/login");
   }
 
   return (

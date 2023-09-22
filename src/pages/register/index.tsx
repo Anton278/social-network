@@ -19,6 +19,7 @@ import { createUserWithEmailAndPassword, deleteUser } from "firebase/auth";
 import type { User } from "firebase/auth";
 import { withPublic } from "@/hocs/withPublic";
 import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
+import { useRouter } from "next/router";
 
 type FormValues = {
   email: string;
@@ -29,6 +30,7 @@ type FormValues = {
 };
 
 function Register() {
+  const router = useRouter();
   const { auth } = useFirebaseAuth();
   const { db } = useFirebaseDB();
   const [showPassword, setShowPassword] = useState(false);
@@ -90,6 +92,7 @@ function Register() {
         userId: auth.currentUser?.uid,
       });
 
+      router.push("/posts");
       console.log("created user ", userDocRef);
     } catch (e: any) {
       setError("Failed to create user");
