@@ -62,7 +62,7 @@ function Login() {
           return setError("Wrong username or password");
         }
 
-        await signInWithEmailAndPassword(auth, emailOrUsername, password);
+        await signInWithEmailAndPassword(auth, user.data().email, password);
       }
       router.push("/posts");
     } catch (e: any) {
