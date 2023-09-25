@@ -5,7 +5,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { useState, useEffect } from "react";
 
-import { setIsAuthed } from "@/redux/slices/auth/slice";
+import { setIsAuthed, setUserId } from "@/redux/slices/auth/slice";
 import store from "@/redux/store";
 import { FirebaseContext } from "@/contexts/firebase";
 
@@ -36,8 +36,10 @@ export default function App({ Component, pageProps }: AppProps) {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         store.dispatch(setIsAuthed(true));
+        store.dispatch(setUserId(user.uid));
       } else {
         store.dispatch(setIsAuthed(false));
+        store.dispatch(setUserId(""));
       }
 
       setIsAuthStateLoading(false);

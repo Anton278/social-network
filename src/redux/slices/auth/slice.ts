@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { InitialState } from "./types";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
-const initialState: InitialState = { isAuthed: false };
+const initialState: InitialState = { isAuthed: false, userId: "" };
 
 const authSlice = createSlice({
   name: "auth",
@@ -12,9 +12,12 @@ const authSlice = createSlice({
       state.isAuthed = action.payload;
       console.log("setIsAuthed payload ", action.payload);
     },
+    setUserId(state, action: PayloadAction<string>) {
+      state.userId = action.payload;
+    },
   },
 });
 
-export const { setIsAuthed } = authSlice.actions;
+export const { setIsAuthed, setUserId } = authSlice.actions;
 
 export default authSlice.reducer;
