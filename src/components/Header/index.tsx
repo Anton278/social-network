@@ -5,11 +5,10 @@ import { signOut } from "firebase/auth";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
 import { selectIsAuthed } from "@/redux/slices/auth/selectors";
-import { useAppDispatch } from "@/hooks/useAppDispatch";
+import * as Styled from "./Header.styled";
 
 function Header() {
   const router = useRouter();
-  const dispatch = useAppDispatch();
   const { auth } = useFirebaseAuth();
   const isAuthed = useSelector(selectIsAuthed);
 
@@ -21,6 +20,58 @@ function Header() {
   return (
     <AppBar>
       <Toolbar>
+        {isAuthed && (
+          <nav>
+            <Styled.Links>
+              <li>
+                <Button
+                  component={RouterLink}
+                  href="/posts"
+                  style={{
+                    textDecoration:
+                      router.pathname === "/posts" ? "underline" : "none",
+                  }}
+                  sx={{
+                    color: "#fff",
+                  }}
+                >
+                  Posts
+                </Button>
+              </li>
+              <li>
+                <Button
+                  component={RouterLink}
+                  href={`/profile/${auth.currentUser?.uid}`}
+                  sx={{ color: "#fff" }}
+                  style={{
+                    textDecoration:
+                      window.location.pathname ===
+                      `/profile/${auth.currentUser?.uid}`
+                        ? "underline"
+                        : "none",
+                  }}
+                >
+                  My profile
+                </Button>
+              </li>
+              <li>
+                <Button
+                  component={RouterLink}
+                  href="/all-profiles"
+                  sx={{ color: "#fff" }}
+                  style={{
+                    textDecoration:
+                      router.pathname === "/all-profiles"
+                        ? "underline"
+                        : "none",
+                  }}
+                >
+                  All profiles
+                </Button>
+              </li>
+            </Styled.Links>
+          </nav>
+        )}
         <Box sx={{ ml: "auto" }}>
           {isAuthed ? (
             <Button
