@@ -33,6 +33,8 @@ function Profile() {
   const [user, setUser] = useState<User>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isSentFriendReq, setIsSentFriendReq] = useState(false);
+  const [isFriend, setIsFriend] = useState(false);
 
   async function handleAddFriend() {
     if (typeof id !== "string") {
@@ -52,15 +54,23 @@ function Profile() {
     async function getUser() {
       setIsLoading(true);
 
+      const q = query(collection(db, "users"), where("userId", "==", id));
+
       try {
-        const q = query(collection(db, "users"), where("userId", "==", id));
+        const usersDocs = (await getDocs(q)).docs;
+        if (!usersDocs[0]) {
+          return setError("Failed to get user");
+        }
 
-        const querySnapshot = (await getDocs(q)).docs;
+        const user = usersDocs[0].data();
+        setUser(user as User);
 
-        if (querySnapshot[0]) {
-          setUser(querySnapshot[0].data() as User);
-        } else {
-          setError("Failed to get user");
+        if (user.userId === userId) {
+          // my profile
+          return;
+        }
+        if (user.friendsRequests.includes(userId)) {
+          setIsSentFriendReq(true);
         }
       } catch (e) {
         setError("Failed to get user");
@@ -118,13 +128,19 @@ function Profile() {
             {id !== userId && (
               <Styled.ActionsBar>
                 <>
-                  <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    onClick={handleAddFriend}
-                  >
-                    Add friend
-                  </Button>
+                  {isSentFriendReq ? (
+                    <Button variant="contained" onClick={handleAddFriend}>
+                      Cancel friend request
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="contained"
+                      startIcon={<AddIcon />}
+                      onClick={handleAddFriend}
+                    >
+                      Add friend
+                    </Button>
+                  )}
                   {/* <Button variant="outlined" startIcon={<DeleteIcon />} color="error">
               Delete friend
             </Button> */}
