@@ -41,12 +41,12 @@ function Header() {
               <li>
                 <Button
                   component={RouterLink}
-                  href={`/profile/${auth.currentUser?.uid}`}
+                  href={`/profiles/${auth.currentUser?.uid}`}
                   sx={{ color: "#fff" }}
                   style={{
                     textDecoration:
                       window.location.pathname ===
-                      `/profile/${auth.currentUser?.uid}`
+                      `/profiles/${auth.currentUser?.uid}`
                         ? "underline"
                         : "none",
                   }}
@@ -57,13 +57,11 @@ function Header() {
               <li>
                 <Button
                   component={RouterLink}
-                  href="/all-profiles"
+                  href="/profiles"
                   sx={{ color: "#fff" }}
                   style={{
                     textDecoration:
-                      router.pathname === "/all-profiles"
-                        ? "underline"
-                        : "none",
+                      router.pathname === "/profiles" ? "underline" : "none",
                   }}
                 >
                   All profiles
