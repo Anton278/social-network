@@ -129,9 +129,7 @@ function Profile() {
               <Styled.ActionsBar>
                 <>
                   {isSentFriendReq ? (
-                    <Button variant="contained" onClick={handleAddFriend}>
-                      Cancel friend request
-                    </Button>
+                    <Button variant="contained">Cancel friend request</Button>
                   ) : (
                     <Button
                       variant="contained"
