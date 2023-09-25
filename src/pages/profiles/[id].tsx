@@ -21,6 +21,7 @@ import { withProtected } from "@/hocs/withProtected";
 import Post from "@/components/Post";
 import { selectUserId } from "@/redux/slices/auth/selectors";
 import { toast } from "react-toastify";
+import UserService from "@/services/UserService";
 
 const posts = ["My first post", "My second post"];
 
@@ -34,33 +35,15 @@ function Profile() {
   const [error, setError] = useState("");
 
   async function handleAddFriend() {
-    const friendQuery = query(
-      collection(db, "users"),
-      where("userId", "==", id)
-    );
-    const userQuery = query(
-      collection(db, "users"),
-      where("userId", "==", userId)
-    );
+    if (typeof id !== "string") {
+      return;
+    }
 
     try {
-      const friendQuerySnapshot = (await getDocs(friendQuery)).docs;
-      const userQuerySnapshot = (await getDocs(userQuery)).docs;
+      const userDoc = await UserService.getUserDoc(userId);
+      const friendDoc = await UserService.getUserDoc(id);
 
-      if (!friendQuerySnapshot[0] || !userQuerySnapshot[0]) {
-        throw new Error("Failed to get users");
-      }
-
-      const friendDocRef = friendQuerySnapshot[0].ref;
-      const userDocRef = userQuerySnapshot[0].ref;
-
-      await updateDoc(friendDocRef, {
-        friendsRequests: arrayUnion(userId),
-      });
-      await updateDoc(userDocRef, {
-        sentFriendsRequests: arrayUnion(id),
-      });
-
+      await UserService.addFriend(userDoc, friendDoc);
       toast.success(`Sent friend request to ${user?.fullName}!`);
     } catch (e) {}
   }
