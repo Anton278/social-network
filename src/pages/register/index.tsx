@@ -73,8 +73,6 @@ function Register() {
         email,
         password
       );
-
-      console.log("registered user ", createUserRes.user);
     } catch (e: any) {
       if (e.code === "auth/email-already-in-use") {
         setError("Error: Email already in use");
@@ -93,10 +91,11 @@ function Register() {
         fullName,
         posts: [],
         friends: [],
+        sentFriendsRequests: [],
+        friendsRequests: [],
       });
 
       router.push("/posts");
-      console.log("created user ", userDocRef);
     } catch (e: any) {
       setError("Failed to create user");
       await deleteUser(auth.currentUser as User);

@@ -4,6 +4,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { useState, useEffect } from "react";
+import { ToastContainer } from "react-toastify";
 
 import { setIsAuthed, setUserId } from "@/redux/slices/auth/slice";
 import store from "@/redux/store";
@@ -13,6 +14,7 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
+import "react-toastify/dist/ReactToastify.css";
 
 import "@/styles/globals.css";
 
@@ -50,6 +52,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <Provider store={store}>
       <FirebaseContext.Provider value={{ auth, db, isAuthStateLoading }}>
         <Component {...pageProps} />
+        <ToastContainer />
       </FirebaseContext.Provider>
     </Provider>
   );

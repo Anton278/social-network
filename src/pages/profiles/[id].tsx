@@ -1,6 +1,13 @@
 import Layout from "@/components/Layout";
 import { useFirebaseDB } from "@/hooks/useFirebaseDB";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import {
+  arrayUnion,
+  collection,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -13,6 +20,7 @@ import MessageIcon from "@mui/icons-material/Message";
 import { withProtected } from "@/hocs/withProtected";
 import Post from "@/components/Post";
 import { selectUserId } from "@/redux/slices/auth/selectors";
+import { toast } from "react-toastify";
 
 const posts = ["My first post", "My second post"];
 
@@ -25,6 +33,38 @@ function Profile() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
+  async function handleAddFriend() {
+    const friendQuery = query(
+      collection(db, "users"),
+      where("userId", "==", id)
+    );
+    const userQuery = query(
+      collection(db, "users"),
+      where("userId", "==", userId)
+    );
+
+    try {
+      const friendQuerySnapshot = (await getDocs(friendQuery)).docs;
+      const userQuerySnapshot = (await getDocs(userQuery)).docs;
+
+      if (!friendQuerySnapshot[0] || !userQuerySnapshot[0]) {
+        throw new Error("Failed to get users");
+      }
+
+      const friendDocRef = friendQuerySnapshot[0].ref;
+      const userDocRef = userQuerySnapshot[0].ref;
+
+      await updateDoc(friendDocRef, {
+        friendsRequests: arrayUnion(userId),
+      });
+      await updateDoc(userDocRef, {
+        sentFriendsRequests: arrayUnion(id),
+      });
+
+      toast.success(`Sent friend request to ${user?.fullName}!`);
+    } catch (e) {}
+  }
+
   useEffect(() => {
     async function getUser() {
       setIsLoading(true);
@@ -33,11 +73,9 @@ function Profile() {
         const q = query(collection(db, "users"), where("userId", "==", id));
 
         const querySnapshot = (await getDocs(q)).docs;
-        console.log("querySnapshot ", querySnapshot);
 
         if (querySnapshot[0]) {
           setUser(querySnapshot[0].data() as User);
-          console.log("user ", querySnapshot[0].data());
         } else {
           setError("Failed to get user");
         }
@@ -97,7 +135,11 @@ function Profile() {
             {id !== userId && (
               <Styled.ActionsBar>
                 <>
-                  <Button variant="contained" startIcon={<AddIcon />}>
+                  <Button
+                    variant="contained"
+                    startIcon={<AddIcon />}
+                    onClick={handleAddFriend}
+                  >
                     Add friend
                   </Button>
                   {/* <Button variant="outlined" startIcon={<DeleteIcon />} color="error">

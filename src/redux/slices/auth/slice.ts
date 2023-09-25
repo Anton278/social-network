@@ -10,7 +10,6 @@ const authSlice = createSlice({
   reducers: {
     setIsAuthed(state, action: PayloadAction<boolean>) {
       state.isAuthed = action.payload;
-      console.log("setIsAuthed payload ", action.payload);
     },
     setUserId(state, action: PayloadAction<string>) {
       state.userId = action.payload;
