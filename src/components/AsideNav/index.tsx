@@ -25,7 +25,7 @@ function AsideNav() {
   const [expandedFriends, setExpandedFriends] = useState(false);
 
   return (
-    <aside style={{ maxWidth: "360px", width: "100%" }}>
+    <aside style={{ maxWidth: "320px", width: "100%" }}>
       <List>
         <ListItemButton
           selected={router.pathname === "/posts"}
