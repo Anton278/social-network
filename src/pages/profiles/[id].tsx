@@ -153,7 +153,12 @@ function Profile() {
         <Divider sx={{ marginTop: "30px", marginBottom: "30px" }} />
         {user &&
           posts.map((post) => (
-            <Post key={post} author={user.fullName} text={post} />
+            <Post
+              key={post}
+              author={{ username: user.username, fullName: user.fullName }}
+              text={post}
+              date="1 minute ago"
+            />
           ))}
       </>
     </Layout>

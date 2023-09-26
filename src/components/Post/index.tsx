@@ -1,9 +1,11 @@
 import { stringToColor } from "@/utils/stringToColor";
 import Link from "next/link";
-import { Avatar } from "@mui/material";
+import { Avatar, Button } from "@mui/material";
+import * as Styled from "./Post.styled";
 
 interface PostProps {
-  author: string;
+  author: { username: string; fullName: string };
+  date: string;
   text: string;
 }
 
@@ -22,20 +24,28 @@ function Post(props: PostProps) {
 
   return (
     <div>
-      <Link
-        href="#"
-        style={{
-          color: "#000",
-          textDecoration: "none",
-          display: "flex",
-          alignItems: "center",
-          width: "fit-content",
-        }}
-      >
-        <Avatar {...stringAvatar(author)} />
-        <h5>{author}</h5>
-      </Link>
+      <Styled.TopBar>
+        <Link
+          href="#"
+          style={{
+            color: "#000",
+            textDecoration: "none",
+            display: "flex",
+            alignItems: "center",
+            width: "fit-content",
+          }}
+        >
+          <Avatar {...stringAvatar(author.fullName)} />
+          <h5>{author.username}</h5>
+        </Link>
+        <span>·</span>
+        <span>1 minute ago</span>
+      </Styled.TopBar>
       <p>{text}</p>
+      <Button variant="outlined">
+        <span style={{ marginRight: "4px" }}>3</span>
+        Comments
+      </Button>
     </div>
   );
 }
