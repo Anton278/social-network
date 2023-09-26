@@ -12,6 +12,7 @@ import {
   Avatar,
 } from "@mui/material";
 import Link from "next/link";
+import { useState } from "react";
 
 type CommentsDialogProps = {
   open?: boolean;
@@ -24,6 +25,8 @@ function CommentsDialog({
   onClose = () => {},
   comments,
 }: CommentsDialogProps) {
+  const [comment, setComment] = useState("");
+
   function stringAvatar(name: string) {
     return {
       sx: {
@@ -76,8 +79,14 @@ function CommentsDialog({
           fullWidth
           label="Add comment"
           sx={{ marginRight: "12px" }}
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
         />
-        <Button variant="contained" endIcon={<SendIcon />}>
+        <Button
+          variant="contained"
+          endIcon={<SendIcon />}
+          disabled={!comment.trim().length}
+        >
           Send
         </Button>
       </DialogActions>
