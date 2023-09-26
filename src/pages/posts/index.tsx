@@ -1,8 +1,7 @@
 import { withProtected } from "@/hocs/withProtected";
 import Layout from "@/components/Layout";
 import Post from "@/components/Post";
-import { Fab, Tooltip } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
+import AddPost from "@/components/AddPost";
 
 const posts = [
   {
@@ -21,20 +20,12 @@ function Posts() {
   return (
     <Layout>
       <>
+        <AddPost />
         <div>
           {posts.map((post, i) => (
             <Post key={i} author={post.author} text={post.post} date="" />
           ))}
         </div>
-        <Tooltip title="Add post" placement="left">
-          <Fab
-            color="primary"
-            aria-label="add"
-            sx={{ position: "fixed", bottom: "20px", right: "20px" }}
-          >
-            <AddIcon />
-          </Fab>
-        </Tooltip>
       </>
     </Layout>
   );
