@@ -16,7 +16,7 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import HandshakeIcon from "@mui/icons-material/Handshake";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
-import { selectUserId } from "@/redux/slices/auth/selectors";
+import { selectUserId } from "@/redux/slices/user/selectors";
 import SettingsIcon from "@mui/icons-material/Settings";
 
 function AsideNav() {

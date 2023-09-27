@@ -12,7 +12,7 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { useFirebaseDB } from "@/hooks/useFirebaseDB";
 import { addDoc, collection } from "firebase/firestore";
 import { useSelector } from "react-redux";
-import { selectUserId } from "@/redux/slices/auth/selectors";
+import { selectUserId } from "@/redux/slices/user/selectors";
 import { useState } from "react";
 import Spinner from "@/components/Spinner";
 
