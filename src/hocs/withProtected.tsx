@@ -1,24 +1,30 @@
-import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
+import { RequestStatus } from "@/models/RequestStatus";
+import {
+  selectAuthStatus,
+  selectIsAuthed,
+} from "@/redux/slices/auth/selectors";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import { useSelector } from "react-redux";
 
 function withProtected(Component: React.FC) {
   function Protected(props: any) {
     const router = useRouter();
-    const { auth, isLoading } = useFirebaseAuth();
+    const isAuthed = useSelector(selectIsAuthed);
+    const authStatus = useSelector(selectAuthStatus);
 
     useEffect(() => {
-      if (isLoading) {
+      if (authStatus === RequestStatus.Loading) {
         return;
       }
-      if (!auth.currentUser) {
+      if (!isAuthed) {
         router.push("/login");
       }
-    }, [isLoading]);
+    }, [authStatus, isAuthed]);
 
-    return isLoading ? (
+    return authStatus === RequestStatus.Loading ? (
       <div>loading...</div>
-    ) : auth.currentUser ? (
+    ) : isAuthed ? (
       <Component {...props} />
     ) : (
       <div>Redirecting...</div>

@@ -3,12 +3,13 @@ import { Provider } from "react-redux";
 import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 
-import { setIsAuthed, setUserId } from "@/redux/slices/auth/slice";
+import { setIsAuthed } from "@/redux/slices/auth/slice";
 import store from "@/redux/store";
 import { FirebaseContext } from "@/contexts/firebase";
+import { getUser as getUserThunk } from "@/redux/slices/user/thunks";
 
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
@@ -32,25 +33,20 @@ const auth = getAuth(app);
 export const db = getFirestore(app);
 
 export default function App({ Component, pageProps }: AppProps) {
-  const [isAuthStateLoading, setIsAuthStateLoading] = useState(true);
-
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         store.dispatch(setIsAuthed(true));
-        store.dispatch(setUserId(user.uid));
+        store.dispatch(getUserThunk(user.uid));
       } else {
         store.dispatch(setIsAuthed(false));
-        store.dispatch(setUserId(""));
       }
-
-      setIsAuthStateLoading(false);
     });
   }, []);
 
   return (
     <Provider store={store}>
-      <FirebaseContext.Provider value={{ auth, db, isAuthStateLoading }}>
+      <FirebaseContext.Provider value={{ auth, db }}>
         <Component {...pageProps} />
         <ToastContainer />
       </FirebaseContext.Provider>

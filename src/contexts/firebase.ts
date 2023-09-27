@@ -5,7 +5,6 @@ import type { Firestore } from "firebase/firestore";
 type FirebaseContextT = {
   auth: Auth;
   db: Firestore;
-  isAuthStateLoading: boolean;
 };
 
 // @ts-ignore

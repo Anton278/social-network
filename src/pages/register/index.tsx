@@ -16,10 +16,12 @@ import { emailRegEx } from "@/utils/consts";
 import { getDocs, collection, addDoc } from "firebase/firestore";
 import { useFirebaseDB } from "@/hooks/useFirebaseDB";
 import { createUserWithEmailAndPassword, deleteUser } from "firebase/auth";
-import type { User } from "firebase/auth";
+import type { User as FirebaseAuthedUser } from "firebase/auth";
+import type { User } from "@/models/User";
 import { withPublic } from "@/hocs/withPublic";
 import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
-import { useRouter } from "next/router";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { setUser } from "@/redux/slices/user/slice";
 
 type FormValues = {
   email: string;
@@ -30,7 +32,7 @@ type FormValues = {
 };
 
 function Register() {
-  const router = useRouter();
+  const dispatch = useAppDispatch();
   const { auth } = useFirebaseAuth();
   const { db } = useFirebaseDB();
   const [showPassword, setShowPassword] = useState(false);
@@ -84,21 +86,21 @@ function Register() {
     }
 
     try {
-      const userDocRef = await addDoc(collection(db, "users"), {
+      const user: User = {
         email,
         username,
-        userId: auth.currentUser?.uid,
+        userId: auth.currentUser?.uid as string,
         fullName,
         posts: [],
         friends: [],
         sentFriendsRequests: [],
         friendsRequests: [],
-      });
-
-      router.push("/posts");
+      };
+      const userDocRef = await addDoc(collection(db, "users"), user);
+      dispatch(setUser(user));
     } catch (e: any) {
       setError("Failed to create user");
-      await deleteUser(auth.currentUser as User);
+      await deleteUser(auth.currentUser as FirebaseAuthedUser);
     } finally {
       setIsSubmitting(false);
     }
