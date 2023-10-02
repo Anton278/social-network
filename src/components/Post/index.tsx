@@ -1,15 +1,16 @@
-import { stringToColor } from "@/utils/stringToColor";
 import Link from "next/link";
 import { Avatar, Button } from "@mui/material";
-import * as Styled from "./Post.styled";
 import { useState } from "react";
+
+import { stringToColor } from "@/utils/stringToColor";
 import CommentsDialog from "../CommentsDialog";
 import { Comment } from "@/models/Comment";
 import { getTimeFromNow } from "@/utils/getTimeFromNow";
-import type { DocumentData, DocumentReference } from "firebase/firestore";
+
+import * as Styled from "./Post.styled";
 
 interface PostProps {
-  author: { username: string; fullName: string };
+  author: { username: string; fullName: string; userId: string };
   date: number;
   text: string;
   comments: Comment[];
@@ -31,10 +32,6 @@ function Post(props: PostProps) {
     };
   }
 
-  function onCommentsDialogCloseReq() {
-    setShowDialog(false);
-  }
-
   const postDateFromNow = getTimeFromNow(date);
 
   return (
@@ -42,7 +39,7 @@ function Post(props: PostProps) {
       <div>
         <Styled.TopBar>
           <Link
-            href="#"
+            href={`/profiles/${author.userId}`}
             style={{
               color: "#000",
               textDecoration: "none",
@@ -73,7 +70,7 @@ function Post(props: PostProps) {
       </div>
       <CommentsDialog
         open={showDialog}
-        onClose={onCommentsDialogCloseReq}
+        onClose={() => setShowDialog(false)}
         comments={comments}
         postId={postId}
       />

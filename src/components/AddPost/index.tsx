@@ -8,28 +8,19 @@ import {
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import {
-  Timestamp,
-  addDoc,
-  collection,
-  serverTimestamp,
-} from "firebase/firestore";
+import { serverTimestamp } from "firebase/firestore";
 import { useState } from "react";
 
 import { Post } from "@/models/Post";
 import { useAppSelector } from "@/hooks/useAppSelector";
-import { PostWithId } from "@/models/PostWithId";
-import { useFirebaseDB } from "@/hooks/useFirebaseDB";
 import Spinner from "@/components/Spinner";
 
 import * as Styled from "./AddPost.styled";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { addPost } from "@/redux/slices/posts/thunks";
 
-type AddPostProps = {
-  onAddedPost?: (post: PostWithId) => void;
-};
-
-function AddPost({ onAddedPost }: AddPostProps) {
-  const { db } = useFirebaseDB();
+function AddPost() {
+  const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.user);
   const [text, setText] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
@@ -54,22 +45,10 @@ function AddPost({ onAddedPost }: AddPostProps) {
     };
 
     try {
-      const postDocRef = await addDoc(collection(db, "posts"), post);
-
-      if (typeof onAddedPost === "function") {
-        onAddedPost({
-          ...post,
-          timeStamp: {
-            seconds: Date.now() / 1000,
-            nanoseconds: 0,
-          } as Timestamp,
-          id: postDocRef.id,
-        });
-      }
-
+      await dispatch(addPost(post)).unwrap();
       setText("");
     } catch (e) {
-      setError("Failed to publish post");
+      setError("Failed to add post");
     } finally {
       setIsSubmitting(false);
     }
@@ -103,7 +82,7 @@ function AddPost({ onAddedPost }: AddPostProps) {
         <Button
           variant="contained"
           onClick={onPublishClick}
-          disabled={!text.trim().length}
+          disabled={!text.trim().length || isSubmitting}
           endIcon={isSubmitting ? <Spinner /> : <SendIcon />}
         >
           Publish

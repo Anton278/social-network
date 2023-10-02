@@ -1,8 +1,3 @@
-import { useAppDispatch } from "@/hooks/useAppDispatch";
-import { useAppSelector } from "@/hooks/useAppSelector";
-import { Comment } from "@/models/Comment";
-import { updatePost } from "@/redux/slices/posts/thunks";
-import { stringToColor } from "@/utils/stringToColor";
 import SendIcon from "@mui/icons-material/Send";
 import {
   Button,
@@ -14,24 +9,24 @@ import {
   TextField,
   Avatar,
 } from "@mui/material";
-import {
-  DocumentData,
-  DocumentReference,
-  arrayUnion,
-  updateDoc,
-} from "firebase/firestore";
 import Link from "next/link";
 import { useState } from "react";
 
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { useAppSelector } from "@/hooks/useAppSelector";
+import { Comment } from "@/models/Comment";
+import { updatePost } from "@/redux/slices/posts/thunks";
+import { stringToColor } from "@/utils/stringToColor";
+
 type CommentsDialogProps = {
-  open?: boolean;
+  open: boolean;
   onClose?: () => void;
   comments: Comment[];
   postId: string;
 };
 
 function CommentsDialog({
-  open = false,
+  open,
   onClose = () => {},
   comments,
   postId,

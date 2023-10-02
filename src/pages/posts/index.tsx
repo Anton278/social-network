@@ -1,34 +1,33 @@
+import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useAppSelector } from "@/hooks/useAppSelector";
+import { Typography } from "@mui/material";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+
 import { withProtected } from "@/hocs/withProtected";
 import Layout from "@/components/Layout";
 import Post from "@/components/Post";
 import AddPost from "@/components/AddPost";
 import FriendsPostsOver from "@/components/FriendsPostsOver";
-import { useState, useEffect } from "react";
 import { Post as PostModel } from "@/models/Post";
-import { useSelector } from "react-redux";
-import { useAppSelector } from "@/hooks/useAppSelector";
-import { Typography } from "@mui/material";
-import { selectUserId } from "@/redux/slices/user/selectors";
-import * as Styled from "@/styles/Posts.styled";
 import { sortByDate } from "@/utils/sortByDate";
-import { PostWithId } from "@/models/PostWithId";
-import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getPosts } from "@/redux/slices/posts/thunks";
 import { selectPosts, selectPostsStatus } from "@/redux/slices/posts/selectors";
 import { RequestStatus } from "@/models/RequestStatus";
+
+import * as Styled from "@/styles/Posts.styled";
 
 function Posts() {
   const dispatch = useAppDispatch();
   const posts = useSelector(selectPosts);
   const postsStatus = useSelector(selectPostsStatus);
-  const { friends, sentFriendsRequests } = useAppSelector(
+  const { friends, sentFriendsRequests, userId } = useAppSelector(
     (state) => state.user
   );
 
   const [userAndFriendsPosts, setUserAndFriendsPosts] = useState<PostModel[]>(
     []
   );
-  const userId = useSelector(selectUserId);
   const [otherUsersPosts, setOtherUsersPosts] = useState<PostModel[]>([]);
 
   useEffect(() => {
@@ -78,10 +77,6 @@ function Posts() {
     setOtherUsersPosts(otherUsersPosts);
   }, [posts, friends, sentFriendsRequests, userId]);
 
-  function onAddedPost(post: PostWithId) {
-    setUserAndFriendsPosts((oldPosts) => sortByDate([...oldPosts, post]));
-  }
-
   if (postsStatus === RequestStatus.Loading) {
     return (
       <Layout>
@@ -107,7 +102,7 @@ function Posts() {
   return (
     <Layout>
       <>
-        <AddPost onAddedPost={onAddedPost} />
+        <AddPost />
         <div>
           <Styled.PostsContainer>
             {userAndFriendsPosts.map((post) => (
@@ -124,15 +119,15 @@ function Posts() {
           </Styled.PostsContainer>
           {Boolean(userAndFriendsPosts.length) && <FriendsPostsOver />}
           <Styled.PostsContainer>
-            {otherUsersPosts.map((otherUserPost) => (
+            {otherUsersPosts.map((post) => (
               <Post
-                key={otherUserPost.id}
-                author={otherUserPost.author}
-                text={otherUserPost.body}
-                date={otherUserPost.timeStamp.seconds}
-                comments={otherUserPost.comments}
-                isPrivate={otherUserPost.isPrivate}
-                postId={otherUserPost.id}
+                key={post.id}
+                author={post.author}
+                text={post.body}
+                date={post.timeStamp.seconds}
+                comments={post.comments}
+                isPrivate={post.isPrivate}
+                postId={post.id}
               />
             ))}
           </Styled.PostsContainer>
