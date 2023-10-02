@@ -11,7 +11,6 @@ import { useSelector } from "react-redux";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { Typography } from "@mui/material";
 import { selectUserId } from "@/redux/slices/user/selectors";
-import { isFriend } from "@/utils/isFriend";
 import * as Styled from "@/styles/Posts.styled";
 import { sortByDate } from "@/utils/sortByDate";
 import { PostWithId } from "@/models/PostWithId";
@@ -44,13 +43,27 @@ function Posts() {
         postsDocs.forEach((postDoc) => {
           const post = postDoc.data() as PostModel;
 
-          const isAuthorFriend = isFriend(
-            post.author.userId,
-            friends,
-            sentFriendsRequests
+          const isAuthorFriend = Boolean(
+            friends.find((friend) => friend.userId === post.author.userId)
+          );
+          const isAuthorInSentFriendsRequests = Boolean(
+            sentFriendsRequests.find(
+              (futureFriend) => futureFriend.userId === post.author.userId
+            )
           );
 
-          if (isAuthorFriend || post.author.userId === userId) {
+          if (post.author.userId === userId) {
+            return userAndFriendsPosts.push({ ...post, id: postDoc.id });
+          }
+
+          if (post.isPrivate) {
+            if (!isAuthorFriend) {
+              return;
+            }
+            return userAndFriendsPosts.push({ ...post, id: postDoc.id });
+          }
+
+          if (isAuthorFriend || isAuthorInSentFriendsRequests) {
             userAndFriendsPosts.push({ ...post, id: postDoc.id });
           } else {
             otherUsersPosts.push({ ...post, id: postDoc.id });
