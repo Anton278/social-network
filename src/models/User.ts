@@ -1,4 +1,4 @@
-interface Friend {}
+import { Friend } from "./Friend";
 
 export interface User {
   email: string;
@@ -7,6 +7,6 @@ export interface User {
   fullName: string;
   posts: string[];
   friends: Friend[];
-  sentFriendsRequests: [];
-  friendsRequests: [];
+  sentFriendsRequests: Friend[];
+  friendsRequests: Friend[];
 }

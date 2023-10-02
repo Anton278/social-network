@@ -36,3 +36,5 @@ function getTimeFromNow(timeStamp: number) {
     return `${Math.ceil(diff / 60 / 60 / 24 / 365)} years ago`;
   }
 }
+
+export { getTimeFromNow };

@@ -3,6 +3,15 @@ import Layout from "@/components/Layout";
 import Post from "@/components/Post";
 import AddPost from "@/components/AddPost";
 import FriendsPostsOver from "@/components/FriendsPostsOver";
+import { useState, useEffect } from "react";
+import { Post as PostModel } from "@/models/Post";
+import { addDoc, collection, getDocs } from "firebase/firestore";
+import { db } from "../_app";
+import { useSelector } from "react-redux";
+import { useAppSelector } from "@/hooks/useAppSelector";
+import { Typography } from "@mui/material";
+import { selectUserId } from "@/redux/slices/user/selectors";
+import { isFriend } from "@/utils/isFriend";
 
 const posts = [
   {
@@ -34,24 +43,115 @@ const posts = [
   },
 ];
 
+interface PostWithId extends PostModel {
+  id: string;
+}
+
 function Posts() {
+  const { friends, sentFriendsRequests } = useAppSelector(
+    (state) => state.user
+  );
+  const [userAndFriendsPosts, setUserAndFriendsPosts] = useState<PostWithId[]>(
+    []
+  );
+  const userId = useSelector(selectUserId);
+  const [otherUsersPosts, setOtherUsersPosts] = useState<PostWithId[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function getPosts() {
+      setIsLoading(true);
+      setError("");
+
+      try {
+        const postsDocs = (await getDocs(collection(db, "posts"))).docs;
+        if (!postsDocs.length) {
+          return;
+        }
+
+        const userAndFriendsPosts: PostWithId[] = [];
+        const otherUsersPosts: PostWithId[] = [];
+        postsDocs.forEach((postDoc) => {
+          const post = postDoc.data() as PostModel;
+
+          const isAuthorFriend = isFriend(
+            post.author.userId,
+            friends,
+            sentFriendsRequests
+          );
+
+          if (isAuthorFriend || post.author.userId === userId) {
+            userAndFriendsPosts.push({ ...post, id: postDoc.id });
+          } else {
+            otherUsersPosts.push({ ...post, id: postDoc.id });
+          }
+        });
+        setUserAndFriendsPosts(userAndFriendsPosts);
+        setOtherUsersPosts(otherUsersPosts);
+      } catch (e) {
+        setError("Failed to get posts");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    getPosts();
+  }, [friends, sentFriendsRequests, userId]);
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <>
+          <AddPost />
+          <div>Loading...</div>
+        </>
+      </Layout>
+    );
+  }
+
+  if (error) {
+    return (
+      <Layout>
+        <>
+          <AddPost />
+          <Typography color="error">{error}</Typography>
+        </>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <>
         <AddPost />
         <div>
-          {posts.map((post, i) => (
-            <Post
-              key={i}
-              author={post.author}
-              text={post.post}
-              date=""
-              postId="#"
-              comments={post.comments}
-            />
-          ))}
+          <div>
+            {userAndFriendsPosts.map((post) => (
+              <Post
+                key={post.id}
+                author={post.author}
+                text={post.body}
+                date={post.timeStamp}
+                postId="#"
+                comments={post.comments}
+              />
+            ))}
+          </div>
+          {Boolean(userAndFriendsPosts.length) && <FriendsPostsOver />}
+          <div>
+            {otherUsersPosts.map((otherUserPost) => (
+              <Post
+                key={otherUserPost.id}
+                author={otherUserPost.author}
+                text={otherUserPost.body}
+                date={otherUserPost.timeStamp}
+                postId="#"
+                comments={otherUserPost.comments}
+              />
+            ))}
+          </div>
         </div>
-        <FriendsPostsOver />
       </>
     </Layout>
   );

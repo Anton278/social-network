@@ -5,6 +5,7 @@ import * as Styled from "./Post.styled";
 import { useState } from "react";
 import CommentsDialog from "../CommentsDialog";
 import { Comment } from "@/models/Comment";
+import { getTimeFromNow } from "@/utils/getTimeFromNow";
 
 interface PostProps {
   author: { username: string; fullName: string };
@@ -16,7 +17,7 @@ interface PostProps {
 
 function Post(props: PostProps) {
   const [showDialog, setShowDialog] = useState(false);
-  const { author, text, postId, comments } = props;
+  const { author, text, postId, comments, date } = props;
 
   function stringAvatar(name: string) {
     return {
@@ -31,6 +32,8 @@ function Post(props: PostProps) {
   function onCommentsDialogCloseReq() {
     setShowDialog(false);
   }
+
+  const postDateFromNow = getTimeFromNow(+date);
 
   return (
     <>
@@ -50,11 +53,13 @@ function Post(props: PostProps) {
             <h5>{author.username}</h5>
           </Link>
           <span>·</span>
-          <span>1 minute ago</span>
+          <span>{postDateFromNow}</span>
         </Styled.TopBar>
         <p>{text}</p>
         <Button variant="outlined" onClick={() => setShowDialog(true)}>
-          <span style={{ marginRight: "4px" }}>3</span>
+          {comments.length ? (
+            <span style={{ marginRight: "4px" }}>{comments.length}</span>
+          ) : null}
           Comments
         </Button>
       </div>
