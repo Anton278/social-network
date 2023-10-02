@@ -125,6 +125,7 @@ function Posts() {
                 date={post.timeStamp.seconds}
                 postId="#"
                 comments={post.comments}
+                isPrivate={post.isPrivate}
               />
             ))}
           </Styled.PostsContainer>
@@ -138,6 +139,7 @@ function Posts() {
                 date={otherUserPost.timeStamp.seconds}
                 postId="#"
                 comments={otherUserPost.comments}
+                isPrivate={otherUserPost.isPrivate}
               />
             ))}
           </Styled.PostsContainer>

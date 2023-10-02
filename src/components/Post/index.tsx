@@ -13,11 +13,12 @@ interface PostProps {
   text: string;
   postId: string;
   comments: Comment[];
+  isPrivate: boolean;
 }
 
 function Post(props: PostProps) {
   const [showDialog, setShowDialog] = useState(false);
-  const { author, text, postId, comments, date } = props;
+  const { author, text, postId, comments, date, isPrivate } = props;
 
   function stringAvatar(name: string) {
     return {
@@ -54,6 +55,12 @@ function Post(props: PostProps) {
           </Link>
           <span>·</span>
           <span>{postDateFromNow}</span>
+          {isPrivate && (
+            <>
+              <span>·</span>
+              <Styled.PrivateMarker>(Private)</Styled.PrivateMarker>
+            </>
+          )}
         </Styled.TopBar>
         <p>{text}</p>
         <Button variant="outlined" onClick={() => setShowDialog(true)}>
