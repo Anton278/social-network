@@ -6,14 +6,15 @@ import { useState } from "react";
 import CommentsDialog from "../CommentsDialog";
 import { Comment } from "@/models/Comment";
 import { getTimeFromNow } from "@/utils/getTimeFromNow";
+import type { DocumentData, DocumentReference } from "firebase/firestore";
 
 interface PostProps {
   author: { username: string; fullName: string };
   date: number;
   text: string;
-  postId: string;
   comments: Comment[];
   isPrivate: boolean;
+  postId: string;
 }
 
 function Post(props: PostProps) {
@@ -74,6 +75,7 @@ function Post(props: PostProps) {
         open={showDialog}
         onClose={onCommentsDialogCloseReq}
         comments={comments}
+        postId={postId}
       />
     </>
   );

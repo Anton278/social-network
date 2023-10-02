@@ -1,4 +1,8 @@
-import type { Timestamp } from "firebase/firestore";
+import type {
+  DocumentData,
+  DocumentReference,
+  Timestamp,
+} from "firebase/firestore";
 import { Comment } from "./Comment";
 
 interface Author {
@@ -13,4 +17,5 @@ export interface Post {
   comments: Comment[];
   timeStamp: Timestamp;
   isPrivate: boolean;
+  id: string;
 }

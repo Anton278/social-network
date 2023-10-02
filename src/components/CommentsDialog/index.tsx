@@ -1,4 +1,7 @@
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { useAppSelector } from "@/hooks/useAppSelector";
 import { Comment } from "@/models/Comment";
+import { updatePost } from "@/redux/slices/posts/thunks";
 import { stringToColor } from "@/utils/stringToColor";
 import SendIcon from "@mui/icons-material/Send";
 import {
@@ -11,6 +14,12 @@ import {
   TextField,
   Avatar,
 } from "@mui/material";
+import {
+  DocumentData,
+  DocumentReference,
+  arrayUnion,
+  updateDoc,
+} from "firebase/firestore";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -18,14 +27,19 @@ type CommentsDialogProps = {
   open?: boolean;
   onClose?: () => void;
   comments: Comment[];
+  postId: string;
 };
 
 function CommentsDialog({
   open = false,
   onClose = () => {},
   comments,
+  postId,
 }: CommentsDialogProps) {
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.user);
   const [comment, setComment] = useState("");
+  const [isSending, setsIsSending] = useState(false);
 
   function stringAvatar(name: string) {
     return {
@@ -35,6 +49,23 @@ function CommentsDialog({
       },
       children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
     };
+  }
+
+  async function onSendClick() {
+    setsIsSending(true);
+
+    const lastComment = comments[comments.length - 1];
+    const newComment: Comment = {
+      comment,
+      fullName: user.fullName,
+      userId: user.userId,
+      username: user.username,
+      id: lastComment ? lastComment.id + 1 : 1,
+    };
+    await dispatch(updatePost({ postId, comments: [...comments, newComment] }));
+
+    setsIsSending(false);
+    setComment("");
   }
 
   return (
@@ -85,7 +116,8 @@ function CommentsDialog({
         <Button
           variant="contained"
           endIcon={<SendIcon />}
-          disabled={!comment.trim().length}
+          disabled={!comment.trim().length || isSending}
+          onClick={onSendClick}
         >
           Send
         </Button>
