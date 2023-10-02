@@ -132,7 +132,7 @@ function Posts() {
                 key={post.id}
                 author={post.author}
                 text={post.body}
-                date={post.timeStamp}
+                date={post.timeStamp.seconds}
                 postId="#"
                 comments={post.comments}
               />
@@ -145,7 +145,7 @@ function Posts() {
                 key={otherUserPost.id}
                 author={otherUserPost.author}
                 text={otherUserPost.body}
-                date={otherUserPost.timeStamp}
+                date={otherUserPost.timeStamp.seconds}
                 postId="#"
                 comments={otherUserPost.comments}
               />

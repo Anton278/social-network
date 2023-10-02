@@ -9,7 +9,7 @@ import { getTimeFromNow } from "@/utils/getTimeFromNow";
 
 interface PostProps {
   author: { username: string; fullName: string };
-  date: string;
+  date: number;
   text: string;
   postId: string;
   comments: Comment[];
@@ -33,7 +33,7 @@ function Post(props: PostProps) {
     setShowDialog(false);
   }
 
-  const postDateFromNow = getTimeFromNow(+date);
+  const postDateFromNow = getTimeFromNow(date);
 
   return (
     <>
