@@ -12,4 +12,5 @@ export interface Post {
   body: string;
   comments: Comment[];
   timeStamp: Timestamp;
+  isPrivate: boolean;
 }

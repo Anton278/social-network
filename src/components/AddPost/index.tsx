@@ -1,4 +1,3 @@
-import * as Styled from "./AddPost.styled";
 import {
   TextField,
   Button,
@@ -9,16 +8,29 @@ import {
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import { useFirebaseDB } from "@/hooks/useFirebaseDB";
-import { addDoc, collection } from "firebase/firestore";
-import { useSelector } from "react-redux";
-import { selectUserId } from "@/redux/slices/user/selectors";
+import {
+  Timestamp,
+  addDoc,
+  collection,
+  serverTimestamp,
+} from "firebase/firestore";
 import { useState } from "react";
+
+import { Post } from "@/models/Post";
+import { useAppSelector } from "@/hooks/useAppSelector";
+import { PostWithId } from "@/models/PostWithId";
+import { useFirebaseDB } from "@/hooks/useFirebaseDB";
 import Spinner from "@/components/Spinner";
 
-function AddPost() {
+import * as Styled from "./AddPost.styled";
+
+type AddPostProps = {
+  onAddedPost?: (post: PostWithId) => void;
+};
+
+function AddPost({ onAddedPost }: AddPostProps) {
   const { db } = useFirebaseDB();
-  const userId = useSelector(selectUserId);
+  const user = useAppSelector((state) => state.user);
   const [text, setText] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -28,12 +40,32 @@ function AddPost() {
     setIsSubmitting(true);
     setError("");
 
+    const post: Post = {
+      author: {
+        fullName: user.fullName,
+        userId: user.userId,
+        username: user.username,
+      },
+      body: text,
+      comments: [],
+      //@ts-expect-error
+      timeStamp: serverTimestamp(),
+      isPrivate,
+    };
+
     try {
-      await addDoc(collection(db, "posts"), {
-        userId,
-        text,
-        isPrivate,
-      });
+      const postDocRef = await addDoc(collection(db, "posts"), post);
+
+      if (typeof onAddedPost === "function") {
+        onAddedPost({
+          ...post,
+          timeStamp: {
+            seconds: Date.now() / 1000,
+            nanoseconds: 0,
+          } as Timestamp,
+          id: postDocRef.id,
+        });
+      }
 
       setText("");
     } catch (e) {

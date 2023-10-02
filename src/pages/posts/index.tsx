@@ -14,40 +14,7 @@ import { selectUserId } from "@/redux/slices/user/selectors";
 import { isFriend } from "@/utils/isFriend";
 import * as Styled from "@/styles/Posts.styled";
 import { sortByDate } from "@/utils/sortByDate";
-
-const posts = [
-  {
-    author: { username: "anton278", fullName: "Anton Nakonechnyi" },
-    authorId: "1",
-    post: "Very first post. Hello!",
-    comments: [
-      {
-        userId: "CwYS23Q87iOxCpHCTU1qlzDka263",
-        username: "john001",
-        comment: "Comment 1",
-        id: "1",
-        fullName: "John Doe",
-      },
-      {
-        userId: "CwYS23Q87iOxCpHCTU1qlzDka263",
-        username: "john001",
-        comment: "Comment 2",
-        id: "2",
-        fullName: "John Doe",
-      },
-    ],
-  },
-  {
-    author: { username: "john001", fullName: "John Doe" },
-    authorId: "2",
-    post: "Lorem ipsum dolor...",
-    comments: [],
-  },
-];
-
-interface PostWithId extends PostModel {
-  id: string;
-}
+import { PostWithId } from "@/models/PostWithId";
 
 function Posts() {
   const { friends, sentFriendsRequests } = useAppSelector(
@@ -105,6 +72,10 @@ function Posts() {
     getPosts();
   }, [friends, sentFriendsRequests, userId]);
 
+  function onAddedPost(post: PostWithId) {
+    setUserAndFriendsPosts((oldPosts) => sortByDate([...oldPosts, post]));
+  }
+
   if (isLoading) {
     return (
       <Layout>
@@ -130,7 +101,7 @@ function Posts() {
   return (
     <Layout>
       <>
-        <AddPost />
+        <AddPost onAddedPost={onAddedPost} />
         <div>
           <Styled.PostsContainer>
             {userAndFriendsPosts.map((post) => (
