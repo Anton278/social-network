@@ -12,6 +12,8 @@ import { useAppSelector } from "@/hooks/useAppSelector";
 import { Typography } from "@mui/material";
 import { selectUserId } from "@/redux/slices/user/selectors";
 import { isFriend } from "@/utils/isFriend";
+import * as Styled from "@/styles/Posts.styled";
+import { sortByDate } from "@/utils/sortByDate";
 
 const posts = [
   {
@@ -87,6 +89,10 @@ function Posts() {
             otherUsersPosts.push({ ...post, id: postDoc.id });
           }
         });
+
+        sortByDate(userAndFriendsPosts);
+        sortByDate(otherUsersPosts);
+
         setUserAndFriendsPosts(userAndFriendsPosts);
         setOtherUsersPosts(otherUsersPosts);
       } catch (e) {
@@ -126,7 +132,7 @@ function Posts() {
       <>
         <AddPost />
         <div>
-          <div>
+          <Styled.PostsContainer>
             {userAndFriendsPosts.map((post) => (
               <Post
                 key={post.id}
@@ -137,9 +143,9 @@ function Posts() {
                 comments={post.comments}
               />
             ))}
-          </div>
+          </Styled.PostsContainer>
           {Boolean(userAndFriendsPosts.length) && <FriendsPostsOver />}
-          <div>
+          <Styled.PostsContainer>
             {otherUsersPosts.map((otherUserPost) => (
               <Post
                 key={otherUserPost.id}
@@ -150,7 +156,7 @@ function Posts() {
                 comments={otherUserPost.comments}
               />
             ))}
-          </div>
+          </Styled.PostsContainer>
         </div>
       </>
     </Layout>

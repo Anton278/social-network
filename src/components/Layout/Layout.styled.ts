@@ -11,6 +11,7 @@ export const Main = styled.div({
   display: "flex",
   padding: "0 24px",
   columnGap: "30px",
+  marginBottom: "30px",
 });
 
 export const ContentWrapper = styled.div({ flexGrow: 1 });
