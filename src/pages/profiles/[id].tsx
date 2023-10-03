@@ -1,19 +1,19 @@
-import Layout from "@/components/Layout";
 import { useFirebaseDB } from "@/hooks/useFirebaseDB";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Avatar, Typography, Button, Divider } from "@mui/material";
-import { stringToColor } from "@/utils/stringToColor";
-import { User } from "@/models/User";
-import * as Styled from "@/styles/Profile.styled";
 import AddIcon from "@mui/icons-material/Add";
 import MessageIcon from "@mui/icons-material/Message";
+import { toast } from "react-toastify";
+
+import Layout from "@/components/Layout";
+import { stringToColor } from "@/utils/stringToColor";
+import { User } from "@/models/User";
 import { withProtected } from "@/hocs/withProtected";
 import Post from "@/components/Post";
 import { selectUserId } from "@/redux/slices/user/selectors";
-import { toast } from "react-toastify";
 import UserService from "@/services/UserService";
 import { selectPosts, selectPostsStatus } from "@/redux/slices/posts/selectors";
 import { getPosts } from "@/redux/slices/posts/thunks";
@@ -21,68 +21,73 @@ import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { sortByDate } from "@/utils/sortByDate";
 import { RequestStatus } from "@/models/RequestStatus";
 
+import * as Styled from "@/styles/Profile.styled";
+
 function Profile() {
   const router = useRouter();
-  const id = router.query.id;
+  const profileId = router.query.id;
   const dispatch = useAppDispatch();
   const posts = useSelector(selectPosts);
   const postsStatus = useSelector(selectPostsStatus);
   const userId = useSelector(selectUserId);
   const { db } = useFirebaseDB();
-  const [user, setUser] = useState<User>();
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [profile, setProfile] = useState<User>();
+  const [isProfileLoading, setIsProfileLoading] = useState(true);
+  const [profileError, setProfileError] = useState("");
   const [isSentFriendReq, setIsSentFriendReq] = useState(false);
   const [isFriend, setIsFriend] = useState(false);
 
-  const userPosts = sortByDate(
-    posts.filter((post) => post.author.userId === id)
+  const profilePosts = sortByDate(
+    posts.filter((post) => post.author.userId === profileId)
   );
 
   async function handleAddFriend() {
-    if (typeof id !== "string") {
+    if (typeof profileId !== "string") {
       return;
     }
 
     try {
       const userDoc = await UserService.getUserDoc(userId);
-      const friendDoc = await UserService.getUserDoc(id);
+      const friendDoc = await UserService.getUserDoc(profileId);
 
       await UserService.addFriend(userDoc, friendDoc);
-      toast.success(`Sent friend request to ${user?.fullName}!`);
+      toast.success(`Sent friend request to ${profile?.fullName}!`);
     } catch (e) {}
   }
 
   useEffect(() => {
-    async function getUser() {
-      setIsLoading(true);
+    async function getProfile() {
+      setIsProfileLoading(true);
 
-      const q = query(collection(db, "users"), where("userId", "==", id));
+      const q = query(
+        collection(db, "users"),
+        where("userId", "==", profileId)
+      );
 
       try {
         const usersDocs = (await getDocs(q)).docs;
         if (!usersDocs[0]) {
-          return setError("Failed to get user");
+          return setProfileError("Failed to get user");
         }
 
-        const user = usersDocs[0].data();
-        setUser(user as User);
+        const profile = usersDocs[0].data() as User;
+        setProfile(profile);
 
-        if (user.userId === userId) {
+        if (profile.userId === userId) {
           // my profile
           return;
         }
-        if (user.friendsRequests.includes(userId)) {
-          setIsSentFriendReq(true);
-        }
+        // if (profile.friendsRequests.includes(userId)) {
+        //   setIsSentFriendReq(true);
+        // }
       } catch (e) {
-        setError("Failed to get user");
+        setProfileError("Failed to get user");
       } finally {
-        setIsLoading(false);
+        setIsProfileLoading(false);
       }
     }
 
-    getUser();
+    getProfile();
 
     dispatch(getPosts());
   }, []);
@@ -90,13 +95,13 @@ function Profile() {
   return (
     <Layout maxWidth="md">
       <>
-        {isLoading ? (
+        {isProfileLoading ? (
           <div>loading...</div>
         ) : (
           <>
             <Styled.TopBar>
               <Styled.TopBarLeft>
-                {user && (
+                {profile && (
                   <Avatar
                     sx={{
                       width: "100px",
@@ -104,33 +109,33 @@ function Profile() {
                       bgcolor: stringToColor("Anton Nakonechnyi"),
                     }}
                   >
-                    {user.fullName.split(" ")[0][0]}
-                    {user.fullName.split(" ")[1][0]}
+                    {profile.fullName.split(" ")[0][0]}
+                    {profile.fullName.split(" ")[1][0]}
                   </Avatar>
                 )}
                 <Typography
                   component="h5"
                   sx={{ fontSize: 18, marginTop: "10px" }}
                 >
-                  {user?.fullName}
+                  {profile?.fullName}
                 </Typography>
               </Styled.TopBarLeft>
               <Styled.TopBarRight>
                 <Styled.PostsButton>
                   <Typography component="b" sx={{ fontWeight: "bold" }}>
-                    {userPosts.length}
+                    {profilePosts.length}
                   </Typography>
                   <Typography sx={{ marginTop: "5px" }}>posts</Typography>
                 </Styled.PostsButton>
                 <Styled.FriendsLink href="#">
                   <Typography component="b" sx={{ fontWeight: "bold" }}>
-                    {user?.friends.length}
+                    {profile?.friends.length}
                   </Typography>
                   <Typography sx={{ marginTop: "5px" }}>friends</Typography>
                 </Styled.FriendsLink>
               </Styled.TopBarRight>
             </Styled.TopBar>
-            {id !== userId && (
+            {profileId !== userId && (
               <Styled.ActionsBar>
                 <>
                   {isSentFriendReq ? (
@@ -161,15 +166,15 @@ function Profile() {
         ) : postsStatus === RequestStatus.Error ? (
           <Typography color="error">Failed to get posts</Typography>
         ) : (
-          userPosts.map((userPost) => (
+          profilePosts.map((profilePost) => (
             <Post
-              key={userPost.id}
-              author={userPost.author}
-              text={userPost.body}
-              date={userPost.timeStamp.seconds}
-              comments={userPost.comments}
-              isPrivate={userPost.isPrivate}
-              postId={userPost.id}
+              key={profilePost.id}
+              author={profilePost.author}
+              text={profilePost.body}
+              date={profilePost.timeStamp.seconds}
+              comments={profilePost.comments}
+              isPrivate={profilePost.isPrivate}
+              postId={profilePost.id}
             />
           ))
         )}
