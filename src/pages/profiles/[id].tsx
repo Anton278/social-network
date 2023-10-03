@@ -1,13 +1,6 @@
 import Layout from "@/components/Layout";
 import { useFirebaseDB } from "@/hooks/useFirebaseDB";
-import {
-  arrayUnion,
-  collection,
-  getDocs,
-  query,
-  updateDoc,
-  where,
-} from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -19,15 +12,21 @@ import AddIcon from "@mui/icons-material/Add";
 import MessageIcon from "@mui/icons-material/Message";
 import { withProtected } from "@/hocs/withProtected";
 import Post from "@/components/Post";
-import { selectUserId } from "@/redux/slices/auth/selectors";
+import { selectUserId } from "@/redux/slices/user/selectors";
 import { toast } from "react-toastify";
 import UserService from "@/services/UserService";
-
-const posts = ["My first post", "My second post"];
+import { selectPosts, selectPostsStatus } from "@/redux/slices/posts/selectors";
+import { getPosts } from "@/redux/slices/posts/thunks";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { sortByDate } from "@/utils/sortByDate";
+import { RequestStatus } from "@/models/RequestStatus";
 
 function Profile() {
   const router = useRouter();
   const id = router.query.id;
+  const dispatch = useAppDispatch();
+  const posts = useSelector(selectPosts);
+  const postsStatus = useSelector(selectPostsStatus);
   const userId = useSelector(selectUserId);
   const { db } = useFirebaseDB();
   const [user, setUser] = useState<User>();
@@ -35,6 +34,10 @@ function Profile() {
   const [error, setError] = useState("");
   const [isSentFriendReq, setIsSentFriendReq] = useState(false);
   const [isFriend, setIsFriend] = useState(false);
+
+  const userPosts = sortByDate(
+    posts.filter((post) => post.author.userId === id)
+  );
 
   async function handleAddFriend() {
     if (typeof id !== "string") {
@@ -80,6 +83,8 @@ function Profile() {
     }
 
     getUser();
+
+    dispatch(getPosts());
   }, []);
 
   return (
@@ -113,7 +118,7 @@ function Profile() {
               <Styled.TopBarRight>
                 <Styled.PostsButton>
                   <Typography component="b" sx={{ fontWeight: "bold" }}>
-                    {user?.posts.length}
+                    {userPosts.length}
                   </Typography>
                   <Typography sx={{ marginTop: "5px" }}>posts</Typography>
                 </Styled.PostsButton>
@@ -151,15 +156,23 @@ function Profile() {
           </>
         )}
         <Divider sx={{ marginTop: "30px", marginBottom: "30px" }} />
-        {user &&
-          posts.map((post) => (
+        {postsStatus === RequestStatus.Loading ? (
+          <div>loading...</div>
+        ) : postsStatus === RequestStatus.Error ? (
+          <Typography color="error">Failed to get posts</Typography>
+        ) : (
+          userPosts.map((userPost) => (
             <Post
-              key={post}
-              author={{ username: user.username, fullName: user.fullName }}
-              text={post}
-              date="1 minute ago"
+              key={userPost.id}
+              author={userPost.author}
+              text={userPost.body}
+              date={userPost.timeStamp.seconds}
+              comments={userPost.comments}
+              isPrivate={userPost.isPrivate}
+              postId={userPost.id}
             />
-          ))}
+          ))
+        )}
       </>
     </Layout>
   );

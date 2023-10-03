@@ -1,6 +1,6 @@
-import { PostWithId } from "@/models/PostWithId";
+import { Post } from "@/models/Post";
 
-function sortByDate(posts: PostWithId[]) {
+function sortByDate(posts: Post[]) {
   const sortedPosts = posts.sort(
     (a, b) => b.timeStamp.seconds - a.timeStamp.seconds
   );

@@ -5,7 +5,6 @@ export interface User {
   username: string;
   userId: string;
   fullName: string;
-  posts: string[];
   friends: Friend[];
   sentFriendsRequests: Friend[];
   friendsRequests: Friend[];
