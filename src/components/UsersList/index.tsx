@@ -3,6 +3,7 @@ import type { DocumentData, QueryDocumentSnapshot } from "firebase/firestore";
 import { Avatar, Typography } from "@mui/material";
 import { stringToColor } from "@/utils/stringToColor";
 import { memo } from "react";
+import UserSummary from "../UserSummary";
 
 interface UsersListProps {
   usersDocs: QueryDocumentSnapshot<DocumentData, DocumentData>[];
@@ -25,30 +26,12 @@ function UsersList(props: UsersListProps) {
             const user = userDoc.data();
 
             return (
-              <Styled.User href={`/profiles/${user.userId}`} key={user.userId}>
-                <Avatar
-                  sx={{
-                    bgcolor: stringToColor(user.fullName),
-                    marginRight: "10px",
-                  }}
-                >
-                  {user.fullName.split(" ")[0][0]}
-                  {user.fullName.split(" ")[1][0]}
-                </Avatar>
-                <div>
-                  <Typography
-                    component="h5"
-                    sx={{
-                      fontSize: "18px",
-                      fontWeight: "700",
-                      marginBottom: "5px",
-                    }}
-                  >
-                    {user.username}
-                  </Typography>
-                  <Typography>{user.fullName}</Typography>
-                </div>
-              </Styled.User>
+              <UserSummary
+                fullName={user.fullName}
+                userId={user.userId}
+                username={user.username}
+                key={user.userId}
+              />
             );
           })
       ) : (
