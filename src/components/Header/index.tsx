@@ -1,11 +1,10 @@
-import { AppBar, Toolbar, Box, Button } from "@mui/material";
+import { AppBar, Toolbar, Box, Button, Typography } from "@mui/material";
 import RouterLink from "next/link";
 import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
 import { selectIsAuthed } from "@/redux/slices/auth/selectors";
-import * as Styled from "./Header.styled";
 
 function Header() {
   const router = useRouter();
@@ -20,56 +19,7 @@ function Header() {
   return (
     <AppBar>
       <Toolbar>
-        {isAuthed && (
-          <nav>
-            <Styled.Links>
-              <li>
-                <Button
-                  component={RouterLink}
-                  href="/posts"
-                  style={{
-                    textDecoration:
-                      router.pathname === "/posts" ? "underline" : "none",
-                  }}
-                  sx={{
-                    color: "#fff",
-                  }}
-                >
-                  Posts
-                </Button>
-              </li>
-              <li>
-                <Button
-                  component={RouterLink}
-                  href={`/profiles/${auth.currentUser?.uid}`}
-                  sx={{ color: "#fff" }}
-                  style={{
-                    textDecoration:
-                      window.location.pathname ===
-                      `/profiles/${auth.currentUser?.uid}`
-                        ? "underline"
-                        : "none",
-                  }}
-                >
-                  My profile
-                </Button>
-              </li>
-              <li>
-                <Button
-                  component={RouterLink}
-                  href="/profiles"
-                  sx={{ color: "#fff" }}
-                  style={{
-                    textDecoration:
-                      router.pathname === "/profiles" ? "underline" : "none",
-                  }}
-                >
-                  All profiles
-                </Button>
-              </li>
-            </Styled.Links>
-          </nav>
-        )}
+        <Typography variant="h5">Social Network</Typography>
         <Box sx={{ ml: "auto" }}>
           {isAuthed ? (
             <Button
