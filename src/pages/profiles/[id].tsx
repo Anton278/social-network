@@ -48,6 +48,7 @@ function Profile() {
   const [profileError, setProfileError] = useState("");
   const [isSentFriendReq, setIsSentFriendReq] = useState(false);
   const [isFriend, setIsFriend] = useState(false);
+  const [isReceivedFriendReq, setIsReceivedFriendReq] = useState(false);
 
   const profilePosts = sortByDate(
     posts.filter((post) => post.author.userId === profileId)
@@ -148,6 +149,76 @@ function Profile() {
     setIsSentFriendReq(false);
   }
 
+  async function handleAcceptFriendReq() {
+    try {
+      const updatedFriendsRequests: Friend[] = user.friendsRequests.filter(
+        (friend) => friend.userId !== profileId
+      );
+
+      await dispatch(
+        updateUser({
+          docId: user.docId,
+          friendsRequests: updatedFriendsRequests,
+          friends: [
+            ...user.friends,
+            {
+              fullName: profile.fullName,
+              userId: profile.userId,
+              username: profile.username,
+            },
+          ],
+        })
+      ).unwrap();
+    } catch (e) {
+      return;
+    }
+
+    try {
+      const profileDocRef = doc(db, "users", profile.docId);
+
+      const updatedSentFriendsRequests: Friend[] =
+        profile.sentFriendsRequests.filter(
+          (friend) => friend.userId !== user.userId
+        );
+      const updatedFriends: Friend[] = [
+        ...profile.friends,
+        {
+          username: user.username,
+          fullName: user.fullName,
+          userId: user.userId,
+        },
+      ];
+
+      await updateDoc(profileDocRef, {
+        sentFriendsRequests: updatedSentFriendsRequests,
+        friends: updatedFriends,
+      });
+
+      setProfile({ ...profile, friends: updatedFriends });
+    } catch (e) {
+      const updatedFriends = user.friends.filter(
+        (friend) => friend.userId !== profile.userId
+      );
+      return dispatch(
+        updateUser({
+          docId: user.docId,
+          friendsRequests: [
+            ...user.friendsRequests,
+            {
+              fullName: profile.fullName,
+              userId: profile.userId,
+              username: profile.username,
+            },
+          ],
+          friends: updatedFriends,
+        })
+      );
+    }
+
+    setIsReceivedFriendReq(false);
+    setIsFriend(true);
+  }
+
   async function handleDeleteFriend() {
     try {
       const updatedFriends = user.friends.filter(
@@ -227,12 +298,18 @@ function Profile() {
         const isFriend = user.friends.find(
           (friend) => friend.userId === profileId
         );
+        const isReceivedFriendReq = user.friendsRequests.find(
+          (friend) => friend.userId === profileId
+        );
 
         if (isSentFriendRequest) {
           setIsSentFriendReq(true);
         }
         if (isFriend) {
           setIsFriend(true);
+        }
+        if (isReceivedFriendReq) {
+          setIsReceivedFriendReq(true);
         }
       } catch (e) {
         setProfileError("Failed to get user");
@@ -302,6 +379,10 @@ function Profile() {
                       startIcon={<CloseIcon />}
                     >
                       Delete friend
+                    </Button>
+                  ) : isReceivedFriendReq ? (
+                    <Button variant="contained" onClick={handleAcceptFriendReq}>
+                      Accept friend request
                     </Button>
                   ) : isSentFriendReq ? (
                     <Button variant="contained" onClick={handleCancelFriendReq}>
