@@ -1,5 +1,13 @@
 import { useFirebaseDB } from "@/hooks/useFirebaseDB";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import {
+  arrayUnion,
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -22,6 +30,9 @@ import { sortByDate } from "@/utils/sortByDate";
 import { RequestStatus } from "@/models/RequestStatus";
 
 import * as Styled from "@/styles/Profile.styled";
+import { updateUser } from "@/redux/slices/user/thunks";
+import { useAppSelector } from "@/hooks/useAppSelector";
+import { Friend } from "@/models/Friend";
 
 function Profile() {
   const router = useRouter();
@@ -29,9 +40,9 @@ function Profile() {
   const dispatch = useAppDispatch();
   const posts = useSelector(selectPosts);
   const postsStatus = useSelector(selectPostsStatus);
-  const userId = useSelector(selectUserId);
+  const user = useAppSelector((state) => state.user);
   const { db } = useFirebaseDB();
-  const [profile, setProfile] = useState<User>();
+  const [profile, setProfile] = useState<User>({} as User);
   const [isProfileLoading, setIsProfileLoading] = useState(true);
   const [profileError, setProfileError] = useState("");
   const [isSentFriendReq, setIsSentFriendReq] = useState(false);
@@ -42,22 +53,63 @@ function Profile() {
   );
 
   async function handleAddFriend() {
-    if (typeof profileId !== "string") {
+    if (!profile) {
       return;
     }
 
     try {
-      const userDoc = await UserService.getUserDoc(userId);
-      const friendDoc = await UserService.getUserDoc(profileId);
+      await dispatch(
+        updateUser({
+          docId: user.docId,
+          sentFriendsRequests: [
+            ...user.sentFriendsRequests,
+            {
+              fullName: profile.fullName,
+              userId: profile.userId,
+              username: profile.username,
+            },
+          ],
+        })
+      ).unwrap();
+    } catch (e) {
+      return;
+    }
 
-      await UserService.addFriend(userDoc, friendDoc);
-      toast.success(`Sent friend request to ${profile?.fullName}!`);
-    } catch (e) {}
+    try {
+      const profileDocRef = doc(db, "users", profile.docId);
+
+      await updateDoc(profileDocRef, {
+        friendsRequests: arrayUnion({
+          fullName: user.fullName,
+          userId: user.userId,
+          username: user.username,
+        }),
+      });
+    } catch (e) {
+      // removing profile from sent friends requests
+      const updatedSentFriendsRequests: Friend[] =
+        user.sentFriendsRequests.filter(
+          (friend) => friend.userId !== profileId
+        );
+      return dispatch(
+        updateUser({
+          docId: user.docId,
+          sentFriendsRequests: updatedSentFriendsRequests,
+        })
+      );
+    }
+
+    setIsSentFriendReq(true);
   }
 
   useEffect(() => {
     async function getProfile() {
-      setIsProfileLoading(true);
+      if (user.status === RequestStatus.Loading) {
+        return;
+      }
+      if (user.status === RequestStatus.Error) {
+        return setProfileError("Failed to load profile");
+      }
 
       const q = query(
         collection(db, "users"),
@@ -67,19 +119,27 @@ function Profile() {
       try {
         const usersDocs = (await getDocs(q)).docs;
         if (!usersDocs[0]) {
-          return setProfileError("Failed to get user");
+          return setProfileError("Failed to load profile");
         }
 
-        const profile = usersDocs[0].data() as User;
+        const profile = {
+          ...usersDocs[0].data(),
+          docId: usersDocs[0].id,
+        } as User;
         setProfile(profile);
 
-        if (profile.userId === userId) {
+        if (profile.userId === user.userId) {
           // my profile
           return;
         }
-        // if (profile.friendsRequests.includes(userId)) {
-        //   setIsSentFriendReq(true);
-        // }
+        const isSentFriendRequest = user.sentFriendsRequests.find(
+          (friend) => friend.userId === profileId
+        );
+        console.log("isSentFriendRequest ", isSentFriendRequest);
+
+        if (isSentFriendRequest) {
+          setIsSentFriendReq(true);
+        }
       } catch (e) {
         setProfileError("Failed to get user");
       } finally {
@@ -90,12 +150,14 @@ function Profile() {
     getProfile();
 
     dispatch(getPosts());
-  }, []);
+  }, [user]);
 
   return (
     <Layout maxWidth="md">
       <>
-        {isProfileLoading ? (
+        {profileError ? (
+          <Typography color={"error"}>{profileError}</Typography>
+        ) : isProfileLoading ? (
           <div>loading...</div>
         ) : (
           <>
@@ -135,7 +197,7 @@ function Profile() {
                 </Styled.FriendsLink>
               </Styled.TopBarRight>
             </Styled.TopBar>
-            {profileId !== userId && (
+            {profileId !== user.userId && (
               <Styled.ActionsBar>
                 <>
                   {isSentFriendReq ? (

@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { InitialState } from "./types";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { getUser } from "./thunks";
+import { getUser, updateUser } from "./thunks";
 import { RequestStatus } from "@/models/RequestStatus";
 import { User } from "@/models/User";
 
@@ -11,10 +11,10 @@ const initialState: InitialState = {
   username: "",
   userId: "",
   fullName: "",
-  posts: [],
   friends: [],
   sentFriendsRequests: [],
   friendsRequests: [],
+  docId: "",
 };
 
 const userSlice = createSlice({
@@ -28,6 +28,10 @@ const userSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(getUser.fulfilled, (_, action) => {
       return { status: RequestStatus.IDLE, ...action.payload };
+    });
+
+    builder.addCase(updateUser.fulfilled, (state, action) => {
+      return { ...state, ...action.payload };
     });
   },
 });

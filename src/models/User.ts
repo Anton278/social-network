@@ -8,4 +8,5 @@ export interface User {
   friends: Friend[];
   sentFriendsRequests: Friend[];
   friendsRequests: Friend[];
+  docId: string;
 }
