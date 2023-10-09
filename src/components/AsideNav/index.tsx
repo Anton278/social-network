@@ -18,6 +18,7 @@ import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
 import { selectUserId } from "@/redux/slices/user/selectors";
 import SettingsIcon from "@mui/icons-material/Settings";
+import Link from "next/link";
 
 function AsideNav() {
   const router = useRouter();
@@ -28,8 +29,9 @@ function AsideNav() {
     <aside style={{ maxWidth: "320px", width: "100%" }}>
       <List>
         <ListItemButton
+          component={Link}
           selected={router.pathname === "/posts"}
-          onClick={() => router.push("/posts")}
+          href="/posts"
         >
           <ListItemIcon>
             <DensityMediumIcon />
@@ -37,8 +39,9 @@ function AsideNav() {
           <ListItemText primary="Posts" />
         </ListItemButton>
         <ListItemButton
+          component={Link}
           selected={window.location.pathname === `/profiles/${userId}`}
-          onClick={() => router.push(`/profiles/${userId}`)}
+          href={`/profiles/${userId}`}
         >
           <ListItemIcon>
             <AccountCircleIcon />
@@ -46,8 +49,9 @@ function AsideNav() {
           <ListItemText primary="My profile" />
         </ListItemButton>
         <ListItemButton
+          component={Link}
           selected={router.pathname === "/profiles"}
-          onClick={() => router.push("/profiles")}
+          href="/profiles"
         >
           <ListItemIcon>
             <GroupsIcon />
