@@ -102,6 +102,51 @@ function Profile() {
     setIsSentFriendReq(true);
   }
 
+  async function handleCancelFriendReq() {
+    try {
+      const updatedSentFriendsRequests: Friend[] =
+        user.sentFriendsRequests.filter(
+          (friend) => friend.userId !== profileId
+        );
+      await dispatch(
+        updateUser({
+          docId: user.docId,
+          sentFriendsRequests: updatedSentFriendsRequests,
+        })
+      ).unwrap();
+    } catch (e) {
+      return;
+    }
+
+    try {
+      const profileDocRef = doc(db, "users", profile.docId);
+
+      const updatedFriendsRequests: Friend[] = profile.friendsRequests.filter(
+        (friend) => friend.userId !== user.userId
+      );
+
+      await updateDoc(profileDocRef, {
+        friendsRequests: updatedFriendsRequests,
+      });
+    } catch (e) {
+      return dispatch(
+        updateUser({
+          docId: user.docId,
+          friendsRequests: [
+            ...user.friendsRequests,
+            {
+              fullName: profile.fullName,
+              userId: profile.userId,
+              username: profile.username,
+            },
+          ],
+        })
+      );
+    }
+
+    setIsSentFriendReq(false);
+  }
+
   useEffect(() => {
     async function getProfile() {
       if (user.status === RequestStatus.Loading) {
@@ -201,7 +246,9 @@ function Profile() {
               <Styled.ActionsBar>
                 <>
                   {isSentFriendReq ? (
-                    <Button variant="contained">Cancel friend request</Button>
+                    <Button variant="contained" onClick={handleCancelFriendReq}>
+                      Cancel friend request
+                    </Button>
                   ) : (
                     <Button
                       variant="contained"
