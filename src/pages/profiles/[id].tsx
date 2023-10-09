@@ -28,6 +28,7 @@ import { getPosts } from "@/redux/slices/posts/thunks";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { sortByDate } from "@/utils/sortByDate";
 import { RequestStatus } from "@/models/RequestStatus";
+import CloseIcon from "@mui/icons-material/Close";
 
 import * as Styled from "@/styles/Profile.styled";
 import { updateUser } from "@/redux/slices/user/thunks";
@@ -147,6 +148,49 @@ function Profile() {
     setIsSentFriendReq(false);
   }
 
+  async function handleDeleteFriend() {
+    try {
+      const updatedFriends = user.friends.filter(
+        (friend) => friend.userId !== profileId
+      );
+      await dispatch(
+        updateUser({ docId: user.docId, friends: updatedFriends })
+      ).unwrap();
+    } catch (e) {
+      return;
+    }
+
+    try {
+      const profileDocRef = doc(db, "users", profile.docId);
+
+      const updatedFriends = profile.friends.filter(
+        (friend) => friend.userId !== user.userId
+      );
+
+      await updateDoc(profileDocRef, {
+        friends: updatedFriends,
+      });
+
+      setProfile({ ...profile, friends: updatedFriends });
+    } catch (e) {
+      return dispatch(
+        updateUser({
+          docId: user.docId,
+          friends: [
+            ...user.friends,
+            {
+              fullName: profile.fullName,
+              userId: profile.userId,
+              username: profile.username,
+            },
+          ],
+        })
+      );
+    }
+
+    setIsFriend(false);
+  }
+
   useEffect(() => {
     async function getProfile() {
       if (user.status === RequestStatus.Loading) {
@@ -180,10 +224,15 @@ function Profile() {
         const isSentFriendRequest = user.sentFriendsRequests.find(
           (friend) => friend.userId === profileId
         );
-        console.log("isSentFriendRequest ", isSentFriendRequest);
+        const isFriend = user.friends.find(
+          (friend) => friend.userId === profileId
+        );
 
         if (isSentFriendRequest) {
           setIsSentFriendReq(true);
+        }
+        if (isFriend) {
+          setIsFriend(true);
         }
       } catch (e) {
         setProfileError("Failed to get user");
@@ -245,7 +294,16 @@ function Profile() {
             {profileId !== user.userId && (
               <Styled.ActionsBar>
                 <>
-                  {isSentFriendReq ? (
+                  {isFriend ? (
+                    <Button
+                      variant="contained"
+                      onClick={handleDeleteFriend}
+                      color="error"
+                      startIcon={<CloseIcon />}
+                    >
+                      Delete friend
+                    </Button>
+                  ) : isSentFriendReq ? (
                     <Button variant="contained" onClick={handleCancelFriendReq}>
                       Cancel friend request
                     </Button>
