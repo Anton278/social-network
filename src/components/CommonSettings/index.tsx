@@ -5,9 +5,23 @@ import EditIcon from "@mui/icons-material/Edit";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { useState } from "react";
 import { RequestStatus } from "@/models/RequestStatus";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { emailRegEx } from "@/utils/consts";
+
+type Inputs = {
+  email: string;
+  username: string;
+  fullName: string;
+  // avatar: string; // ?
+};
 
 function CommonSettings() {
   const user = useAppSelector((state) => state.user);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Inputs>();
 
   const [avatar, setAvatar] = useState("");
 
@@ -22,8 +36,10 @@ function CommonSettings() {
     }
   }
 
+  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
+
   return (
-    <form>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <Styled.AvatarWrapper>
         <Avatar
           src={avatar}
@@ -52,13 +68,41 @@ function CommonSettings() {
         </Styled.EditAvatarButton>
       </Styled.AvatarWrapper>
       <Styled.InputsWrapper>
-        <TextField label="Email" variant="outlined" />
-        <TextField label="Username" variant="outlined" />
-        <TextField label="Fullname" variant="outlined" />
+        <TextField
+          label="Email"
+          variant="outlined"
+          {...register("email", { required: true, pattern: emailRegEx })}
+          helperText={
+            errors.email
+              ? errors.email.type === "required"
+                ? "Required"
+                : "Invalid email"
+              : " "
+          }
+          error={Boolean(errors.email)}
+        />
+        <TextField
+          label="Username"
+          variant="outlined"
+          {...register("username", { required: true })}
+          error={Boolean(errors.username)}
+          helperText={errors.username ? "Required" : " "}
+        />
+        <TextField
+          label="Fullname"
+          variant="outlined"
+          {...register("fullName", { required: true })}
+          error={Boolean(errors.fullName)}
+          helperText={errors.fullName ? "Required" : " "}
+        />
       </Styled.InputsWrapper>
       <Styled.FormButtons>
-        <Button variant="outlined">Reset</Button>
-        <Button variant="contained">Submit</Button>
+        <Button variant="outlined" type="reset">
+          Reset
+        </Button>
+        <Button variant="contained" type="submit">
+          Submit
+        </Button>
       </Styled.FormButtons>
     </form>
   );
