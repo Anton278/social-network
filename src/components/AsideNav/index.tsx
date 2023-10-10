@@ -80,7 +80,11 @@ function AsideNav() {
       </List>
       <Divider />
       <List>
-        <ListItemButton>
+        <ListItemButton
+          component={Link}
+          selected={router.pathname === "/settings"}
+          href="/settings"
+        >
           <ListItemIcon>
             <SettingsIcon />
           </ListItemIcon>
