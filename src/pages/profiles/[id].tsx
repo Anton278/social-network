@@ -65,12 +65,12 @@ function Profile() {
     try {
       await dispatch(
         updateUser({
-          docId: user.docId,
+          id: user.id,
           sentFriendsRequests: [
             ...user.sentFriendsRequests,
             {
               fullName: profile.fullName,
-              userId: profile.userId,
+              id: profile.id,
               username: profile.username,
             },
           ],
@@ -81,24 +81,22 @@ function Profile() {
     }
 
     try {
-      const profileDocRef = doc(db, "users", profile.docId);
+      const profileDocRef = doc(db, "users", profile.id);
 
       await updateDoc(profileDocRef, {
-        friendsRequests: arrayUnion({
+        receivedFriendsRequests: arrayUnion({
           fullName: user.fullName,
-          userId: user.userId,
+          id: user.id,
           username: user.username,
         }),
       });
     } catch (e) {
       // removing profile from sent friends requests
       const updatedSentFriendsRequests: Friend[] =
-        user.sentFriendsRequests.filter(
-          (friend) => friend.userId !== profileId
-        );
+        user.sentFriendsRequests.filter((friend) => friend.id !== profileId);
       return dispatch(
         updateUser({
-          docId: user.docId,
+          id: user.id,
           sentFriendsRequests: updatedSentFriendsRequests,
         })
       );
@@ -110,12 +108,10 @@ function Profile() {
   async function handleCancelFriendReq() {
     try {
       const updatedSentFriendsRequests: Friend[] =
-        user.sentFriendsRequests.filter(
-          (friend) => friend.userId !== profileId
-        );
+        user.sentFriendsRequests.filter((friend) => friend.id !== profileId);
       await dispatch(
         updateUser({
-          docId: user.docId,
+          id: user.id,
           sentFriendsRequests: updatedSentFriendsRequests,
         })
       ).unwrap();
@@ -124,24 +120,25 @@ function Profile() {
     }
 
     try {
-      const profileDocRef = doc(db, "users", profile.docId);
+      const profileDocRef = doc(db, "users", profile.id);
 
-      const updatedFriendsRequests: Friend[] = profile.friendsRequests.filter(
-        (friend) => friend.userId !== user.userId
-      );
+      const updatedReceivedFriendsReqs: Friend[] =
+        profile.receivedFriendsRequests.filter(
+          (friend) => friend.id !== user.id
+        );
 
       await updateDoc(profileDocRef, {
-        friendsRequests: updatedFriendsRequests,
+        receivedFriendsRequests: updatedReceivedFriendsReqs,
       });
     } catch (e) {
       return dispatch(
         updateUser({
-          docId: user.docId,
-          friendsRequests: [
-            ...user.friendsRequests,
+          id: user.id,
+          receivedFriendsRequests: [
+            ...user.receivedFriendsRequests,
             {
               fullName: profile.fullName,
-              userId: profile.userId,
+              id: profile.id,
               username: profile.username,
             },
           ],
@@ -154,19 +151,20 @@ function Profile() {
 
   async function handleAcceptFriendReq() {
     try {
-      const updatedFriendsRequests: Friend[] = user.friendsRequests.filter(
-        (friend) => friend.userId !== profileId
-      );
+      const updatedReceivedFriendsReqs: Friend[] =
+        user.receivedFriendsRequests.filter(
+          (friend) => friend.id !== profileId
+        );
 
       await dispatch(
         updateUser({
-          docId: user.docId,
-          friendsRequests: updatedFriendsRequests,
+          id: user.id,
+          receivedFriendsRequests: updatedReceivedFriendsReqs,
           friends: [
             ...user.friends,
             {
               fullName: profile.fullName,
-              userId: profile.userId,
+              id: profile.id,
               username: profile.username,
             },
           ],
@@ -177,18 +175,16 @@ function Profile() {
     }
 
     try {
-      const profileDocRef = doc(db, "users", profile.docId);
+      const profileDocRef = doc(db, "users", profile.id);
 
       const updatedSentFriendsRequests: Friend[] =
-        profile.sentFriendsRequests.filter(
-          (friend) => friend.userId !== user.userId
-        );
+        profile.sentFriendsRequests.filter((friend) => friend.id !== user.id);
       const updatedFriends: Friend[] = [
         ...profile.friends,
         {
           username: user.username,
           fullName: user.fullName,
-          userId: user.userId,
+          id: user.id,
         },
       ];
 
@@ -200,16 +196,16 @@ function Profile() {
       setProfile({ ...profile, friends: updatedFriends });
     } catch (e) {
       const updatedFriends = user.friends.filter(
-        (friend) => friend.userId !== profile.userId
+        (friend) => friend.id !== profile.id
       );
       return dispatch(
         updateUser({
-          docId: user.docId,
-          friendsRequests: [
-            ...user.friendsRequests,
+          id: user.id,
+          receivedFriendsRequests: [
+            ...user.receivedFriendsRequests,
             {
               fullName: profile.fullName,
-              userId: profile.userId,
+              id: profile.id,
               username: profile.username,
             },
           ],
@@ -225,20 +221,20 @@ function Profile() {
   async function handleDeleteFriend() {
     try {
       const updatedFriends = user.friends.filter(
-        (friend) => friend.userId !== profileId
+        (friend) => friend.id !== profileId
       );
       await dispatch(
-        updateUser({ docId: user.docId, friends: updatedFriends })
+        updateUser({ id: user.id, friends: updatedFriends })
       ).unwrap();
     } catch (e) {
       return;
     }
 
     try {
-      const profileDocRef = doc(db, "users", profile.docId);
+      const profileDocRef = doc(db, "users", profile.id);
 
       const updatedFriends = profile.friends.filter(
-        (friend) => friend.userId !== user.userId
+        (friend) => friend.id !== user.id
       );
 
       await updateDoc(profileDocRef, {
@@ -249,12 +245,12 @@ function Profile() {
     } catch (e) {
       return dispatch(
         updateUser({
-          docId: user.docId,
+          id: user.id,
           friends: [
             ...user.friends,
             {
               fullName: profile.fullName,
-              userId: profile.userId,
+              id: profile.id,
               username: profile.username,
             },
           ],

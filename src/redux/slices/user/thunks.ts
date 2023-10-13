@@ -23,11 +23,11 @@ export const getUser = createAsyncThunk(
 export const updateUser = createAsyncThunk(
   "user/updateUser",
   async (user: UpdateUser) => {
-    const { docId, ...userWithoutDocId } = user;
-    const docRef = doc(db, "users", docId);
+    const { id, ...userWithoutId } = user;
+    const docRef = doc(db, "users", id);
 
-    await updateDoc(docRef, userWithoutDocId);
+    await updateDoc(docRef, userWithoutId);
 
-    return userWithoutDocId;
+    return userWithoutId;
   }
 );

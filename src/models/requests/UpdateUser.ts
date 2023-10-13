@@ -1,10 +1,10 @@
 import { Friend } from "../Friend";
 
 export interface UpdateUser {
-  docId: string;
+  id: string;
   email?: string;
   fullName?: string;
   friends?: Friend[];
   sentFriendsRequests?: Friend[];
-  friendsRequests?: Friend[];
+  receivedFriendsRequests?: Friend[];
 }
