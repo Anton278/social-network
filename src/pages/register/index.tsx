@@ -13,15 +13,13 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import * as Styled from "@/styles/Register.styled";
 import Spinner from "@/components/Spinner";
 import { emailRegEx } from "@/utils/consts";
-import { getDocs, collection, addDoc } from "firebase/firestore";
 import { useFirebaseDB } from "@/hooks/useFirebaseDB";
-import { createUserWithEmailAndPassword, deleteUser } from "firebase/auth";
-import type { User as FirebaseAuthedUser } from "firebase/auth";
-import type { User } from "@/models/User";
 import { withPublic } from "@/hocs/withPublic";
 import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { setUser } from "@/redux/slices/user/slice";
+import usersService from "@/services/Users";
+import authService from "@/services/Auth";
 
 type FormValues = {
   email: string;
@@ -57,12 +55,11 @@ function Register() {
     const { email, password, username, fullName } = values;
 
     try {
-      const usersDocs = (await getDocs(collection(db, "users"))).docs;
+      const users = await usersService.getAll();
 
-      const userWithSameUsername = usersDocs.find((userDoc) => {
-        const user = userDoc.data();
-        return user.username === username;
-      });
+      const userWithSameUsername = users.find(
+        (user) => user.username === username
+      );
 
       if (userWithSameUsername) {
         setIsSubmitting(false);
@@ -70,11 +67,7 @@ function Register() {
         return;
       }
 
-      const createUserRes = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      await authService.register(email, password);
     } catch (e: any) {
       if (e.code === "auth/email-already-in-use") {
         setError("Error: Email already in use");
@@ -86,19 +79,11 @@ function Register() {
     }
 
     try {
-      const user = {
-        email,
-        username,
-        fullName,
-        friends: [],
-        sentFriendsRequests: [],
-        receivedFriendsRequests: [],
-      };
-      const userDocRef = await addDoc(collection(db, "users"), user);
-      dispatch(setUser({ ...user, id: userDocRef.id }));
+      const createdUser = await usersService.create(email, username, fullName);
+      dispatch(setUser(createdUser));
     } catch (e: any) {
       setError("Failed to create user");
-      await deleteUser(auth.currentUser as FirebaseAuthedUser);
+      await authService.delete();
     } finally {
       setIsSubmitting(false);
     }

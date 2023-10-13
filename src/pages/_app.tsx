@@ -29,7 +29,7 @@ const firebaseConfig = {
   measurementId: "G-NDTV4X0SMY",
 };
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+export const auth = getAuth(app);
 export const db = getFirestore(app);
 
 export default function App({ Component, pageProps }: AppProps) {

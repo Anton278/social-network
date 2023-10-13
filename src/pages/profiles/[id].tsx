@@ -23,7 +23,7 @@ import { User } from "@/models/User";
 import { withProtected } from "@/hocs/withProtected";
 import Post from "@/components/Post";
 import { selectUserId } from "@/redux/slices/user/selectors";
-import UserService from "@/services/UserService";
+import UserService from "@/services/Users";
 import { selectPosts, selectPostsStatus } from "@/redux/slices/posts/selectors";
 import { getPosts } from "@/redux/slices/posts/thunks";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
