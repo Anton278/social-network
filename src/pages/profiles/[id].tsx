@@ -3,6 +3,7 @@ import {
   arrayUnion,
   collection,
   doc,
+  getDoc,
   getDocs,
   query,
   updateDoc,
@@ -269,21 +270,22 @@ function Profile() {
       if (user.status === RequestStatus.Error) {
         return setProfileError("Failed to load profile");
       }
+      if (typeof profileId !== "string") {
+        return;
+      }
 
-      const q = query(
-        collection(db, "users"),
-        where("userId", "==", profileId)
-      );
-
+      const docRef = doc(db, "users", profileId);
       try {
-        const usersDocs = (await getDocs(q)).docs;
-        if (!usersDocs[0]) {
+        const userDoc = await getDoc(docRef);
+        console.log("res ", userDoc);
+
+        if (!userDoc) {
           return setProfileError("Failed to load profile");
         }
 
         const profile = {
-          ...usersDocs[0].data(),
-          id: usersDocs[0].id,
+          ...userDoc.data(),
+          id: userDoc.id,
         } as User;
         setProfile(profile);
 
@@ -318,7 +320,7 @@ function Profile() {
     getProfile();
 
     dispatch(getPosts());
-  }, [user]);
+  }, [user, db, dispatch, profileId]);
 
   return (
     <Layout maxWidth="md">
