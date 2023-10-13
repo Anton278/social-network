@@ -287,22 +287,20 @@ function Profile() {
 
         const profile = {
           ...usersDocs[0].data(),
-          docId: usersDocs[0].id,
+          id: usersDocs[0].id,
         } as User;
         setProfile(profile);
 
-        if (profile.userId === user.userId) {
+        if (profile.id === user.id) {
           // my profile
           return;
         }
         const isSentFriendRequest = user.sentFriendsRequests.find(
-          (friend) => friend.userId === profileId
+          (friend) => friend.id === profileId
         );
-        const isFriend = user.friends.find(
-          (friend) => friend.userId === profileId
-        );
-        const isReceivedFriendReq = user.friendsRequests.find(
-          (friend) => friend.userId === profileId
+        const isFriend = user.friends.find((friend) => friend.id === profileId);
+        const isReceivedFriendReq = user.receivedFriendsRequests.find(
+          (friend) => friend.id === profileId
         );
 
         if (isSentFriendRequest) {
@@ -371,7 +369,7 @@ function Profile() {
                 </Styled.FriendsBtn>
               </Styled.TopBarRight>
             </Styled.TopBar>
-            {profileId !== user.userId && (
+            {profileId !== user.id && (
               <Styled.ActionsBar>
                 <>
                   {isFriend ? (

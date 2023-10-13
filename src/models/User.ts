@@ -3,10 +3,9 @@ import { Friend } from "./Friend";
 export interface User {
   email: string;
   username: string;
-  userId: string;
+  id: string;
   fullName: string;
   friends: Friend[];
   sentFriendsRequests: Friend[];
-  friendsRequests: Friend[];
-  docId: string;
+  receivedFriendsRequests: Friend[];
 }

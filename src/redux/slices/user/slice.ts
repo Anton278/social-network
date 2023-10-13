@@ -9,19 +9,18 @@ const initialState: InitialState = {
   status: RequestStatus.Loading,
   email: "",
   username: "",
-  userId: "",
+  id: "",
   fullName: "",
   friends: [],
   sentFriendsRequests: [],
-  friendsRequests: [],
-  docId: "",
+  receivedFriendsRequests: [],
 };
 
 const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setUser(state, action) {
+    setUser(state, action: PayloadAction<User>) {
       return { ...state, status: RequestStatus.IDLE, ...action.payload };
     },
   },

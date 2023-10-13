@@ -86,18 +86,16 @@ function Register() {
     }
 
     try {
-      const user: User = {
+      const user = {
         email,
         username,
-        userId: auth.currentUser?.uid as string,
         fullName,
-        posts: [],
         friends: [],
         sentFriendsRequests: [],
-        friendsRequests: [],
+        receivedFriendsRequests: [],
       };
       const userDocRef = await addDoc(collection(db, "users"), user);
-      dispatch(setUser(user));
+      dispatch(setUser({ ...user, id: userDocRef.id }));
     } catch (e: any) {
       setError("Failed to create user");
       await deleteUser(auth.currentUser as FirebaseAuthedUser);

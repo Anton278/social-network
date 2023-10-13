@@ -14,8 +14,8 @@ function Friends() {
   const [activeBottomTab, setActiveBottomTab] = useState(0);
 
   const requestsTotal = useMemo(
-    () => user.friendsRequests.length + user.sentFriendsRequests.length,
-    [user.friendsRequests, user.sentFriendsRequests]
+    () => user.receivedFriendsRequests.length + user.sentFriendsRequests.length,
+    [user.receivedFriendsRequests, user.sentFriendsRequests]
   );
 
   return (
@@ -68,7 +68,7 @@ function Friends() {
                   <Badge
                     max={100}
                     color="secondary"
-                    badgeContent={user.friendsRequests.length}
+                    badgeContent={user.receivedFriendsRequests.length}
                     sx={{ marginLeft: "15px" }}
                   />
                 </Styled.TabLabel>
@@ -112,8 +112,8 @@ function Friends() {
                   <Link href="/profiles">Find friend here</Link>
                 </Typography>
               )
-            ) : user.friendsRequests.length ? (
-              user.friendsRequests.map((potentialFriend) => (
+            ) : user.receivedFriendsRequests.length ? (
+              user.receivedFriendsRequests.map((potentialFriend) => (
                 <UserSummary
                   fullName={potentialFriend.fullName}
                   userId={potentialFriend.userId}

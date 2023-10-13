@@ -6,15 +6,16 @@ import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 
 export const getUser = createAsyncThunk(
   "getUser",
-  async (userId: string, { rejectWithValue }) => {
+  async (email: string | null, { rejectWithValue }) => {
+    if (!email) {
+      return rejectWithValue("email is not provided!");
+    }
     const usersDocs = (await getDocs(collection(db, "users"))).docs;
-    const userDoc = usersDocs.find(
-      (userDoc) => userDoc.data().userId === userId
-    );
+    const userDoc = usersDocs.find((userDoc) => userDoc.data().email === email);
     if (!userDoc) {
       return rejectWithValue("error/user-not-found");
     }
-    const user = { ...(userDoc.data() as User), docId: userDoc.id };
+    const user = { ...userDoc.data(), id: userDoc.id };
     return user;
   }
 );
