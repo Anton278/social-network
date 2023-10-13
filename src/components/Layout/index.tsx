@@ -7,7 +7,7 @@ import { selectIsAuthed } from "@/redux/slices/auth/selectors";
 
 type LayoutProps = {
   maxWidth?: Breakpoint;
-  children?: JSX.Element;
+  children?: React.ReactNode;
 };
 
 function Layout({ children, maxWidth }: LayoutProps) {

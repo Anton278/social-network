@@ -19,9 +19,11 @@ export const PostsButton = styled.button({
   fontSize: "1rem",
 });
 
-export const FriendsLink = styled(Link)({
-  color: "#000",
-  textDecoration: "none",
+export const FriendsBtn = styled.button({
+  border: "none",
+  background: "none",
+  cursor: "pointer",
+  fontSize: "1rem",
   textAlign: "center",
   padding: "5px 15px",
 });

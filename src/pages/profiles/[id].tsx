@@ -34,6 +34,7 @@ import * as Styled from "@/styles/Profile.styled";
 import { updateUser } from "@/redux/slices/user/thunks";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { Friend } from "@/models/Friend";
+import FriendsDialog from "@/components/FriendsDialog";
 
 function Profile() {
   const router = useRouter();
@@ -49,6 +50,8 @@ function Profile() {
   const [isSentFriendReq, setIsSentFriendReq] = useState(false);
   const [isFriend, setIsFriend] = useState(false);
   const [isReceivedFriendReq, setIsReceivedFriendReq] = useState(false);
+
+  const [showFriends, setShowFriends] = useState(false);
 
   const profilePosts = sortByDate(
     posts.filter((post) => post.author.userId === profileId)
@@ -360,12 +363,12 @@ function Profile() {
                   </Typography>
                   <Typography sx={{ marginTop: "5px" }}>posts</Typography>
                 </Styled.PostsButton>
-                <Styled.FriendsLink href="#">
+                <Styled.FriendsBtn onClick={() => setShowFriends(true)}>
                   <Typography component="b" sx={{ fontWeight: "bold" }}>
                     {profile?.friends.length}
                   </Typography>
                   <Typography sx={{ marginTop: "5px" }}>friends</Typography>
-                </Styled.FriendsLink>
+                </Styled.FriendsBtn>
               </Styled.TopBarRight>
             </Styled.TopBar>
             {profileId !== user.userId && (
@@ -397,9 +400,6 @@ function Profile() {
                       Add friend
                     </Button>
                   )}
-                  {/* <Button variant="outlined" startIcon={<DeleteIcon />} color="error">
-              Delete friend
-            </Button> */}
                   <Button variant="outlined" startIcon={<MessageIcon />}>
                     Message
                   </Button>
@@ -427,6 +427,11 @@ function Profile() {
           ))
         )}
       </>
+      <FriendsDialog
+        isOpen={showFriends}
+        onClose={() => setShowFriends(false)}
+        friends={profile.friends || []}
+      />
     </Layout>
   );
 }
