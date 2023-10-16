@@ -13,12 +13,9 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import * as Styled from "@/styles/Login.styled";
 import Spinner from "@/components/Spinner";
 import { emailRegEx } from "@/utils/consts";
-import { useFirebaseDB } from "@/hooks/useFirebaseDB";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { getDocs, collection } from "firebase/firestore";
 import { withPublic } from "@/hocs/withPublic";
-import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
-import { useRouter } from "next/router";
+import authService from "@/services/Auth";
+import usersService from "@/services/Users";
 
 type FormValues = {
   emailOrUsername: string;
@@ -26,9 +23,6 @@ type FormValues = {
 };
 
 function Login() {
-  const router = useRouter();
-  const { auth } = useFirebaseAuth();
-  const { db } = useFirebaseDB();
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -50,21 +44,17 @@ function Login() {
     const isEmail = emailRegEx.test(emailOrUsername);
     try {
       if (isEmail) {
-        await signInWithEmailAndPassword(auth, emailOrUsername, password);
+        await authService.login(emailOrUsername, password);
       } else {
-        const usersDocs = (await getDocs(collection(db, "users"))).docs;
+        const users = await usersService.getAll();
 
-        const user = usersDocs.find((userDoc) => {
-          const user = userDoc.data();
-          return user.username === emailOrUsername;
-        });
+        const user = users.find((user) => user.username === emailOrUsername);
         if (!user) {
           return setError("Wrong username or password");
         }
 
-        await signInWithEmailAndPassword(auth, user.data().email, password);
+        await authService.login(user.email, password);
       }
-      router.push("/posts");
     } catch (e: any) {
       if (["auth/user-not-found", "auth/wrong-password"].includes(e.code)) {
         setError("Wrong email or password");
@@ -117,14 +107,19 @@ function Login() {
               variant="contained"
               type="submit"
               endIcon={isSubmitting ? <Spinner /> : null}
+              data-testid="login-btn"
             >
               Login
             </Button>
           </Styled.ButtonWrapper>
         </form>
-        <Styled.ErrorWrapper>
-          <Typography color="error">{error}</Typography>
-        </Styled.ErrorWrapper>
+        {error && (
+          <Styled.ErrorWrapper>
+            <Typography color="error" data-testid="error">
+              {error}
+            </Typography>
+          </Styled.ErrorWrapper>
+        )}
       </Styled.Wrapper>
     </Layout>
   );
