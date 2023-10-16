@@ -1,36 +1,48 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { api } from "@/http/api";
-import MockAdapter from "axios-mock-adapter";
+import Register from "../../src/pages/register";
+import { User } from "@/models/User";
+import { renderWithRedux } from "@/utils/renderWithRedux";
+import { RequestStatus } from "../../src/models/RequestStatus";
 
-import Register from "@/pages/register";
+import usersService from "../../src/services/Users";
+import authService from "../../src/services/Auth";
+import { fillRegisterPageInputs } from "@/utils/fillRegisterPageInputs";
 
-const mock = new MockAdapter(api);
+jest.mock("../../src/services/Users");
+jest.mock("../../src/services/Auth");
 
-mock
-  .onGet("/users")
-  .reply(200, [
-    { email: "jogndoe@gmail.com", username: "john123", userId: "1" },
-  ]);
-mock
-  .onPost("/auth/register")
-  .reply(500, { message: "auth/email-already-in-use" });
-mock.onPost("/users").reply(500, { code: "users/create-user-error" });
+jest.mock("next/router", () => ({
+  useRouter() {
+    return {
+      route: "/",
+      pathname: "",
+      query: "",
+      asPath: "",
+    };
+  },
+}));
+
+const existingUser: User = {
+  email: "johndoe@gmail.com",
+  friends: [],
+  fullName: "John Doe",
+  id: "",
+  receivedFriendsRequests: [],
+  sentFriendsRequests: [],
+  username: "john123",
+};
+// @ts-expect-error
+usersService.getAll.mockResolvedValue([existingUser]);
+// @ts-expect-error
+usersService.create.mockImplementation(() => Promise.reject(""));
 
 describe("register page form", () => {
   it("should return error if username taken", async () => {
-    render(<Register />);
+    renderWithRedux(<Register />, {
+      auth: { isAuthed: false, status: RequestStatus.IDLE },
+    });
 
-    const emailInput = screen.getByLabelText("Email");
-    const usernameInput = screen.getByLabelText("Username");
-    const fullNameInput = screen.getByLabelText("Full name");
-    const passwordInput = screen.getByLabelText("Password");
-    const repeatPasswordInput = screen.getByLabelText("Repeat password");
-
-    fireEvent.input(emailInput, { target: { value: "johndoe@gmail.com" } });
-    fireEvent.input(usernameInput, { target: { value: "john123" } });
-    fireEvent.input(fullNameInput, { target: { value: "John Doe" } });
-    fireEvent.input(passwordInput, { target: { value: 123 } });
-    fireEvent.input(repeatPasswordInput, { target: { value: 123 } });
+    fillRegisterPageInputs();
 
     const submitBtn = screen.getByTestId("submit-btn");
     fireEvent.click(submitBtn);
@@ -40,19 +52,16 @@ describe("register page form", () => {
   });
 
   it("should return error if email taken", async () => {
-    render(<Register />);
+    renderWithRedux(<Register />, {
+      auth: { isAuthed: false, status: RequestStatus.IDLE },
+    });
 
-    const emailInput = screen.getByLabelText("Email");
-    const usernameInput = screen.getByLabelText("Username");
-    const fullNameInput = screen.getByLabelText("Full name");
-    const passwordInput = screen.getByLabelText("Password");
-    const repeatPasswordInput = screen.getByLabelText("Repeat password");
+    fillRegisterPageInputs("john007");
 
-    fireEvent.input(emailInput, { target: { value: "johndoe@gmail.com" } });
-    fireEvent.input(usernameInput, { target: { value: "john007" } }); // username is available
-    fireEvent.input(fullNameInput, { target: { value: "John Doe" } });
-    fireEvent.input(passwordInput, { target: { value: 123 } });
-    fireEvent.input(repeatPasswordInput, { target: { value: 123 } });
+    // @ts-expect-error
+    authService.register.mockImplementationOnce(() =>
+      Promise.reject({ code: "auth/email-already-in-use" })
+    );
 
     const submitBtn = screen.getByTestId("submit-btn");
     fireEvent.click(submitBtn);
@@ -61,5 +70,20 @@ describe("register page form", () => {
     expect(errorTxt.innerHTML).toBe("Error: Email already in use");
   });
 
-  // it("should delete user from firebase auth if occured error on creating user", async () => {});
+  it("should delete user from firebase auth if occured error on creating user", async () => {
+    renderWithRedux(<Register />, {
+      auth: { isAuthed: false, status: RequestStatus.IDLE },
+    });
+
+    fillRegisterPageInputs("john007", "johndoe2@gmail.com");
+
+    const submitBtn = screen.getByTestId("submit-btn");
+    fireEvent.click(submitBtn);
+
+    const errorTxt = await screen.findByTestId("error-txt");
+    expect(errorTxt.innerHTML).toBe("Failed to create user");
+
+    // @ts-expect-error
+    expect(authService.delete.mock.calls).toEqual([[]]);
+  });
 });

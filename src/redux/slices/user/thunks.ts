@@ -15,7 +15,7 @@ export const getUser = createAsyncThunk(
     if (!userDoc) {
       return rejectWithValue("error/user-not-found");
     }
-    const user = { ...userDoc.data(), id: userDoc.id };
+    const user = { ...userDoc.data(), id: userDoc.id } as User;
     return user;
   }
 );

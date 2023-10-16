@@ -13,11 +13,8 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import * as Styled from "@/styles/Register.styled";
 import Spinner from "@/components/Spinner";
 import { emailRegEx } from "@/utils/consts";
-import { useFirebaseDB } from "@/hooks/useFirebaseDB";
 import { withPublic } from "@/hocs/withPublic";
-import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
-import { setUser } from "@/redux/slices/user/slice";
 import usersService from "@/services/Users";
 import authService from "@/services/Auth";
 
@@ -31,8 +28,6 @@ type FormValues = {
 
 function Register() {
   const dispatch = useAppDispatch();
-  const { auth } = useFirebaseAuth();
-  const { db } = useFirebaseDB();
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -80,7 +75,7 @@ function Register() {
 
     try {
       const createdUser = await usersService.create(email, username, fullName);
-      dispatch(setUser(createdUser));
+      dispatch({ type: "user/setUser", payload: createdUser });
     } catch (e: any) {
       setError("Failed to create user");
       await authService.delete();

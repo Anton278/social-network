@@ -1,6 +1,6 @@
 import { AppBar, Toolbar, Box, Button, Typography } from "@mui/material";
 import RouterLink from "next/link";
-import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
+import { auth } from "@/pages/_app";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
@@ -8,7 +8,6 @@ import { selectIsAuthed } from "@/redux/slices/auth/selectors";
 
 function Header() {
   const router = useRouter();
-  const { auth } = useFirebaseAuth();
   const isAuthed = useSelector(selectIsAuthed);
 
   async function handleLogout() {
