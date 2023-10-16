@@ -23,9 +23,9 @@ function withPublic(Component: React.FC) {
     }, [isAuthed, authStatus]);
 
     return authStatus === RequestStatus.Loading ? (
-      <div>loading...</div>
+      <div data-testid="loading-txt">loading...</div>
     ) : isAuthed ? (
-      <div>Redirecting...</div>
+      <div data-testid="redirect-txt">Redirecting...</div>
     ) : (
       <Component {...props} />
     );
