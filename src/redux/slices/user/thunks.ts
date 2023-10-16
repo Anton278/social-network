@@ -1,21 +1,20 @@
-import { User } from "@/models/User";
 import { UpdateUser } from "@/models/requests/UpdateUser";
 import { db } from "@/pages/_app";
+import usersService from "@/services/Users";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 
 export const getUser = createAsyncThunk(
-  "getUser",
+  "user/getUser",
   async (email: string | null, { rejectWithValue }) => {
     if (!email) {
       return rejectWithValue("email is not provided!");
     }
-    const usersDocs = (await getDocs(collection(db, "users"))).docs;
-    const userDoc = usersDocs.find((userDoc) => userDoc.data().email === email);
-    if (!userDoc) {
+    const users = await usersService.getAll();
+    const user = users.find((user) => user.email === email);
+    if (!user) {
       return rejectWithValue("error/user-not-found");
     }
-    const user = { ...userDoc.data(), id: userDoc.id } as User;
     return user;
   }
 );

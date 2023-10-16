@@ -25,8 +25,11 @@ const userSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(getUser.fulfilled, (_, action) => {
-      return { status: RequestStatus.IDLE, ...action.payload };
+    builder.addCase(getUser.fulfilled, (state, action) => {
+      return { ...state, status: RequestStatus.IDLE, ...action.payload };
+    });
+    builder.addCase(getUser.rejected, (state) => {
+      state.status = RequestStatus.Error;
     });
 
     builder.addCase(updateUser.fulfilled, (state, action) => {
