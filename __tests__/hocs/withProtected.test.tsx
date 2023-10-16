@@ -49,3 +49,7 @@ describe("withPublic HOC", () => {
     expect(pushMock).toHaveBeenCalledWith("/login");
   });
 });
+
+afterAll(() => {
+  jest.clearAllMocks();
+});

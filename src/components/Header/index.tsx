@@ -1,17 +1,16 @@
 import { AppBar, Toolbar, Box, Button, Typography } from "@mui/material";
 import RouterLink from "next/link";
-import { auth } from "@/pages/_app";
-import { signOut } from "firebase/auth";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
 import { selectIsAuthed } from "@/redux/slices/auth/selectors";
+import authService from "@/services/Auth";
 
 function Header() {
   const router = useRouter();
   const isAuthed = useSelector(selectIsAuthed);
 
   async function handleLogout() {
-    await signOut(auth);
+    await authService.logout();
     router.push("/login");
   }
 
@@ -25,11 +24,12 @@ function Header() {
               variant="text"
               sx={{ color: "#fff", mr: "10px" }}
               onClick={handleLogout}
+              data-testid="logout-btn"
             >
               Logout
             </Button>
           ) : (
-            <>
+            <div data-testid="register-or-login-box">
               <Button
                 variant="text"
                 component={RouterLink}
@@ -46,7 +46,7 @@ function Header() {
               >
                 Signup
               </Button>
-            </>
+            </div>
           )}
         </Box>
       </Toolbar>

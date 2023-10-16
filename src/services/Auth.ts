@@ -2,6 +2,7 @@ import {
   createUserWithEmailAndPassword,
   deleteUser,
   signInWithEmailAndPassword,
+  signOut,
 } from "firebase/auth";
 import { auth } from "@/pages/_app";
 
@@ -20,6 +21,11 @@ class AuthService {
 
   async login(email: string, password: string) {
     const res = await signInWithEmailAndPassword(auth, email, password);
+    return res;
+  }
+
+  async logout() {
+    const res = await signOut(auth);
     return res;
   }
 }
