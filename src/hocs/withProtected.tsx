@@ -23,11 +23,11 @@ function withProtected(Component: React.FC) {
     }, [authStatus, isAuthed]);
 
     return authStatus === RequestStatus.Loading ? (
-      <div>loading...</div>
+      <div data-testid="loading-txt">loading...</div>
     ) : isAuthed ? (
       <Component {...props} />
     ) : (
-      <div>Redirecting...</div>
+      <div data-testid="redirect-txt">Redirecting...</div>
     );
   }
 
