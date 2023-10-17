@@ -21,7 +21,7 @@ function Posts() {
   const dispatch = useAppDispatch();
   const posts = useSelector(selectPosts);
   const postsStatus = useSelector(selectPostsStatus);
-  const { friends, sentFriendsRequests, userId } = useAppSelector(
+  const { friends, sentFriendsRequests, id } = useAppSelector(
     (state) => state.user
   );
 
@@ -44,15 +44,15 @@ function Posts() {
 
     posts.forEach((post) => {
       const isAuthorFriend = Boolean(
-        friends.find((friend) => friend.userId === post.author.userId)
+        friends.find((friend) => friend.id === post.author.id)
       );
       const isAuthorInSentFriendsRequests = Boolean(
         sentFriendsRequests.find(
-          (futureFriend) => futureFriend.userId === post.author.userId
+          (futureFriend) => futureFriend.id === post.author.id
         )
       );
 
-      if (post.author.userId === userId) {
+      if (post.author.id === id) {
         return userAndFriendsPosts.push(post);
       }
 
@@ -75,7 +75,7 @@ function Posts() {
 
     setUserAndFriendsPosts(userAndFriendsPosts);
     setOtherUsersPosts(otherUsersPosts);
-  }, [posts, friends, sentFriendsRequests, userId]);
+  }, [posts, friends, sentFriendsRequests, id]);
 
   if (postsStatus === RequestStatus.Loading) {
     return (

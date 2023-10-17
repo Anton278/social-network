@@ -10,7 +10,7 @@ import { getTimeFromNow } from "@/utils/getTimeFromNow";
 import * as Styled from "./Post.styled";
 
 interface PostProps {
-  author: { username: string; fullName: string; userId: string };
+  author: { username: string; fullName: string; id: string };
   date: number;
   text: string;
   comments: Comment[];
@@ -39,7 +39,7 @@ function Post(props: PostProps) {
       <div>
         <Styled.TopBar>
           <Link
-            href={`/profiles/${author.userId}`}
+            href={`/profiles/${author.id}`}
             style={{
               color: "#000",
               textDecoration: "none",

@@ -4,21 +4,16 @@ import {
   addDoc,
   collection,
   doc,
-  getDocs,
   updateDoc,
 } from "firebase/firestore";
 
 import { db } from "@/pages/_app";
-import { Post } from "@/models/Post";
 import { UpdatePost } from "@/models/requests/UpdatePost";
 import { AddPost } from "@/models/requests/AddPost";
+import postsService from "@/services/Posts";
 
 export const getPosts = createAsyncThunk("posts/getPosts", async () => {
-  const postsDocs = (await getDocs(collection(db, "posts"))).docs;
-  const posts = postsDocs.map((postDoc) => {
-    const post = postDoc.data();
-    return { ...post, id: postDoc.id, timeStamp: post.timeStamp.toJSON() };
-  }) as Post[];
+  const posts = await postsService.getAll();
   return posts;
 });
 
