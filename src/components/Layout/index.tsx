@@ -16,7 +16,8 @@ function Layout({ children, maxWidth }: LayoutProps) {
   return (
     <Styled.LayoutWrapper>
       <Header />
-      <Styled.Main>
+      {/* @ts-expect-error */}
+      <Styled.Main fixed component="main">
         {isAuthed && <AsideNav />}
         <Styled.ContentWrapper>{children}</Styled.ContentWrapper>
       </Styled.Main>

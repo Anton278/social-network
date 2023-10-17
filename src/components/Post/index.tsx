@@ -20,6 +20,7 @@ interface PostProps {
 
 function Post(props: PostProps) {
   const [showDialog, setShowDialog] = useState(false);
+  const [showFullText, setShowFullText] = useState(false);
   const { author, text, postId, comments, date, isPrivate } = props;
 
   function stringAvatar(name: string) {
@@ -33,6 +34,9 @@ function Post(props: PostProps) {
   }
 
   const postDateFromNow = getTimeFromNow(date);
+
+  const splittedText = text.split(" ");
+  const shouldTruncateText = splittedText.length >= 100;
 
   return (
     <>
@@ -60,13 +64,40 @@ function Post(props: PostProps) {
             </>
           )}
         </Styled.TopBar>
-        <p>{text}</p>
-        <Button variant="outlined" onClick={() => setShowDialog(true)}>
-          {comments.length ? (
-            <span style={{ marginRight: "4px" }}>{comments.length}</span>
-          ) : null}
-          Comments
-        </Button>
+        <Styled.PostBody>
+          {shouldTruncateText
+            ? showFullText
+              ? text
+              : splittedText.slice(0, 100).join(" ")
+            : text}{" "}
+          {shouldTruncateText && !showFullText && (
+            <Styled.ToggleFullTxtBtn
+              onClick={() => {
+                setShowFullText(true);
+              }}
+            >
+              ...more
+            </Styled.ToggleFullTxtBtn>
+          )}
+        </Styled.PostBody>
+        {shouldTruncateText && showFullText && (
+          <Styled.ToggleFullTxtBtn
+            onClick={() => {
+              setShowFullText(false);
+            }}
+            style={{ marginTop: "5px" }}
+          >
+            Show less
+          </Styled.ToggleFullTxtBtn>
+        )}
+        <Styled.CommentsBtnWrapper>
+          <Button variant="outlined" onClick={() => setShowDialog(true)}>
+            {comments.length ? (
+              <span style={{ marginRight: "4px" }}>{comments.length}</span>
+            ) : null}
+            Comments
+          </Button>
+        </Styled.CommentsBtnWrapper>
       </div>
       <CommentsDialog
         open={showDialog}
