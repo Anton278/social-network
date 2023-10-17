@@ -33,7 +33,7 @@ const friendsPosts: Post[] = [
     body: "Test post 2",
     comments: [],
     timeStamp: { seconds: 0, nanoseconds: 0 } as Timestamp,
-    isPrivate: false,
+    isPrivate: true,
     id: "2",
   },
 ];
@@ -52,7 +52,7 @@ const otherUsersPosts: Post[] = [
     body: "Test post 4",
     comments: [],
     timeStamp: { seconds: 0, nanoseconds: 0 } as Timestamp,
-    isPrivate: false,
+    isPrivate: true,
     id: "4",
   },
 ];
@@ -105,7 +105,7 @@ describe("Posts page", () => {
     });
 
     const posts = await screen.findAllByTestId("post");
-    expect(posts.length).toBe(2);
+    expect(posts.length).toBe(1);
 
     const postsDivider = screen.queryByTestId("posts-divider");
     expect(postsDivider).not.toBeInTheDocument();
