@@ -21,9 +21,7 @@ function Posts() {
   const dispatch = useAppDispatch();
   const posts = useSelector(selectPosts);
   const postsStatus = useSelector(selectPostsStatus);
-  const { friends, sentFriendsRequests, id } = useAppSelector(
-    (state) => state.user
-  );
+  const { friends, id } = useAppSelector((state) => state.user);
 
   const [userAndFriendsPosts, setUserAndFriendsPosts] = useState<PostModel[]>(
     []
@@ -46,11 +44,6 @@ function Posts() {
       const isAuthorFriend = Boolean(
         friends.find((friend) => friend.id === post.author.id)
       );
-      const isAuthorInSentFriendsRequests = Boolean(
-        sentFriendsRequests.find(
-          (futureFriend) => futureFriend.id === post.author.id
-        )
-      );
 
       if (post.author.id === id) {
         return userAndFriendsPosts.push(post);
@@ -63,7 +56,7 @@ function Posts() {
         return userAndFriendsPosts.push(post);
       }
 
-      if (isAuthorFriend || isAuthorInSentFriendsRequests) {
+      if (isAuthorFriend) {
         userAndFriendsPosts.push(post);
       } else {
         otherUsersPosts.push(post);
@@ -75,14 +68,14 @@ function Posts() {
 
     setUserAndFriendsPosts(userAndFriendsPosts);
     setOtherUsersPosts(otherUsersPosts);
-  }, [posts, friends, sentFriendsRequests, id]);
+  }, [posts, friends, id]);
 
   if (postsStatus === RequestStatus.Loading) {
     return (
       <Layout>
         <>
           <AddPost />
-          <div>Loading...</div>
+          <div data-testid="loading-indicator">Loading...</div>
         </>
       </Layout>
     );
@@ -93,7 +86,9 @@ function Posts() {
       <Layout>
         <>
           <AddPost />
-          <Typography color="error">Failed to get posts</Typography>
+          <Typography color="error" data-testid="err-txt">
+            Failed to get posts
+          </Typography>
         </>
       </Layout>
     );

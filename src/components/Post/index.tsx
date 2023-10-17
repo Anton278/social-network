@@ -36,7 +36,7 @@ function Post(props: PostProps) {
 
   return (
     <>
-      <div>
+      <div data-testid="post">
         <Styled.TopBar>
           <Link
             href={`/profiles/${author.id}`}

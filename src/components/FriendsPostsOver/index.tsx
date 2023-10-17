@@ -4,7 +4,7 @@ import Image from "next/image";
 
 function FriendsPostsOver() {
   return (
-    <Styled.Wrapper>
+    <Styled.Wrapper data-testid="posts-divider">
       <Typography
         variant="h5"
         sx={{ marginBottom: "50px", textAlign: "center" }}
