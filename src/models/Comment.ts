@@ -1,7 +1,12 @@
-export interface Comment {
-  userId: string;
-  comment: string;
+interface Author {
+  id: string;
   username: string;
-  id: number;
   fullName: string;
+}
+
+export interface Comment {
+  author: Author;
+  comment: string;
+  id: number;
+  timestamp: number;
 }

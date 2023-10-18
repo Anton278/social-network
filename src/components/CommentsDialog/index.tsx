@@ -7,21 +7,19 @@ import {
   Typography,
   DialogActions,
   TextField,
-  Avatar,
 } from "@mui/material";
-import Link from "next/link";
 import { useState } from "react";
 
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useAppSelector } from "@/hooks/useAppSelector";
-import { Comment } from "@/models/Comment";
+import { Comment as CommentModel } from "@/models/Comment";
 import { updatePost } from "@/redux/slices/posts/thunks";
-import { stringToColor } from "@/utils/stringToColor";
+import Comment from "../Comment";
 
 type CommentsDialogProps = {
   open: boolean;
   onClose?: () => void;
-  comments: Comment[];
+  comments: CommentModel[];
   postId: string;
 };
 
@@ -36,28 +34,24 @@ function CommentsDialog({
   const [comment, setComment] = useState("");
   const [isSending, setsIsSending] = useState(false);
 
-  function stringAvatar(name: string) {
-    return {
-      sx: {
-        marginRight: "5px",
-        bgcolor: stringToColor(name),
-      },
-      children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
-    };
-  }
-
   async function onSendClick() {
     setsIsSending(true);
 
     const lastComment = comments[comments.length - 1];
-    const newComment: Comment = {
+    const newComment: CommentModel = {
       comment,
-      fullName: user.fullName,
-      userId: user.userId,
-      username: user.username,
+      author: {
+        fullName: user.fullName,
+        id: user.id,
+        username: user.username,
+      },
       id: lastComment ? lastComment.id + 1 : 1,
+      timestamp: Math.ceil(Date.now() / 1000),
     };
-    await dispatch(updatePost({ postId, comments: [...comments, newComment] }));
+
+    await dispatch(
+      updatePost({ id: postId, comments: [...comments, newComment] })
+    );
 
     setsIsSending(false);
     setComment("");
@@ -75,22 +69,12 @@ function CommentsDialog({
       <DialogContent dividers>
         {comments.length ? (
           comments.map((comment) => (
-            <div key={comment.id}>
-              <Link
-                href={`/profiles/${comment.userId}`}
-                style={{
-                  color: "#000",
-                  textDecoration: "none",
-                  display: "flex",
-                  alignItems: "center",
-                  width: "fit-content",
-                }}
-              >
-                <Avatar {...stringAvatar(comment.fullName)} />
-                <h5>{comment.username}</h5>
-              </Link>
-              <p>{comment.comment}</p>
-            </div>
+            <Comment
+              key={comment.id}
+              author={comment.author}
+              timestamp={comment.timestamp}
+              comment={comment.comment}
+            />
           ))
         ) : (
           <Typography>

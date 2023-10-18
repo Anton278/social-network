@@ -1,6 +1,13 @@
 import { Post } from "@/models/Post";
+import { UpdatePost } from "@/models/requests/UpdatePost";
 import { db } from "@/pages/_app";
-import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
 
 class PostsService {
   async getAll() {
@@ -21,6 +28,13 @@ class PostsService {
   async delete(id: string) {
     const docRef = doc(db, "posts", id);
     await deleteDoc(docRef);
+  }
+
+  async update(post: UpdatePost) {
+    const { id, ...postWithoutId } = post;
+    const docRef = doc(db, "posts", id);
+    await updateDoc(docRef, postWithoutId);
+    return post;
   }
 }
 

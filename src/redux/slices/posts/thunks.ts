@@ -1,11 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import {
-  Timestamp,
-  addDoc,
-  collection,
-  doc,
-  updateDoc,
-} from "firebase/firestore";
+import { Timestamp, addDoc, collection } from "firebase/firestore";
 
 import { db } from "@/pages/_app";
 import { UpdatePost } from "@/models/requests/UpdatePost";
@@ -28,11 +22,8 @@ export const deletePost = createAsyncThunk(
 export const updatePost = createAsyncThunk(
   "posts/updatePost",
   async (post: UpdatePost) => {
-    const { id, ...postWithoutId } = post;
-    const docRef = doc(db, "posts", id);
-    await updateDoc(docRef, postWithoutId);
-
-    return post;
+    const updatedPost = postsService.update(post);
+    return updatedPost;
   }
 );
 
