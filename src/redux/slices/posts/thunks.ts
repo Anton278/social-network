@@ -17,6 +17,14 @@ export const getPosts = createAsyncThunk("posts/getPosts", async () => {
   return posts;
 });
 
+export const deletePost = createAsyncThunk(
+  "posts/deletePost",
+  async (id: string) => {
+    await postsService.delete(id);
+    return id;
+  }
+);
+
 export const updatePost = createAsyncThunk(
   "posts/updatePost",
   async (post: UpdatePost) => {

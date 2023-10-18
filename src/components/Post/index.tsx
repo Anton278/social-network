@@ -13,6 +13,9 @@ import { useAppSelector } from "@/hooks/useAppSelector";
 import { selectUserId } from "@/redux/slices/user/selectors";
 import EditPost from "../EditPost";
 import PostMoreMenu from "../PostMoreMenu";
+import ConfirmDelete from "../ConfirmDelete";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { deletePost } from "@/redux/slices/posts/thunks";
 
 interface PostProps {
   author: { username: string; fullName: string; id: string };
@@ -26,11 +29,13 @@ interface PostProps {
 function Post(props: PostProps) {
   const { author, text, postId, comments, date, isPrivate } = props;
 
+  const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
   const [showDialog, setShowDialog] = useState(false);
   const [showFullText, setShowFullText] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showConfirmDel, setShowConfirmDel] = useState(false);
 
   function stringAvatar(name: string) {
     return {
@@ -40,6 +45,10 @@ function Post(props: PostProps) {
       },
       children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
     };
+  }
+
+  async function handleDeletePost() {
+    await dispatch(deletePost(postId)).unwrap();
   }
 
   const postDateFromNow = getTimeFromNow(date);
@@ -82,6 +91,9 @@ function Post(props: PostProps) {
                 handleClose={() => setMenuAnchorEl(null)}
                 onEditClick={() => {
                   setShowEditModal(true);
+                }}
+                onDeleteClick={() => {
+                  setShowConfirmDel(true);
                 }}
               />
             </>
@@ -133,6 +145,11 @@ function Post(props: PostProps) {
         onClose={() => setShowEditModal(false)}
         originalText={text}
         postId={postId}
+      />
+      <ConfirmDelete
+        open={showConfirmDel}
+        onClose={() => setShowConfirmDel(false)}
+        onConfirm={handleDeletePost}
       />
     </>
   );
