@@ -37,10 +37,18 @@ function Posts() {
       return;
     }
 
+    const date = new Date();
+    const strDate = `${date.getDate()}.${date.getMonth()}.${date.getFullYear()}`;
+    const todaysPosts: PostModel[] = posts.filter((post) => {
+      const postDate = new Date(post.timeStamp.seconds * 1000);
+      const postStrDate = `${postDate.getDate()}.${postDate.getMonth()}.${postDate.getFullYear()}`;
+      return postStrDate === strDate;
+    });
+
     const userAndFriendsPosts: PostModel[] = [];
     const otherUsersPosts: PostModel[] = [];
 
-    posts.forEach((post) => {
+    todaysPosts.forEach((post) => {
       const isAuthorFriend = Boolean(
         friends.find((friend) => friend.id === post.author.id)
       );
@@ -112,7 +120,7 @@ function Posts() {
               />
             ))}
           </Styled.PostsContainer>
-          {Boolean(userAndFriendsPosts.length) && <FriendsPostsOver />}
+          <FriendsPostsOver />
           <Styled.PostsContainer>
             {otherUsersPosts.map((post) => (
               <Post
