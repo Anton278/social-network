@@ -4,7 +4,7 @@ import { Comment } from "../Comment";
 interface Author {
   username: string;
   fullName: string;
-  userId: string;
+  id: string;
 }
 
 export interface AddPost {

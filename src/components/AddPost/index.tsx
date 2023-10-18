@@ -34,7 +34,7 @@ function AddPost() {
     const post: Post = {
       author: {
         fullName: user.fullName,
-        userId: user.userId,
+        id: user.id,
         username: user.username,
       },
       body: text,
