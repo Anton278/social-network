@@ -19,12 +19,15 @@ jest.mock("next/router", () => ({
 
 jest.mock("../../src/services/Posts");
 
-const friendsPosts: Post[] = [
+const testPosts: Post[] = [
   {
     author: { fullName: "John Doe", id: "1", username: "john001" },
     body: "Test post 1",
     comments: [],
-    timeStamp: { seconds: 0, nanoseconds: 0 } as Timestamp,
+    timeStamp: {
+      seconds: Date.now() / 1000,
+      nanoseconds: 0,
+    } as Timestamp,
     isPrivate: false,
     id: "1",
   },
@@ -32,7 +35,29 @@ const friendsPosts: Post[] = [
     author: { fullName: "Calvin C Chandler", id: "2", username: "calvin001" },
     body: "Test post 2",
     comments: [],
-    timeStamp: { seconds: 0, nanoseconds: 0 } as Timestamp,
+    timeStamp: {
+      seconds: Date.now() / 1000 - 86400,
+      nanoseconds: 0,
+    } as Timestamp,
+    isPrivate: false,
+    id: "2",
+  },
+];
+
+const friendsPosts: Post[] = [
+  {
+    author: { fullName: "John Doe", id: "1", username: "john001" },
+    body: "Test post 1",
+    comments: [],
+    timeStamp: { seconds: Date.now() / 1000, nanoseconds: 0 } as Timestamp,
+    isPrivate: false,
+    id: "1",
+  },
+  {
+    author: { fullName: "Calvin C Chandler", id: "2", username: "calvin001" },
+    body: "Test post 2",
+    comments: [],
+    timeStamp: { seconds: Date.now() / 1000, nanoseconds: 0 } as Timestamp,
     isPrivate: true,
     id: "2",
   },
@@ -43,7 +68,7 @@ const otherUsersPosts: Post[] = [
     author: { fullName: "Robert C Foster", id: "4", username: "robert001" },
     body: "Test post 3",
     comments: [],
-    timeStamp: { seconds: 0, nanoseconds: 0 } as Timestamp,
+    timeStamp: { seconds: Date.now() / 1000, nanoseconds: 0 } as Timestamp,
     isPrivate: false,
     id: "3",
   },
@@ -51,7 +76,7 @@ const otherUsersPosts: Post[] = [
     author: { fullName: "Darlene E Perez", id: "5", username: "perez001" },
     body: "Test post 4",
     comments: [],
-    timeStamp: { seconds: 0, nanoseconds: 0 } as Timestamp,
+    timeStamp: { seconds: Date.now() / 1000, nanoseconds: 0 } as Timestamp,
     isPrivate: true,
     id: "4",
   },
@@ -88,9 +113,21 @@ describe("Posts page", () => {
 
     const posts = await screen.findAllByTestId("post");
     expect(posts.length).toBe(2);
+  });
 
-    const postsDivider = await screen.findByTestId("posts-divider");
-    expect(postsDivider).toBeInTheDocument();
+  it("should not map yesterday posts", async () => {
+    // @ts-expect-error
+    postsService.getAll.mockImplementationOnce(() =>
+      Promise.resolve(testPosts)
+    );
+
+    renderWithRedux(<Posts />, {
+      user,
+      auth: { isAuthed: true, status: RequestStatus.IDLE },
+    });
+
+    const posts = await screen.findAllByTestId("post");
+    expect(posts.length).toBe(1);
   });
 
   it("should map other users posts", async () => {
@@ -106,9 +143,6 @@ describe("Posts page", () => {
 
     const posts = await screen.findAllByTestId("post");
     expect(posts.length).toBe(1);
-
-    const postsDivider = screen.queryByTestId("posts-divider");
-    expect(postsDivider).not.toBeInTheDocument();
   });
 
   it("should display error", async () => {
