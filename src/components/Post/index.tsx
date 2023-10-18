@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Avatar, Button } from "@mui/material";
+import { Avatar, Button, IconButton } from "@mui/material";
 import { useState } from "react";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 import { stringToColor } from "@/utils/stringToColor";
 import CommentsDialog from "../CommentsDialog";
@@ -8,6 +9,10 @@ import { Comment } from "@/models/Comment";
 import { getTimeFromNow } from "@/utils/getTimeFromNow";
 
 import * as Styled from "./Post.styled";
+import { useAppSelector } from "@/hooks/useAppSelector";
+import { selectUserId } from "@/redux/slices/user/selectors";
+import EditPost from "../EditPost";
+import PostMoreMenu from "../PostMoreMenu";
 
 interface PostProps {
   author: { username: string; fullName: string; id: string };
@@ -19,9 +24,13 @@ interface PostProps {
 }
 
 function Post(props: PostProps) {
+  const { author, text, postId, comments, date, isPrivate } = props;
+
+  const userId = useAppSelector(selectUserId);
+  const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
   const [showDialog, setShowDialog] = useState(false);
   const [showFullText, setShowFullText] = useState(false);
-  const { author, text, postId, comments, date, isPrivate } = props;
+  const [showEditModal, setShowEditModal] = useState(false);
 
   function stringAvatar(name: string) {
     return {
@@ -61,6 +70,20 @@ function Post(props: PostProps) {
             <>
               <span>·</span>
               <Styled.PrivateMarker>(Private)</Styled.PrivateMarker>
+            </>
+          )}
+          {author.id === userId && (
+            <>
+              <IconButton onClick={(e) => setMenuAnchorEl(e.currentTarget)}>
+                <MoreVertIcon />
+              </IconButton>
+              <PostMoreMenu
+                anchorEl={menuAnchorEl}
+                handleClose={() => setMenuAnchorEl(null)}
+                onEditClick={() => {
+                  setShowEditModal(true);
+                }}
+              />
             </>
           )}
         </Styled.TopBar>
@@ -103,6 +126,12 @@ function Post(props: PostProps) {
         open={showDialog}
         onClose={() => setShowDialog(false)}
         comments={comments}
+        postId={postId}
+      />
+      <EditPost
+        open={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        originalText={text}
         postId={postId}
       />
     </>

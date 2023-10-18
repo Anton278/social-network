@@ -20,10 +20,9 @@ export const getPosts = createAsyncThunk("posts/getPosts", async () => {
 export const updatePost = createAsyncThunk(
   "posts/updatePost",
   async (post: UpdatePost) => {
-    const docRef = doc(db, "posts", post.postId);
-    await updateDoc(docRef, {
-      comments: post.comments,
-    });
+    const { id, ...postWithoutId } = post;
+    const docRef = doc(db, "posts", id);
+    await updateDoc(docRef, postWithoutId);
 
     return post;
   }

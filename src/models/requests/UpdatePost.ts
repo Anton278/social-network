@@ -1,6 +1,8 @@
 import { Comment } from "../Comment";
 
 export interface UpdatePost {
-  postId: string;
-  comments: Comment[];
+  id: string;
+  comments?: Comment[];
+  isPrivate?: boolean;
+  body?: string;
 }

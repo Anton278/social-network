@@ -23,13 +23,11 @@ const postsSlice = createSlice({
     });
 
     builder.addCase(updatePost.fulfilled, (state, action) => {
-      const updatedPost = state.posts.find(
-        (post) => post.id === action.payload.postId
+      const payload = action.payload;
+      const { id, ...payloadWithoutId } = payload;
+      state.posts = state.posts.map((post) =>
+        post.id === payload.id ? { ...post, ...payloadWithoutId } : post
       );
-      if (!updatedPost) {
-        return state;
-      }
-      updatedPost.comments = action.payload.comments;
     });
 
     builder.addCase(addPost.fulfilled, (state, action) => {
