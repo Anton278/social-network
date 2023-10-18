@@ -27,7 +27,7 @@ import UserService from "@/services/Users";
 import { selectPosts, selectPostsStatus } from "@/redux/slices/posts/selectors";
 import { getPosts } from "@/redux/slices/posts/thunks";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
-import { sortByDate } from "@/utils/sortByDate";
+import { sortPostsFromNewest } from "@/utils/sortPostsFromNewest";
 import { RequestStatus } from "@/models/RequestStatus";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -54,7 +54,7 @@ function Profile() {
 
   const [showFriends, setShowFriends] = useState(false);
 
-  const profilePosts = sortByDate(
+  const profilePosts = sortPostsFromNewest(
     posts.filter((post) => post.author.userId === profileId)
   );
 

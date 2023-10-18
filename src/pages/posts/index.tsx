@@ -10,10 +10,11 @@ import Post from "@/components/Post";
 import AddPost from "@/components/AddPost";
 import FriendsPostsOver from "@/components/FriendsPostsOver";
 import { Post as PostModel } from "@/models/Post";
-import { sortByDate } from "@/utils/sortByDate";
+import { sortPostsFromNewest } from "@/utils/sortPostsFromNewest";
 import { getPosts } from "@/redux/slices/posts/thunks";
 import { selectPosts, selectPostsStatus } from "@/redux/slices/posts/selectors";
 import { RequestStatus } from "@/models/RequestStatus";
+import { Comment } from "@/models/Comment";
 
 import * as Styled from "@/styles/Posts.styled";
 
@@ -45,8 +46,8 @@ function Posts() {
       return postStrDate === strDate;
     });
 
-    const userAndFriendsPosts: PostModel[] = [];
-    const otherUsersPosts: PostModel[] = [];
+    let userAndFriendsPosts: PostModel[] = [];
+    let otherUsersPosts: PostModel[] = [];
 
     todaysPosts.forEach((post) => {
       const isAuthorFriend = Boolean(
@@ -71,8 +72,24 @@ function Posts() {
       }
     });
 
-    sortByDate(userAndFriendsPosts);
-    sortByDate(otherUsersPosts);
+    sortPostsFromNewest(userAndFriendsPosts);
+    sortPostsFromNewest(otherUsersPosts);
+
+    userAndFriendsPosts = userAndFriendsPosts.map((post) => {
+      const { comments } = post;
+      const sortedComments = JSON.parse(JSON.stringify(comments)).sort(
+        (a: Comment, b: Comment) => b.timestamp - a.timestamp
+      );
+      return { ...post, comments: sortedComments };
+    });
+
+    otherUsersPosts = otherUsersPosts.map((post) => {
+      const { comments } = post;
+      const sortedComments = JSON.parse(JSON.stringify(comments)).sort(
+        (a: Comment, b: Comment) => b.timestamp - a.timestamp
+      );
+      return { ...post, comments: sortedComments };
+    });
 
     setUserAndFriendsPosts(userAndFriendsPosts);
     setOtherUsersPosts(otherUsersPosts);

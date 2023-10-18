@@ -1,6 +1,6 @@
 import { Post } from "@/models/Post";
 
-function sortByDate(posts: Post[]) {
+function sortPostsFromNewest(posts: Post[]) {
   const sortedPosts = posts.sort(
     (a, b) => b.timeStamp.seconds - a.timeStamp.seconds
   );
@@ -8,4 +8,4 @@ function sortByDate(posts: Post[]) {
   return sortedPosts;
 }
 
-export { sortByDate };
+export { sortPostsFromNewest };
