@@ -14,6 +14,7 @@ const initialState: InitialState = {
   friends: [],
   sentFriendsRequests: [],
   receivedFriendsRequests: [],
+  watchedPosts: [],
 };
 
 const userSlice = createSlice({
