@@ -54,6 +54,7 @@ function CommentsDialog({
       },
       id: lastComment ? lastComment.id + 1 : 1,
       timestamp: Math.ceil(Date.now() / 1000),
+      isEdited: false,
     };
 
     await dispatch(
@@ -74,7 +75,7 @@ function CommentsDialog({
 
     const updatedComments = comments.map((comment) =>
       comment.id === editingCommentId
-        ? { ...comment, comment: editingComment }
+        ? { ...comment, comment: editingComment, isEdited: true }
         : comment
     );
 
@@ -125,6 +126,7 @@ function CommentsDialog({
                 setIsEditing(true);
                 setEditingCommentId(id);
               }}
+              isEdited={comment.isEdited}
             />
           ))
         ) : (

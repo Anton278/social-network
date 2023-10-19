@@ -9,4 +9,5 @@ export interface Comment {
   comment: string;
   id: number;
   timestamp: number;
+  isEdited: boolean;
 }

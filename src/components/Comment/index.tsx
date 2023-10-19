@@ -23,10 +23,12 @@ type CommentProps = {
   postId: string;
   id: number;
   onEditClick: (id: number) => void;
+  isEdited: boolean;
 };
 
 function Comment(props: CommentProps) {
-  const { author, timestamp, comment, postId, id, onEditClick } = props;
+  const { author, timestamp, comment, postId, id, onEditClick, isEdited } =
+    props;
 
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
@@ -57,6 +59,12 @@ function Comment(props: CommentProps) {
         </Styled.Author>
         <span>·</span>
         <span>{timeFromNow}</span>
+        {isEdited && (
+          <>
+            <span>·</span>
+            <Styled.Marker>(Edited)</Styled.Marker>
+          </>
+        )}
         {author.id === userId && (
           <>
             <IconButton onClick={(e) => setMenuAnchorEl(e.currentTarget)}>
