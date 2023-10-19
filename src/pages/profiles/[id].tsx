@@ -55,7 +55,7 @@ function Profile() {
   const [showFriends, setShowFriends] = useState(false);
 
   const profilePosts = sortPostsFromNewest(
-    posts.filter((post) => post.author.userId === profileId)
+    posts.filter((post) => post.author.id === profileId)
   );
 
   async function handleAddFriend() {
@@ -419,6 +419,7 @@ function Profile() {
               comments={profilePost.comments}
               isPrivate={profilePost.isPrivate}
               postId={profilePost.id}
+              isEdited={profilePost.isEdited}
             />
           ))
         )}
