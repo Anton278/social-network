@@ -13,4 +13,5 @@ export interface AddPost {
   comments: Comment[];
   timeStamp: Timestamp;
   isPrivate: boolean;
+  isEdited: boolean;
 }

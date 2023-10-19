@@ -7,7 +7,7 @@ export const TopBar = styled.div({
   alignItems: "center",
 });
 
-export const PrivateMarker = styled.span({
+export const Marker = styled.span({
   color: grey[600],
 });
 

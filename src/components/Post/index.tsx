@@ -24,10 +24,11 @@ interface PostProps {
   comments: Comment[];
   isPrivate: boolean;
   postId: string;
+  isEdited: boolean;
 }
 
 function Post(props: PostProps) {
-  const { author, text, postId, comments, date, isPrivate } = props;
+  const { author, text, postId, comments, date, isPrivate, isEdited } = props;
 
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
@@ -78,7 +79,13 @@ function Post(props: PostProps) {
           {isPrivate && (
             <>
               <span>·</span>
-              <Styled.PrivateMarker>(Private)</Styled.PrivateMarker>
+              <Styled.Marker>(Private)</Styled.Marker>
+            </>
+          )}
+          {isEdited && (
+            <>
+              <span>·</span>
+              <Styled.Marker>(Edited)</Styled.Marker>
             </>
           )}
           {author.id === userId && (

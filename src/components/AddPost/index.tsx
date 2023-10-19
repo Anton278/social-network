@@ -42,6 +42,7 @@ function AddPost() {
       //@ts-expect-error
       timeStamp: serverTimestamp(),
       isPrivate,
+      isEdited: false,
     };
 
     try {

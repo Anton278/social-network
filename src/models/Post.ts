@@ -14,4 +14,5 @@ export interface Post {
   timeStamp: Timestamp;
   isPrivate: boolean;
   id: string;
+  isEdited: boolean;
 }

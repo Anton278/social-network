@@ -43,7 +43,7 @@ function EditPost(props: EditPostProps) {
     setIsSubmitting(true);
     try {
       await dispatch(
-        updatePost({ id: postId, body: text, isPrivate })
+        updatePost({ id: postId, body: text, isPrivate, isEdited: true })
       ).unwrap();
       onClose();
     } catch (e) {

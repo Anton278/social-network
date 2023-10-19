@@ -134,6 +134,7 @@ function Posts() {
                 comments={post.comments}
                 isPrivate={post.isPrivate}
                 postId={post.id}
+                isEdited={post.isEdited}
               />
             ))}
           </Styled.PostsContainer>
@@ -148,6 +149,7 @@ function Posts() {
                 comments={post.comments}
                 isPrivate={post.isPrivate}
                 postId={post.id}
+                isEdited={post.isEdited}
               />
             ))}
           </Styled.PostsContainer>
