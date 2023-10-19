@@ -28,9 +28,9 @@ function UsersList(props: UsersListProps) {
             return (
               <UserSummary
                 fullName={user.fullName}
-                userId={user.userId}
+                id={user.id}
                 username={user.username}
-                key={user.userId}
+                key={user.id}
               />
             );
           })

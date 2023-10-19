@@ -3,16 +3,16 @@ import * as Styled from "./UserSummary.styled";
 import { Avatar, Typography } from "@mui/material";
 
 interface UserSummaryProps {
-  userId: string;
+  id: string;
   fullName: string;
   username: string;
 }
 
 function UserSummary(props: UserSummaryProps) {
-  const { userId, fullName, username } = props;
+  const { id, fullName, username } = props;
 
   return (
-    <Styled.User href={`/profiles/${userId}`}>
+    <Styled.User href={`/profiles/${id}`}>
       <Avatar
         sx={{
           bgcolor: stringToColor(fullName),

@@ -26,9 +26,9 @@ function FriendsDialog(props: FriendsDialogProps) {
       <DialogContent dividers>
         {friends.map((friend) => (
           <UserSummary
-            key={friend.userId}
+            key={friend.id}
             fullName={friend.fullName}
-            userId={friend.userId}
+            id={friend.id}
             username={friend.username}
           />
         ))}

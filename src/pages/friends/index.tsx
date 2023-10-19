@@ -82,9 +82,9 @@ function Friends() {
               user.friends.map((friend) => (
                 <UserSummary
                   fullName={friend.fullName}
-                  userId={friend.userId}
+                  id={friend.id}
                   username={friend.username}
-                  key={friend.userId}
+                  key={friend.id}
                 />
               ))
             ) : (
@@ -101,9 +101,9 @@ function Friends() {
                 user.sentFriendsRequests.map((potentialFriend) => (
                   <UserSummary
                     fullName={potentialFriend.fullName}
-                    userId={potentialFriend.userId}
+                    id={potentialFriend.id}
                     username={potentialFriend.username}
-                    key={potentialFriend.userId}
+                    key={potentialFriend.id}
                   />
                 ))
               ) : (
@@ -116,9 +116,9 @@ function Friends() {
               user.receivedFriendsRequests.map((potentialFriend) => (
                 <UserSummary
                   fullName={potentialFriend.fullName}
-                  userId={potentialFriend.userId}
+                  id={potentialFriend.id}
                   username={potentialFriend.username}
-                  key={potentialFriend.userId}
+                  key={potentialFriend.id}
                 />
               ))
             ) : (
