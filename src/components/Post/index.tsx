@@ -12,7 +12,7 @@ import * as Styled from "./Post.styled";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { selectUserId } from "@/redux/slices/user/selectors";
 import EditPost from "../EditPost";
-import PostMoreMenu from "../PostMoreMenu";
+import MoreMenu from "../MoreMenu";
 import ConfirmDelete from "../ConfirmDelete";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { deletePost } from "@/redux/slices/posts/thunks";
@@ -93,9 +93,9 @@ function Post(props: PostProps) {
               <IconButton onClick={(e) => setMenuAnchorEl(e.currentTarget)}>
                 <MoreVertIcon />
               </IconButton>
-              <PostMoreMenu
+              <MoreMenu
                 anchorEl={menuAnchorEl}
-                handleClose={() => setMenuAnchorEl(null)}
+                onClose={() => setMenuAnchorEl(null)}
                 onEditClick={() => {
                   setShowEditModal(true);
                 }}

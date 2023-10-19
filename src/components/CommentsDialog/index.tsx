@@ -74,6 +74,8 @@ function CommentsDialog({
               author={comment.author}
               timestamp={comment.timestamp}
               comment={comment.comment}
+              postId={postId}
+              id={comment.id}
             />
           ))
         ) : (

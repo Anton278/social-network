@@ -2,27 +2,27 @@ import { Menu, MenuItem, ListItemIcon, ListItemText } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-type Props = {
+type MoreMenuProps = {
   anchorEl: HTMLElement | null;
-  handleClose?: () => void;
+  onClose?: () => void;
   onEditClick?: () => void;
   onDeleteClick?: () => void;
 };
 
-function PostMoreMenu(props: Props) {
+function MoreMenu(props: MoreMenuProps) {
   const {
     anchorEl,
-    handleClose = () => {},
+    onClose = () => {},
     onEditClick = () => {},
     onDeleteClick = () => {},
   } = props;
 
   return (
-    <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+    <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={onClose}>
       <MenuItem
         onClick={() => {
           onEditClick();
-          handleClose();
+          onClose();
         }}
       >
         <ListItemIcon>
@@ -33,7 +33,7 @@ function PostMoreMenu(props: Props) {
       <MenuItem
         onClick={() => {
           onDeleteClick();
-          handleClose();
+          onClose();
         }}
       >
         <ListItemIcon>
@@ -45,4 +45,4 @@ function PostMoreMenu(props: Props) {
   );
 }
 
-export default PostMoreMenu;
+export default MoreMenu;

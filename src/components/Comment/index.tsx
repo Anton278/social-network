@@ -1,9 +1,16 @@
-import { Avatar } from "@mui/material";
+import { Avatar, IconButton } from "@mui/material";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { useState } from "react";
 
 import { stringToColor } from "@/utils/stringToColor";
+import { getTimeFromNow } from "@/utils/getTimeFromNow";
+import MoreMenu from "../MoreMenu";
+import { useAppSelector } from "@/hooks/useAppSelector";
+import { selectUserId } from "@/redux/slices/user/selectors";
 
 import * as Styled from "./Comment.styled";
-import { getTimeFromNow } from "@/utils/getTimeFromNow";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { deleteComment } from "@/redux/slices/posts/thunks";
 
 type CommentProps = {
   author: {
@@ -13,10 +20,16 @@ type CommentProps = {
   };
   timestamp: number;
   comment: string;
+  postId: string;
+  id: number;
 };
 
 function Comment(props: CommentProps) {
-  const { author, timestamp, comment } = props;
+  const { author, timestamp, comment, postId, id } = props;
+
+  const dispatch = useAppDispatch();
+  const userId = useAppSelector(selectUserId);
+  const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
 
   function stringAvatar(name: string) {
     return {
@@ -30,6 +43,10 @@ function Comment(props: CommentProps) {
 
   const timeFromNow = getTimeFromNow(timestamp);
 
+  function handleDelete() {
+    dispatch(deleteComment({ postId, commentId: id }));
+  }
+
   return (
     <div>
       <Styled.TopLine>
@@ -39,6 +56,18 @@ function Comment(props: CommentProps) {
         </Styled.Author>
         <span>·</span>
         <span>{timeFromNow}</span>
+        {author.id === userId && (
+          <>
+            <IconButton onClick={(e) => setMenuAnchorEl(e.currentTarget)}>
+              <MoreVertIcon />
+            </IconButton>
+            <MoreMenu
+              anchorEl={menuAnchorEl}
+              onClose={() => setMenuAnchorEl(null)}
+              onDeleteClick={handleDelete}
+            />
+          </>
+        )}
       </Styled.TopLine>
       <p>{comment}</p>
     </div>

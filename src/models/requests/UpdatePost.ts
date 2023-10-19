@@ -5,5 +5,5 @@ export interface UpdatePost {
   comments?: Comment[];
   isPrivate?: boolean;
   body?: string;
-  isEdited: boolean;
+  isEdited?: boolean;
 }

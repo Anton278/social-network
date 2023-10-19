@@ -2,7 +2,13 @@ import { createSlice } from "@reduxjs/toolkit";
 
 import { InitialState } from "./types";
 import { RequestStatus } from "@/models/RequestStatus";
-import { addPost, getPosts, updatePost, deletePost } from "./thunks";
+import {
+  addPost,
+  getPosts,
+  updatePost,
+  deletePost,
+  deleteComment,
+} from "./thunks";
 
 const initialState: InitialState = {
   posts: [],
@@ -36,6 +42,12 @@ const postsSlice = createSlice({
 
     builder.addCase(deletePost.fulfilled, (state, action) => {
       state.posts = state.posts.filter((post) => post.id !== action.payload);
+    });
+
+    builder.addCase(deleteComment.fulfilled, (state, { payload }) => {
+      state.posts = state.posts.map((post) =>
+        post.id === payload.id ? { ...post, ...payload } : post
+      );
     });
   },
 });
