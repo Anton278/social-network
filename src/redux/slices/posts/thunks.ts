@@ -63,7 +63,7 @@ export const deleteComment = createAsyncThunk<
       (comment) => comment.id !== commentId
     );
     const updatedPost = await postsService.update({
-      ...post,
+      id: postId,
       comments: updatedComments,
     });
     return updatedPost;
