@@ -22,10 +22,11 @@ type CommentProps = {
   comment: string;
   postId: string;
   id: number;
+  onEditClick: (id: number) => void;
 };
 
 function Comment(props: CommentProps) {
-  const { author, timestamp, comment, postId, id } = props;
+  const { author, timestamp, comment, postId, id, onEditClick } = props;
 
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
@@ -65,6 +66,7 @@ function Comment(props: CommentProps) {
               anchorEl={menuAnchorEl}
               onClose={() => setMenuAnchorEl(null)}
               onDeleteClick={handleDelete}
+              onEditClick={() => onEditClick(id)}
             />
           </>
         )}

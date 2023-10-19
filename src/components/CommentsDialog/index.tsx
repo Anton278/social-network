@@ -8,7 +8,9 @@ import {
   DialogActions,
   TextField,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import CloseIcon from "@mui/icons-material/Close";
+import SaveIcon from "@mui/icons-material/Save";
 
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useAppSelector } from "@/hooks/useAppSelector";
@@ -33,6 +35,11 @@ function CommentsDialog({
   const user = useAppSelector((state) => state.user);
   const [comment, setComment] = useState("");
   const [isSending, setsIsSending] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [origComment, setOrigComment] = useState("");
+  const [editingComment, setEditingComment] = useState("");
+  const [editingCommentId, setEditingCommentId] = useState(-1);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   async function onSendClick() {
     setsIsSending(true);
@@ -57,6 +64,42 @@ function CommentsDialog({
     setComment("");
   }
 
+  function handleCancelEditing() {
+    setIsEditing(false);
+    setEditingCommentId(-1);
+  }
+
+  async function handleUpdateComment() {
+    setIsUpdating(true);
+
+    const updatedComments = comments.map((comment) =>
+      comment.id === editingCommentId
+        ? { ...comment, comment: editingComment }
+        : comment
+    );
+
+    await dispatch(updatePost({ id: postId, comments: updatedComments }));
+
+    setIsEditing(false);
+    setOrigComment("");
+    setEditingComment("");
+    setEditingCommentId(-1);
+
+    setIsUpdating(false);
+  }
+
+  useEffect(() => {
+    if (!isEditing) {
+      return;
+    }
+    const comment = comments.find((comment) => comment.id === editingCommentId);
+    if (!comment) {
+      return;
+    }
+    setOrigComment(comment.comment);
+    setEditingComment(comment.comment);
+  }, [isEditing, editingCommentId]);
+
   return (
     <Dialog
       open={open}
@@ -65,7 +108,9 @@ function CommentsDialog({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle>Comments</DialogTitle>
+      <DialogTitle>
+        {isEditing ? "Comments · (Editing)" : "Comments"}
+      </DialogTitle>
       <DialogContent dividers>
         {comments.length ? (
           comments.map((comment) => (
@@ -76,6 +121,10 @@ function CommentsDialog({
               comment={comment.comment}
               postId={postId}
               id={comment.id}
+              onEditClick={(id: number) => {
+                setIsEditing(true);
+                setEditingCommentId(id);
+              }}
             />
           ))
         ) : (
@@ -84,24 +133,66 @@ function CommentsDialog({
           </Typography>
         )}
       </DialogContent>
-      <DialogActions>
-        <TextField
-          multiline
-          maxRows={4}
-          fullWidth
-          label="Add comment"
-          sx={{ marginRight: "12px" }}
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-        />
-        <Button
-          variant="contained"
-          endIcon={<SendIcon />}
-          disabled={!comment.trim().length || isSending}
-          onClick={onSendClick}
-        >
-          Send
-        </Button>
+      <DialogActions
+        sx={{
+          flexDirection: isEditing ? "column" : "row",
+          alignItems: isEditing ? "flex-end" : "center",
+        }}
+      >
+        {isEditing ? (
+          <>
+            <TextField
+              multiline
+              maxRows={4}
+              fullWidth
+              label={isEditing ? "Edit" : "Add comment"}
+              value={editingComment}
+              onChange={(e) => setEditingComment(e.target.value)}
+            />
+            <p>
+              <Button
+                variant="text"
+                endIcon={<CloseIcon />}
+                onClick={handleCancelEditing}
+                sx={{ marginRight: "20px" }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="contained"
+                endIcon={<SaveIcon />}
+                disabled={
+                  !editingComment.trim().length ||
+                  isUpdating ||
+                  origComment === editingComment
+                }
+                onClick={handleUpdateComment}
+              >
+                Save
+              </Button>
+            </p>
+          </>
+        ) : (
+          <>
+            <TextField
+              multiline
+              maxRows={4}
+              fullWidth
+              label="Add comment"
+              sx={{ marginRight: "12px" }}
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+            />
+            <Button
+              variant="contained"
+              endIcon={<SendIcon />}
+              disabled={!comment.trim().length || isSending}
+              onClick={onSendClick}
+            >
+              Send
+            </Button>
+          </>
+        )}
       </DialogActions>
     </Dialog>
   );
