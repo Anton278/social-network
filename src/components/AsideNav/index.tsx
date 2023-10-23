@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 import DensityMediumIcon from "@mui/icons-material/DensityMedium";
 import PeopleIcon from "@mui/icons-material/People";
+import ForumIcon from "@mui/icons-material/Forum";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import GroupsIcon from "@mui/icons-material/Groups";
 import { useRouter } from "next/router";
@@ -40,6 +41,16 @@ function AsideNav() {
             <DensityMediumIcon />
           </ListItemIcon>
           <ListItemText primary="Posts" />
+        </ListItemButton>
+        <ListItemButton
+          component={Link}
+          selected={router.pathname.includes("/chats")}
+          href="/chats"
+        >
+          <ListItemIcon>
+            <ForumIcon />
+          </ListItemIcon>
+          <ListItemText primary="Chats" />
         </ListItemButton>
         <ListItemButton
           component={Link}
