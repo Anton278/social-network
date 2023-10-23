@@ -1,6 +1,16 @@
+import { Avatar, Typography, Button } from "@mui/material";
+import { useState } from "react";
+import { arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
+
 import { stringToColor } from "@/utils/stringToColor";
+import { useAppSelector } from "@/hooks/useAppSelector";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { updateUser } from "@/redux/slices/user/thunks";
+import { Friend } from "@/models/Friend";
+import { db } from "@/pages/_app";
+import { User } from "@/models/User";
+
 import * as Styled from "./UserSummary.styled";
-import { Avatar, Typography } from "@mui/material";
 
 interface UserSummaryProps {
   id: string;
@@ -11,31 +21,241 @@ interface UserSummaryProps {
 function UserSummary(props: UserSummaryProps) {
   const { id, fullName, username } = props;
 
+  const user: Friend = {
+    id,
+    fullName,
+    username,
+  };
+
+  const dispatch = useAppDispatch();
+  const authedUser = useAppSelector((state) => state.user);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const isFriend = Boolean(
+    authedUser.friends.find((friend) => friend.id === user.id)
+  );
+  const isSentFriendsRequest = Boolean(
+    authedUser.sentFriendsRequests.find(
+      (sentFriendsRequest) => sentFriendsRequest.id === user.id
+    )
+  );
+  const isReceivedFriendsRequest = Boolean(
+    authedUser.receivedFriendsRequests.find(
+      (receivedFriendsRequest) => receivedFriendsRequest.id === user.id
+    )
+  );
+
+  async function handleAddFriend(authedUserSentFriendsRequests: Friend[]) {
+    setIsLoading(true);
+    try {
+      await dispatch(
+        updateUser({
+          sentFriendsRequests: [...authedUserSentFriendsRequests, user],
+        })
+      ).unwrap();
+    } catch (e) {
+      return setIsLoading(false);
+    }
+
+    try {
+      const recipientDocRef = doc(db, "users", user.id);
+      await updateDoc(recipientDocRef, {
+        receivedFriendsRequests: arrayUnion({
+          username: authedUser.username,
+          fullName: authedUser.fullName,
+          id: authedUser.id,
+        }),
+      });
+    } catch (e) {
+      await dispatch(
+        updateUser({
+          sentFriendsRequests: authedUserSentFriendsRequests,
+        })
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function handleAcceptFriendsRequest(
+    authedUserReceivedFriendsRequests: Friend[],
+    authedUserFriends: Friend[]
+  ) {
+    setIsLoading(true);
+    try {
+      const updatedReceivedFriendsRequests =
+        authedUserReceivedFriendsRequests.filter(
+          (receivedFriendsRequest) => receivedFriendsRequest.id !== user.id
+        );
+      await dispatch(
+        updateUser({
+          receivedFriendsRequests: updatedReceivedFriendsRequests,
+          friends: [...authedUserFriends, user],
+        })
+      ).unwrap();
+    } catch (e) {
+      return setIsLoading(false);
+    }
+
+    try {
+      const senderDocRef = doc(db, "users", user.id);
+      const senderDoc = await getDoc(senderDocRef);
+      const sender = senderDoc.data() as User;
+      const updatedSentFriendsRequests = sender.sentFriendsRequests.filter(
+        (sentFriendsRequest) => sentFriendsRequest.id !== authedUser.id
+      );
+      await updateDoc(senderDocRef, {
+        sentFriendsRequests: updatedSentFriendsRequests,
+        friends: arrayUnion({
+          id: authedUser.id,
+          fullName: authedUser.fullName,
+          username: authedUser.username,
+        }),
+      });
+    } catch (e) {
+      await dispatch(
+        updateUser({
+          receivedFriendsRequests: authedUserReceivedFriendsRequests,
+          friends: authedUserFriends,
+        })
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function handleCancelFriendsRequest(
+    authedUserSentFriendsRequests: Friend[]
+  ) {
+    setIsLoading(true);
+    try {
+      const updatedSentFriendsRequests = authedUserSentFriendsRequests.filter(
+        (sentFriendsRequest) => sentFriendsRequest.id !== user.id
+      );
+      await dispatch(
+        updateUser({ sentFriendsRequests: updatedSentFriendsRequests })
+      ).unwrap();
+    } catch (e) {
+      return setIsLoading(false);
+    }
+
+    try {
+      const recepientDocRef = doc(db, "users", user.id);
+      const recepientDoc = await getDoc(recepientDocRef);
+      const recepient = recepientDoc.data() as User;
+      const updatedReceivedFriendsRequests =
+        recepient.receivedFriendsRequests.filter(
+          (receivedFriendsRequest) =>
+            receivedFriendsRequest.id !== authedUser.id
+        );
+      await updateDoc(recepientDocRef, {
+        receivedFriendsRequests: updatedReceivedFriendsRequests,
+      });
+    } catch (e) {
+      await dispatch(
+        updateUser({ sentFriendsRequests: authedUserSentFriendsRequests })
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function handleDeleteFriend(authedUserFriends: Friend[]) {
+    setIsLoading(true);
+    try {
+      const updatedFriends = authedUserFriends.filter(
+        (friend) => friend.id !== user.id
+      );
+      await dispatch(updateUser({ friends: updatedFriends })).unwrap();
+    } catch (e) {
+      return setIsLoading(false);
+    }
+
+    try {
+      const friendDocRef = doc(db, "users", user.id);
+      const friendDoc = await getDoc(friendDocRef);
+      const friend = friendDoc.data() as User;
+      const updatedFriends = friend.friends.filter(
+        (friend) => friend.id !== authedUser.id
+      );
+      await updateDoc(friendDocRef, {
+        friends: updatedFriends,
+      });
+    } catch (e) {
+      await dispatch(updateUser({ friends: authedUserFriends }));
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
-    <Styled.User href={`/profiles/${id}`}>
-      <Avatar
-        sx={{
-          bgcolor: stringToColor(fullName),
-          marginRight: "10px",
-        }}
-      >
-        {fullName.split(" ")[0][0]}
-        {fullName.split(" ")[1][0]}
-      </Avatar>
-      <div>
-        <Typography
-          component="h5"
+    <Styled.Box>
+      <Styled.User href={`/profiles/${id}`}>
+        <Avatar
           sx={{
-            fontSize: "18px",
-            fontWeight: "700",
-            marginBottom: "5px",
+            bgcolor: stringToColor(fullName),
+            marginRight: "10px",
           }}
         >
-          {username}
-        </Typography>
-        <Typography>{fullName}</Typography>
-      </div>
-    </Styled.User>
+          {fullName.split(" ")[0][0]}
+          {fullName.split(" ")[1][0]}
+        </Avatar>
+        <div>
+          <Typography
+            component="h5"
+            sx={{
+              fontSize: "18px",
+              fontWeight: "700",
+              marginBottom: "5px",
+            }}
+          >
+            {username}
+          </Typography>
+          <Typography>{fullName}</Typography>
+        </div>
+      </Styled.User>
+      {isFriend ? (
+        <Button
+          variant="contained"
+          color="warning"
+          onClick={() => handleDeleteFriend(authedUser.friends)}
+          disabled={isLoading}
+        >
+          Delete friend
+        </Button>
+      ) : isSentFriendsRequest ? (
+        <Button
+          variant="outlined"
+          onClick={() =>
+            handleCancelFriendsRequest(authedUser.sentFriendsRequests)
+          }
+          disabled={isLoading}
+        >
+          Cancel friends request
+        </Button>
+      ) : isReceivedFriendsRequest ? (
+        <Button
+          variant="contained"
+          onClick={() =>
+            handleAcceptFriendsRequest(
+              authedUser.receivedFriendsRequests,
+              authedUser.friends
+            )
+          }
+          disabled={isLoading}
+        >
+          Accept friends request
+        </Button>
+      ) : (
+        <Button
+          variant="contained"
+          onClick={() => handleAddFriend(authedUser.sentFriendsRequests)}
+          disabled={isLoading}
+        >
+          Add friend
+        </Button>
+      )}
+    </Styled.Box>
   );
 }
 

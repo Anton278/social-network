@@ -66,7 +66,6 @@ function Profile() {
     try {
       await dispatch(
         updateUser({
-          id: user.id,
           sentFriendsRequests: [
             ...user.sentFriendsRequests,
             {
@@ -97,7 +96,6 @@ function Profile() {
         user.sentFriendsRequests.filter((friend) => friend.id !== profileId);
       return dispatch(
         updateUser({
-          id: user.id,
           sentFriendsRequests: updatedSentFriendsRequests,
         })
       );
@@ -112,7 +110,6 @@ function Profile() {
         user.sentFriendsRequests.filter((friend) => friend.id !== profileId);
       await dispatch(
         updateUser({
-          id: user.id,
           sentFriendsRequests: updatedSentFriendsRequests,
         })
       ).unwrap();
@@ -134,7 +131,6 @@ function Profile() {
     } catch (e) {
       return dispatch(
         updateUser({
-          id: user.id,
           receivedFriendsRequests: [
             ...user.receivedFriendsRequests,
             {
@@ -159,7 +155,6 @@ function Profile() {
 
       await dispatch(
         updateUser({
-          id: user.id,
           receivedFriendsRequests: updatedReceivedFriendsReqs,
           friends: [
             ...user.friends,
@@ -201,7 +196,6 @@ function Profile() {
       );
       return dispatch(
         updateUser({
-          id: user.id,
           receivedFriendsRequests: [
             ...user.receivedFriendsRequests,
             {
@@ -224,9 +218,7 @@ function Profile() {
       const updatedFriends = user.friends.filter(
         (friend) => friend.id !== profileId
       );
-      await dispatch(
-        updateUser({ id: user.id, friends: updatedFriends })
-      ).unwrap();
+      await dispatch(updateUser({ friends: updatedFriends })).unwrap();
     } catch (e) {
       return;
     }
@@ -246,7 +238,6 @@ function Profile() {
     } catch (e) {
       return dispatch(
         updateUser({
-          id: user.id,
           friends: [
             ...user.friends,
             {

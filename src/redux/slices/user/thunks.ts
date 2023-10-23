@@ -1,8 +1,10 @@
-import { UpdateUser } from "@/models/requests/UpdateUser";
-import { db } from "@/pages/_app";
-import usersService from "@/services/Users";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { doc, updateDoc } from "firebase/firestore";
+
+import { UpdateUser } from "@/models/requests/UpdateUser";
+import { db } from "@/pages/_app";
+import { RootState } from "@/redux/store";
+import usersService from "@/services/Users";
 
 export const getUser = createAsyncThunk(
   "user/getUser",
@@ -19,14 +21,15 @@ export const getUser = createAsyncThunk(
   }
 );
 
-export const updateUser = createAsyncThunk(
-  "user/updateUser",
-  async (user: UpdateUser) => {
-    const { id, ...userWithoutId } = user;
-    const docRef = doc(db, "users", id);
+export const updateUser = createAsyncThunk<
+  UpdateUser,
+  UpdateUser,
+  { state: RootState }
+>("user/updateUser", async (user: UpdateUser, { getState }) => {
+  const userId = getState().user.id;
+  const docRef = doc(db, "users", userId);
 
-    await updateDoc(docRef, userWithoutId);
+  await updateDoc(docRef, { ...user });
 
-    return userWithoutId;
-  }
-);
+  return user;
+});
