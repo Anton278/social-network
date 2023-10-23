@@ -84,7 +84,10 @@ function AddPost() {
           variant="contained"
           onClick={onPublishClick}
           disabled={!text.trim().length || isSubmitting}
-          endIcon={isSubmitting ? <Spinner /> : <SendIcon />}
+          endIcon={
+            isSubmitting ? <Spinner /> : <SendIcon data-testid="send-icon" />
+          }
+          data-testid="submit-btn"
         >
           Publish
         </Button>
@@ -93,6 +96,7 @@ function AddPost() {
         <Typography
           color="error"
           sx={{ textAlign: "center", marginTop: "5px" }}
+          data-testid="error-txt"
         >
           {error}
         </Typography>

@@ -1,7 +1,10 @@
 import { Post } from "@/models/Post";
+import { AddPost } from "@/models/requests/AddPost";
 import { UpdatePost } from "@/models/requests/UpdatePost";
 import { db } from "@/pages/_app";
 import {
+  Timestamp,
+  addDoc,
   collection,
   deleteDoc,
   doc,
@@ -35,6 +38,20 @@ class PostsService {
     const docRef = doc(db, "posts", id);
     await updateDoc(docRef, postWithoutId);
     return post;
+  }
+
+  async create(post: AddPost) {
+    const postDocRef = await addDoc(collection(db, "posts"), post);
+
+    const addedPost: Post = {
+      ...post,
+      id: postDocRef.id,
+      timeStamp: {
+        seconds: Date.now() / 1000,
+        nanoseconds: 0,
+      } as Timestamp,
+    };
+    return addedPost;
   }
 }
 
