@@ -161,4 +161,19 @@ describe("profiles page", () => {
     const userSummaries = await screen.findAllByTestId("user-summary");
     expect(userSummaries.length).toBe(3);
   });
+
+  it("should display no results", async () => {
+    // @ts-expect-error
+    usersService.getAll.mockImplementation(() => Promise.resolve(users));
+
+    renderWithRedux(<Profiles />, {
+      auth: { isAuthed: true, status: RequestStatus.IDLE },
+    });
+
+    const search = screen.getByLabelText("Search by username");
+    fireEvent.input(search, { target: { value: "001001asdasd" } });
+
+    const noResultsNode = await screen.findByTestId("no-results");
+    expect(noResultsNode).toBeInTheDocument();
+  });
 });

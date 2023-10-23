@@ -71,7 +71,7 @@ function Profiles() {
               />
             ))
         ) : (
-          <Typography>
+          <Typography data-testid="no-results">
             No results by &quot;<b>{searchValue}</b>&quot;
           </Typography>
         )}
