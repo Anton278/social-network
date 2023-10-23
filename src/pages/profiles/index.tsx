@@ -66,7 +66,7 @@ function Profiles() {
             ))
         ) : (
           <Typography>
-            No results by "<b>{searchValue}</b>"
+            No results by &quot;<b>{searchValue}</b>&quot;
           </Typography>
         )}
       </Styled.UsersListWrapper>
