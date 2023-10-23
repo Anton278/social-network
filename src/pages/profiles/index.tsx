@@ -48,11 +48,17 @@ function Profiles() {
       </Styled.SearchBar>
       <Styled.UsersListWrapper>
         {usersStatus === RequestStatus.Error ? (
-          <Typography color="error" sx={{ textAlign: "center" }}>
+          <Typography
+            color="error"
+            sx={{ textAlign: "center" }}
+            data-testid="error-txt"
+          >
             Failed to load users
           </Typography>
         ) : usersStatus === RequestStatus.Loading ? (
-          <div style={{ textAlign: "center" }}>loading...</div>
+          <div style={{ textAlign: "center" }} data-testid="loader">
+            loading...
+          </div>
         ) : searchedUsers.length ? (
           searchedUsers
             .slice(0, page * itemsPerPage)

@@ -30,6 +30,7 @@ const testPosts: Post[] = [
     } as Timestamp,
     isPrivate: false,
     id: "1",
+    isEdited: false,
   },
   {
     author: { fullName: "Calvin C Chandler", id: "2", username: "calvin001" },
@@ -41,6 +42,7 @@ const testPosts: Post[] = [
     } as Timestamp,
     isPrivate: false,
     id: "2",
+    isEdited: false,
   },
 ];
 
@@ -52,6 +54,7 @@ const friendsPosts: Post[] = [
     timeStamp: { seconds: Date.now() / 1000, nanoseconds: 0 } as Timestamp,
     isPrivate: false,
     id: "1",
+    isEdited: false,
   },
   {
     author: { fullName: "Calvin C Chandler", id: "2", username: "calvin001" },
@@ -60,6 +63,7 @@ const friendsPosts: Post[] = [
     timeStamp: { seconds: Date.now() / 1000, nanoseconds: 0 } as Timestamp,
     isPrivate: true,
     id: "2",
+    isEdited: false,
   },
 ];
 
@@ -71,6 +75,7 @@ const otherUsersPosts: Post[] = [
     timeStamp: { seconds: Date.now() / 1000, nanoseconds: 0 } as Timestamp,
     isPrivate: false,
     id: "3",
+    isEdited: false,
   },
   {
     author: { fullName: "Darlene E Perez", id: "5", username: "perez001" },
@@ -79,6 +84,7 @@ const otherUsersPosts: Post[] = [
     timeStamp: { seconds: Date.now() / 1000, nanoseconds: 0 } as Timestamp,
     isPrivate: true,
     id: "4",
+    isEdited: false,
   },
 ];
 

@@ -189,7 +189,7 @@ function UserSummary(props: UserSummaryProps) {
   }
 
   return (
-    <Styled.Box>
+    <Styled.Box data-testid="user-summary">
       <Styled.User href={`/profiles/${id}`}>
         <Avatar
           sx={{

@@ -23,8 +23,6 @@ function AsideNav() {
   const userId = useSelector(selectUserId);
   const user = useAppSelector((state) => state.user);
 
-  console.log(userId);
-
   const requestsTotal = useMemo(
     () => user.receivedFriendsRequests.length + user.sentFriendsRequests.length,
     [user.receivedFriendsRequests, user.sentFriendsRequests]
