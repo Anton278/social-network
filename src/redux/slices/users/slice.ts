@@ -5,7 +5,7 @@ import { RequestStatus } from "@/models/RequestStatus";
 
 const initialState: InitialState = {
   status: RequestStatus.Loading,
-  usersDocs: [],
+  users: [],
 };
 
 const usersSlice = createSlice({
@@ -17,7 +17,7 @@ const usersSlice = createSlice({
       state.status = RequestStatus.Loading;
     });
     builder.addCase(getUsers.fulfilled, (state, action) => {
-      state.usersDocs = action.payload;
+      state.users = action.payload;
       state.status = RequestStatus.IDLE;
     });
     builder.addCase(getUsers.rejected, (state, action) => {

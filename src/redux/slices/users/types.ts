@@ -1,7 +1,7 @@
-import { DocumentData, QueryDocumentSnapshot } from "firebase/firestore";
 import type { RequestStatus } from "@/models/RequestStatus";
+import type { User } from "@/models/User";
 
 export interface InitialState {
-  usersDocs: QueryDocumentSnapshot<DocumentData, DocumentData>[];
+  users: User[];
   status: RequestStatus;
 }

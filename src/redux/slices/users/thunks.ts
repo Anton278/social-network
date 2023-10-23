@@ -1,8 +1,8 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { db } from "@/pages/_app";
-import { collection, getDocs } from "firebase/firestore";
 
-export const getUsers = createAsyncThunk("/getUsers", async () => {
-  const usersDocs = (await getDocs(collection(db, "users"))).docs;
-  return usersDocs;
+import usersService from "@/services/Users";
+
+export const getUsers = createAsyncThunk("users/getUsers", async () => {
+  const users = await usersService.getAll();
+  return users;
 });
