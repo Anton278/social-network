@@ -22,7 +22,7 @@ class UsersService {
       friends: [],
       sentFriendsRequests: [],
       receivedFriendsRequests: [],
-      watchedPosts: [],
+      chats: [],
     };
     const userDocRef = await addDoc(collection(db, "users"), user);
     const createdUser = { ...user, id: userDocRef.id } as User;

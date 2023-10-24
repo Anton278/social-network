@@ -9,6 +9,8 @@ import { updateUser } from "@/redux/slices/user/thunks";
 import { Friend } from "@/models/Friend";
 import { db } from "@/pages/_app";
 import { User } from "@/models/User";
+import { createChat, deleteChat } from "@/redux/slices/chats/thunks";
+import { Chat } from "@/models/Chat";
 
 import * as Styled from "./UserSummary.styled";
 
@@ -17,10 +19,19 @@ interface UserSummaryProps {
   fullName: string;
   username: string;
   showActionButtons?: boolean;
+  actionButtonsType?: "friends" | "create-chat";
+  onCreatedChat?: () => void;
 }
 
 function UserSummary(props: UserSummaryProps) {
-  const { id, fullName, username, showActionButtons = true } = props;
+  const {
+    id,
+    fullName,
+    username,
+    showActionButtons = true,
+    actionButtonsType = "friends",
+    onCreatedChat = () => {},
+  } = props;
 
   const user: Friend = {
     id,
@@ -189,6 +200,37 @@ function UserSummary(props: UserSummaryProps) {
     }
   }
 
+  async function handleCreateChat(authedUserChats: string[]) {
+    setIsLoading(true);
+    let createdChat: Chat | undefined;
+    const userDocRef = doc(db, "users", user.id);
+    try {
+      createdChat = await dispatch(
+        createChat([
+          user,
+          {
+            fullName: authedUser.fullName,
+            username: authedUser.username,
+            id: authedUser.id,
+          },
+        ])
+      ).unwrap();
+      await dispatch(
+        updateUser({ chats: [...authedUserChats, createdChat.id] })
+      ).unwrap();
+      await updateDoc(userDocRef, { chats: arrayUnion(createdChat.id) });
+      onCreatedChat();
+    } catch (e) {
+      if (!createdChat?.id) {
+        return setIsLoading(false);
+      }
+      await dispatch(deleteChat(createdChat.id));
+      await dispatch(updateUser({ chats: authedUserChats }));
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
     <Styled.Box data-testid="user-summary">
       <Styled.User href={`/profiles/${id}`}>
@@ -216,45 +258,55 @@ function UserSummary(props: UserSummaryProps) {
         </div>
       </Styled.User>
       {showActionButtons &&
-        (isFriend ? (
-          <Button
-            variant="contained"
-            color="warning"
-            onClick={() => handleDeleteFriend(authedUser.friends)}
-            disabled={isLoading}
-          >
-            Delete friend
-          </Button>
-        ) : isSentFriendsRequest ? (
-          <Button
-            variant="outlined"
-            onClick={() =>
-              handleCancelFriendsRequest(authedUser.sentFriendsRequests)
-            }
-            disabled={isLoading}
-          >
-            Cancel friends request
-          </Button>
-        ) : isReceivedFriendsRequest ? (
-          <Button
-            variant="contained"
-            onClick={() =>
-              handleAcceptFriendsRequest(
-                authedUser.receivedFriendsRequests,
-                authedUser.friends
-              )
-            }
-            disabled={isLoading}
-          >
-            Accept friends request
-          </Button>
+        (actionButtonsType === "friends" ? (
+          isFriend ? (
+            <Button
+              variant="contained"
+              color="warning"
+              onClick={() => handleDeleteFriend(authedUser.friends)}
+              disabled={isLoading}
+            >
+              Delete friend
+            </Button>
+          ) : isSentFriendsRequest ? (
+            <Button
+              variant="outlined"
+              onClick={() =>
+                handleCancelFriendsRequest(authedUser.sentFriendsRequests)
+              }
+              disabled={isLoading}
+            >
+              Cancel friends request
+            </Button>
+          ) : isReceivedFriendsRequest ? (
+            <Button
+              variant="contained"
+              onClick={() =>
+                handleAcceptFriendsRequest(
+                  authedUser.receivedFriendsRequests,
+                  authedUser.friends
+                )
+              }
+              disabled={isLoading}
+            >
+              Accept friends request
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              onClick={() => handleAddFriend(authedUser.sentFriendsRequests)}
+              disabled={isLoading}
+            >
+              Add friend
+            </Button>
+          )
         ) : (
           <Button
             variant="contained"
-            onClick={() => handleAddFriend(authedUser.sentFriendsRequests)}
+            onClick={() => handleCreateChat(authedUser.chats)}
             disabled={isLoading}
           >
-            Add friend
+            Create chat
           </Button>
         ))}
     </Styled.Box>

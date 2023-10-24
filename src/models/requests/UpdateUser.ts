@@ -6,4 +6,5 @@ export interface UpdateUser {
   friends?: Friend[];
   sentFriendsRequests?: Friend[];
   receivedFriendsRequests?: Friend[];
+  chats?: string[];
 }

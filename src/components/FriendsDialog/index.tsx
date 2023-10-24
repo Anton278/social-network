@@ -9,10 +9,18 @@ type FriendsDialogProps = {
   isOpen: boolean;
   onClose?: () => void;
   friends: Friend[];
+  userSummaryActionButtonsType?: "friends" | "create-chat";
+  onCreatedChat?: () => void;
 };
 
 function FriendsDialog(props: FriendsDialogProps) {
-  const { isOpen, onClose, friends } = props;
+  const {
+    isOpen,
+    onClose,
+    friends,
+    userSummaryActionButtonsType,
+    onCreatedChat = () => {},
+  } = props;
 
   return (
     <Dialog
@@ -30,6 +38,8 @@ function FriendsDialog(props: FriendsDialogProps) {
             fullName={friend.fullName}
             id={friend.id}
             username={friend.username}
+            actionButtonsType={userSummaryActionButtonsType}
+            onCreatedChat={onCreatedChat}
           />
         ))}
       </DialogContent>
