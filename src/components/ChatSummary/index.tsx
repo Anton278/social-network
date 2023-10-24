@@ -2,17 +2,25 @@ import { Typography, IconButton } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 import Avatar from "../Avatar";
+import { ChatParticipant } from "@/models/ChatParticipant";
 
 import * as Styled from "./ChatSummary.styled";
 
-function ChatSummary() {
+type ChatSummaryProps = {
+  id: string;
+  interlocutor?: ChatParticipant;
+};
+
+function ChatSummary(props: ChatSummaryProps) {
+  const { id, interlocutor } = props;
+
   return (
-    <Styled.Link href={"/chats/1"}>
+    <Styled.Link href={`/chats/${id}`}>
       <Styled.ChatSummary>
-        <Avatar fullName="John Doe" />
+        <Avatar fullName={interlocutor?.fullName} />
         <div>
           <Typography component="h5" sx={{ fontWeight: "bold" }}>
-            John Doe
+            {interlocutor?.fullName}
           </Typography>
           <p>Last message</p>
         </div>
