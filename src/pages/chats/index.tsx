@@ -1,8 +1,8 @@
-import { Typography, IconButton } from "@mui/material";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { Button } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 
-import Avatar from "@/components/Avatar";
 import Layout from "@/components/Layout";
+import ChatSummary from "@/components/ChatSummary";
 import { withProtected } from "@/hocs/withProtected";
 
 import * as Styled from "@/styles/Chats.styled";
@@ -10,39 +10,18 @@ import * as Styled from "@/styles/Chats.styled";
 function Chats() {
   return (
     <Layout>
+      <Styled.TopBar>
+        <Button variant="outlined" startIcon={<AddIcon />}>
+          New chat
+        </Button>
+      </Styled.TopBar>
       <Styled.ChatsList>
-        <Styled.ChatsListItem>
-          <Styled.Link href={"/chats/1"}>
-            <Styled.ChatSummary>
-              <Avatar fullName="John Doe" />
-              <div>
-                <Typography component="h5" sx={{ fontWeight: "bold" }}>
-                  John Doe
-                </Typography>
-                <p>Last message</p>
-              </div>
-            </Styled.ChatSummary>
-            <IconButton>
-              <MoreVertIcon />
-            </IconButton>
-          </Styled.Link>
-        </Styled.ChatsListItem>
-        <Styled.ChatsListItem>
-          <Styled.Link href={"/chats/1"}>
-            <Styled.ChatSummary>
-              <Avatar fullName="Oleg Liashko" />
-              <div>
-                <Typography component="h5" sx={{ fontWeight: "bold" }}>
-                  Oleg Liashko
-                </Typography>
-                <p>Last message</p>
-              </div>
-            </Styled.ChatSummary>
-            <IconButton>
-              <MoreVertIcon />
-            </IconButton>
-          </Styled.Link>
-        </Styled.ChatsListItem>
+        <li>
+          <ChatSummary />
+        </li>
+        <li>
+          <ChatSummary />
+        </li>
       </Styled.ChatsList>
     </Layout>
   );
