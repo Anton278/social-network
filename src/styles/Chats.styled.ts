@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import { blue } from "@mui/material/colors";
+import NextLink from "next/link";
 
 export const ChatsList = styled.ul({
   listStyleType: "none",
@@ -9,12 +10,15 @@ export const ChatsList = styled.ul({
   "li:not(:last-of-type)": { marginBottom: 20 },
 });
 
-export const ChatsListItem = styled.li({
-  cursor: "pointer",
-  padding: "5px 10px",
+export const ChatsListItem = styled.li({});
+
+export const Link = styled(NextLink)({
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
+  padding: "5px 10px",
+  color: "inherit",
+  textDecoration: "none",
 
   "&:hover": {
     background: blue[50],

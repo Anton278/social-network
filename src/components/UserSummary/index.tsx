@@ -16,10 +16,11 @@ interface UserSummaryProps {
   id: string;
   fullName: string;
   username: string;
+  showActionButtons?: boolean;
 }
 
 function UserSummary(props: UserSummaryProps) {
-  const { id, fullName, username } = props;
+  const { id, fullName, username, showActionButtons = true } = props;
 
   const user: Friend = {
     id,
@@ -214,47 +215,48 @@ function UserSummary(props: UserSummaryProps) {
           <Typography>{fullName}</Typography>
         </div>
       </Styled.User>
-      {isFriend ? (
-        <Button
-          variant="contained"
-          color="warning"
-          onClick={() => handleDeleteFriend(authedUser.friends)}
-          disabled={isLoading}
-        >
-          Delete friend
-        </Button>
-      ) : isSentFriendsRequest ? (
-        <Button
-          variant="outlined"
-          onClick={() =>
-            handleCancelFriendsRequest(authedUser.sentFriendsRequests)
-          }
-          disabled={isLoading}
-        >
-          Cancel friends request
-        </Button>
-      ) : isReceivedFriendsRequest ? (
-        <Button
-          variant="contained"
-          onClick={() =>
-            handleAcceptFriendsRequest(
-              authedUser.receivedFriendsRequests,
-              authedUser.friends
-            )
-          }
-          disabled={isLoading}
-        >
-          Accept friends request
-        </Button>
-      ) : (
-        <Button
-          variant="contained"
-          onClick={() => handleAddFriend(authedUser.sentFriendsRequests)}
-          disabled={isLoading}
-        >
-          Add friend
-        </Button>
-      )}
+      {showActionButtons &&
+        (isFriend ? (
+          <Button
+            variant="contained"
+            color="warning"
+            onClick={() => handleDeleteFriend(authedUser.friends)}
+            disabled={isLoading}
+          >
+            Delete friend
+          </Button>
+        ) : isSentFriendsRequest ? (
+          <Button
+            variant="outlined"
+            onClick={() =>
+              handleCancelFriendsRequest(authedUser.sentFriendsRequests)
+            }
+            disabled={isLoading}
+          >
+            Cancel friends request
+          </Button>
+        ) : isReceivedFriendsRequest ? (
+          <Button
+            variant="contained"
+            onClick={() =>
+              handleAcceptFriendsRequest(
+                authedUser.receivedFriendsRequests,
+                authedUser.friends
+              )
+            }
+            disabled={isLoading}
+          >
+            Accept friends request
+          </Button>
+        ) : (
+          <Button
+            variant="contained"
+            onClick={() => handleAddFriend(authedUser.sentFriendsRequests)}
+            disabled={isLoading}
+          >
+            Add friend
+          </Button>
+        ))}
     </Styled.Box>
   );
 }

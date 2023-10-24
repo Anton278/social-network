@@ -12,32 +12,36 @@ function Chats() {
     <Layout>
       <Styled.ChatsList>
         <Styled.ChatsListItem>
-          <Styled.ChatSummary>
-            <Avatar fullName="John Doe" />
-            <div>
-              <Typography component="h5" sx={{ fontWeight: "bold" }}>
-                John Doe
-              </Typography>
-              <p>Last message</p>
-            </div>
-          </Styled.ChatSummary>
-          <IconButton>
-            <MoreVertIcon />
-          </IconButton>
+          <Styled.Link href={"/chats/1"}>
+            <Styled.ChatSummary>
+              <Avatar fullName="John Doe" />
+              <div>
+                <Typography component="h5" sx={{ fontWeight: "bold" }}>
+                  John Doe
+                </Typography>
+                <p>Last message</p>
+              </div>
+            </Styled.ChatSummary>
+            <IconButton>
+              <MoreVertIcon />
+            </IconButton>
+          </Styled.Link>
         </Styled.ChatsListItem>
         <Styled.ChatsListItem>
-          <Styled.ChatSummary>
-            <Avatar fullName="Oleg Liashko" />
-            <div>
-              <Typography component="h5" sx={{ fontWeight: "bold" }}>
-                Oleg Liashko
-              </Typography>
-              <p>Last message</p>
-            </div>
-          </Styled.ChatSummary>
-          <IconButton>
-            <MoreVertIcon />
-          </IconButton>
+          <Styled.Link href={"/chats/1"}>
+            <Styled.ChatSummary>
+              <Avatar fullName="Oleg Liashko" />
+              <div>
+                <Typography component="h5" sx={{ fontWeight: "bold" }}>
+                  Oleg Liashko
+                </Typography>
+                <p>Last message</p>
+              </div>
+            </Styled.ChatSummary>
+            <IconButton>
+              <MoreVertIcon />
+            </IconButton>
+          </Styled.Link>
         </Styled.ChatsListItem>
       </Styled.ChatsList>
     </Layout>
