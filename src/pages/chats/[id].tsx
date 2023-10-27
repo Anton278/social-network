@@ -15,6 +15,7 @@ import { getChats } from "@/redux/slices/chats/thunks";
 import { RequestStatus } from "@/models/RequestStatus";
 import { ChatParticipant } from "@/models/ChatParticipant";
 import { selectUserId } from "@/redux/slices/user/selectors";
+import { sortMessages } from "@/utils/sortMessages";
 
 function Chat() {
   const router = useRouter();
@@ -22,15 +23,23 @@ function Chat() {
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
   const chats = useAppSelector((state) => state.chats.chats);
-  const chat = chats.find((chat) => chat.id === id);
+  const [chat, setChat] = useState<ChatModel>();
   const chatsStatus = useAppSelector((state) => state.chats.status);
   const [interlocutor, setInterlocutor] = useState<ChatParticipant>();
 
   useEffect(() => {
-    if (!chat) {
-      dispatch(getChats());
+    function getChat() {
+      const chat = chats.find((chat) => chat.id === id);
+      if (chat) {
+        const chatWithSortedMessages = sortMessages(chat);
+        setChat(chatWithSortedMessages);
+      } else {
+        dispatch(getChats());
+      }
     }
-  }, []);
+
+    getChat();
+  }, [id, chats]);
 
   useEffect(() => {
     function getInterlocutor() {
@@ -65,7 +74,7 @@ function Chat() {
               <ChatMessages messages={chat.messages} />
               <ChatBottomBar
                 id={chat.id}
-                lastMessageId={chat.messages[0]?.id}
+                lastMessageId={chat.messages[chat.messages.length - 1]?.id}
               />
             </>
           )}
