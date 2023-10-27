@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { InitialState } from "./types";
 import { RequestStatus } from "@/models/RequestStatus";
-import { createChat, deleteChat, getChats } from "./thunks";
+import { addMessage, createChat, deleteChat, getChats } from "./thunks";
 
 const initialState: InitialState = {
   status: RequestStatus.Loading,
@@ -28,6 +28,15 @@ const chatsSlice = createSlice({
 
     builder.addCase(deleteChat.fulfilled, (state, action) => {
       state.chats = state.chats.filter((chat) => chat.id !== action.payload);
+    });
+
+    builder.addCase(addMessage.fulfilled, (state, action) => {
+      const chatIndex = state.chats.findIndex(
+        (chat) => chat.id === action.payload.id
+      );
+      if (chatIndex >= 0) {
+        state.chats[chatIndex].messages.push(action.payload.message);
+      }
     });
   },
 });

@@ -3,10 +3,9 @@ import { ChatParticipant } from "./ChatParticipant";
 export interface Message {
   authorId: string;
   message: string;
-  createdAt: string;
-  lastEdited: string;
+  timeStamp: number;
   isEdited: boolean;
-  id: string;
+  id: number;
 }
 
 export interface Chat {

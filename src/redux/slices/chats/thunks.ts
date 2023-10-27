@@ -1,4 +1,6 @@
+import { Message } from "@/models/Chat";
 import { ChatParticipant } from "@/models/ChatParticipant";
+import { RootState } from "@/redux/store";
 import chatsService from "@/services/Chats";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
@@ -22,3 +24,17 @@ export const deleteChat = createAsyncThunk(
     return deletedChatId;
   }
 );
+
+type AddMessagePayload = {
+  id: string;
+  message: Message;
+};
+
+export const addMessage = createAsyncThunk<
+  AddMessagePayload,
+  AddMessagePayload,
+  { state: RootState }
+>("chats/addMessage", async ({ id, message }) => {
+  await chatsService.addMessage({ id, message });
+  return { id, message };
+});

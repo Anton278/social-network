@@ -1,12 +1,14 @@
-import { Chat } from "@/models/Chat";
+import { Chat, Message } from "@/models/Chat";
 import { ChatParticipant } from "@/models/ChatParticipant";
 import { db } from "@/pages/_app";
 import {
   addDoc,
+  arrayUnion,
   collection,
   deleteDoc,
   doc,
   getDocs,
+  updateDoc,
 } from "firebase/firestore";
 
 class ChatsService {
@@ -39,6 +41,12 @@ class ChatsService {
     const docRef = doc(db, "chats", id);
     await deleteDoc(docRef);
     return id;
+  }
+
+  async addMessage({ id, message }: { id: string; message: Message }) {
+    const docRef = doc(db, "chats", id);
+    await updateDoc(docRef, { messages: arrayUnion(message) });
+    return { id, message };
   }
 }
 

@@ -22,22 +22,15 @@ function Chat() {
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
   const chats = useAppSelector((state) => state.chats.chats);
+  const chat = chats.find((chat) => chat.id === id);
   const chatsStatus = useAppSelector((state) => state.chats.status);
-  const [chat, setChat] = useState<ChatModel>();
   const [interlocutor, setInterlocutor] = useState<ChatParticipant>();
 
   useEffect(() => {
-    function getChat() {
-      const chat = chats.find((chat) => chat.id === id);
-      if (!chat) {
-        dispatch(getChats());
-      } else {
-        setChat(chat);
-      }
+    if (!chat) {
+      dispatch(getChats());
     }
-
-    getChat();
-  }, [chatsStatus]);
+  }, []);
 
   useEffect(() => {
     function getInterlocutor() {
@@ -63,14 +56,17 @@ function Chat() {
       {chatsStatus === RequestStatus.Error ? (
         <Typography color={"error"}>Failed to load chat</Typography>
       ) : chatsStatus === RequestStatus.Loading ? (
-        <Typography color={"error"}>loading...</Typography>
+        <Typography>loading...</Typography>
       ) : (
         <Styled.PageWrapper>
           {interlocutor && <ChatTopBar interlocutor={interlocutor} />}
           {chat && (
             <>
               <ChatMessages messages={chat.messages} />
-              <ChatBottomBar />
+              <ChatBottomBar
+                id={chat.id}
+                lastMessageId={chat.messages[0]?.id}
+              />
             </>
           )}
         </Styled.PageWrapper>
