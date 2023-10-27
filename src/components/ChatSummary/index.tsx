@@ -8,24 +8,56 @@ import {
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useState } from "react";
+import { arrayRemove, doc, updateDoc } from "firebase/firestore";
 
+import { useAppDispatch } from "@/hooks/useAppDispatch";
 import Avatar from "../Avatar";
 import { ChatParticipant } from "@/models/ChatParticipant";
+import { deleteChat } from "@/redux/slices/chats/thunks";
+import { updateUser } from "@/redux/slices/user/thunks";
+import { useAppSelector } from "@/hooks/useAppSelector";
+import { db } from "@/pages/_app";
 
 import * as Styled from "./ChatSummary.styled";
 
 type ChatSummaryProps = {
   id: string;
-  interlocutor?: ChatParticipant;
+  interlocutor: ChatParticipant;
 };
 
 function ChatSummary(props: ChatSummaryProps) {
   const { id, interlocutor } = props;
 
+  const dispatch = useAppDispatch();
+  const { chats } = useAppSelector((state) => state.user);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   function handleCloseMenu() {
     setAnchorEl(null);
+  }
+
+  async function handleDeleteChat() {
+    if (isDeleting) {
+      return;
+    }
+    setIsDeleting(true);
+    try {
+      await dispatch(deleteChat(id)).unwrap();
+    } catch (e) {
+      return setIsDeleting(false);
+    }
+    try {
+      const updatedChats = chats.filter((chat) => chat !== id);
+      await dispatch(updateUser({ chats: updatedChats })).unwrap();
+      const interlocutorDocRef = doc(db, "users", interlocutor.id);
+      await updateDoc(interlocutorDocRef, {
+        chats: arrayRemove(id),
+      });
+    } catch (e) {
+    } finally {
+      setIsDeleting(false);
+    }
   }
 
   return (
@@ -49,7 +81,7 @@ function ChatSummary(props: ChatSummaryProps) {
         open={Boolean(anchorEl)}
         onClose={handleCloseMenu}
       >
-        <MenuItem>
+        <MenuItem onClick={handleDeleteChat}>
           <ListItemIcon>
             <DeleteIcon fontSize="small" />
           </ListItemIcon>

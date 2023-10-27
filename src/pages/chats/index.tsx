@@ -43,7 +43,7 @@ function Chats() {
     const userChats = chats.filter((chat) => chatIds.includes(chat.id));
     setUserChats(userChats);
     setIsLoading(false);
-  }, [userStatus, chatsStatus]);
+  }, [chatIds, chats]);
 
   if (userStatus === RequestStatus.Error) {
     return (
@@ -112,6 +112,9 @@ function Chats() {
               const interlocutor = chat.participants.find(
                 (participants) => participants.id !== userId
               );
+              if (!interlocutor) {
+                return;
+              }
               return (
                 <li key={chat.id}>
                   <ChatSummary id={chat.id} interlocutor={interlocutor} />
