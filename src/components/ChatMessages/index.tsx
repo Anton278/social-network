@@ -1,28 +1,29 @@
+import { Message } from "@/models/Chat";
 import * as Styled from "./ChatMessages.styled";
+import { useAppSelector } from "@/hooks/useAppSelector";
+import { selectUserId } from "@/redux/slices/user/selectors";
 
-function ChatMessages() {
+type ChatMessagesProps = {
+  messages: Message[];
+};
+
+function ChatMessages({ messages }: ChatMessagesProps) {
+  const userId = useAppSelector(selectUserId);
+
   return (
     <Styled.MessagesList>
-      <Styled.Message isUserMessage>Message 1</Styled.Message>
-      <Styled.Message>Message 2</Styled.Message>
-      <Styled.Message isUserMessage>Message 3</Styled.Message>
-      <Styled.Message>Message 4</Styled.Message>
-      <Styled.Message isUserMessage>Message 1</Styled.Message>
-      <Styled.Message>Message 2</Styled.Message>
-      <Styled.Message isUserMessage>Message 3</Styled.Message>
-      <Styled.Message>Message 4</Styled.Message>
-      <Styled.Message isUserMessage>Message 1</Styled.Message>
-      <Styled.Message>Message 2</Styled.Message>
-      <Styled.Message isUserMessage>Message 3</Styled.Message>
-      <Styled.Message>Message 4</Styled.Message>
-      <Styled.Message isUserMessage>Message 1</Styled.Message>
-      <Styled.Message>Message 2</Styled.Message>
-      <Styled.Message isUserMessage>Message 3</Styled.Message>
-      <Styled.Message>Message 4</Styled.Message>
-      <Styled.Message isUserMessage>Message 1</Styled.Message>
-      <Styled.Message>Message 2</Styled.Message>
-      <Styled.Message isUserMessage>Message 3</Styled.Message>
-      <Styled.Message>Message 4</Styled.Message>
+      {messages.length ? (
+        messages.map((message) => (
+          <Styled.Message
+            isUserMessage={message.authorId === userId}
+            key={message.id}
+          >
+            {message.message}
+          </Styled.Message>
+        ))
+      ) : (
+        <Styled.NoMessages>No messages yet</Styled.NoMessages>
+      )}
     </Styled.MessagesList>
   );
 }

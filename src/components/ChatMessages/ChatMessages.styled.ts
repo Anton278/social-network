@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import { green, lime } from "@mui/material/colors";
+import { Typography } from "@mui/material";
 
 export const MessagesList = styled.ol({
   listStyleType: "none",
@@ -10,6 +11,7 @@ export const MessagesList = styled.ol({
   rowGap: 20,
   overflow: "auto",
   margin: "20px 0",
+  position: "relative",
 });
 
 export const Message = styled.li<{ isUserMessage?: boolean }>(
@@ -20,3 +22,10 @@ export const Message = styled.li<{ isUserMessage?: boolean }>(
     borderRadius: 4,
   })
 );
+
+export const NoMessages = styled(Typography)({
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+});

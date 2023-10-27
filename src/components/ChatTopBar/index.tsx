@@ -6,8 +6,13 @@ import { useRouter } from "next/router";
 import UserSummary from "../UserSummary";
 
 import * as Styled from "./ChatTopBar.styled";
+import { ChatParticipant } from "@/models/ChatParticipant";
 
-function ChatTopBar() {
+type ChatTopBarProps = {
+  interlocutor: ChatParticipant;
+};
+
+function ChatTopBar({ interlocutor }: ChatTopBarProps) {
   const router = useRouter();
 
   return (
@@ -17,9 +22,9 @@ function ChatTopBar() {
           <ArrowBackIcon />
         </IconButton>
         <UserSummary
-          fullName="John Doe"
-          username="john001"
-          id="1"
+          fullName={interlocutor.fullName}
+          username={interlocutor.username}
+          id={interlocutor.id}
           showActionButtons={false}
         />
       </Styled.TopBarLeft>

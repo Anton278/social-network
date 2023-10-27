@@ -1,11 +1,12 @@
 import { ChatParticipant } from "./ChatParticipant";
 
-interface Message {
+export interface Message {
   authorId: string;
   message: string;
   createdAt: string;
   lastEdited: string;
   isEdited: boolean;
+  id: string;
 }
 
 export interface Chat {
