@@ -1,4 +1,4 @@
-import { Message } from "@/models/Chat";
+import { Message as MessageModel } from "@/models/Chat";
 import { Typography } from "@mui/material";
 import * as Styled from "./ChatMessages.styled";
 import { useAppSelector } from "@/hooks/useAppSelector";
@@ -6,14 +6,15 @@ import { selectUserId } from "@/redux/slices/user/selectors";
 import { getTime } from "@/utils/getTime";
 import { getDay } from "@/utils/getDay";
 import { Fragment } from "react";
+import Message from "../Message";
 
 type ChatMessagesProps = {
-  messages: Message[];
+  messages: MessageModel[];
 };
 
 function ChatMessages({ messages }: ChatMessagesProps) {
   const userId = useAppSelector(selectUserId);
-  const groupedMessages = messages.reduce<{ [key: string]: Message[] }>(
+  const groupedMessages = messages.reduce<{ [key: string]: MessageModel[] }>(
     (acc, message) => {
       const day = getDay(message.timeStamp * 1000);
       if (day in acc) {
@@ -44,13 +45,12 @@ function ChatMessages({ messages }: ChatMessagesProps) {
           {messages.toReversed().map((message) => {
             const sentAt = getTime(message.timeStamp * 1000);
             return (
-              <Styled.Message
+              <Message
                 isUserMessage={message.authorId === userId}
+                body={message.message}
+                sentAt={sentAt}
                 key={message.id}
-              >
-                <Typography style={{ margin: 0 }}>{message.message}</Typography>
-                <Styled.SentAt>({sentAt})</Styled.SentAt>
-              </Styled.Message>
+              />
             );
           })}
         </Fragment>
