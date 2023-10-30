@@ -43,7 +43,7 @@ function ChatMessages({ messages }: ChatMessagesProps) {
             <Typography>{day}</Typography>
           </Styled.DayDivider>
           {messages.toReversed().map((message) => {
-            const sentAt = getTime(message.timeStamp * 1000);
+            const sentAt = getTime(message.timeStamp);
             return (
               <Message
                 isUserMessage={message.authorId === userId}
