@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import { blue } from "@mui/material/colors";
+import { Typography } from "@mui/material";
 import NextLink from "next/link";
 import { IconButton } from "@mui/material";
 
@@ -31,9 +32,17 @@ export const ChatSummary = styled.div({
   display: "flex",
   alignItems: "center",
   columnGap: 15,
+  width: "100%",
 
   p: {
     marginTop: 5,
     marginBottom: 0,
   },
+});
+
+export const LastMessage = styled(Typography)({
+  width: "50%",
+  overflow: "hidden",
+  whiteSpace: "nowrap",
+  textOverflow: "ellipsis",
 });

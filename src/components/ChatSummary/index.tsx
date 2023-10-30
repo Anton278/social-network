@@ -23,10 +23,11 @@ import * as Styled from "./ChatSummary.styled";
 type ChatSummaryProps = {
   id: string;
   interlocutor: ChatParticipant;
+  lastMessage: string;
 };
 
 function ChatSummary(props: ChatSummaryProps) {
-  const { id, interlocutor } = props;
+  const { id, interlocutor, lastMessage } = props;
 
   const dispatch = useAppDispatch();
   const { chats } = useAppSelector((state) => state.user);
@@ -65,11 +66,11 @@ function ChatSummary(props: ChatSummaryProps) {
       <Styled.Link href={`/chats/${id}`}>
         <Styled.ChatSummary>
           <Avatar fullName={interlocutor?.fullName} />
-          <div>
+          <div style={{ flexGrow: "1" }}>
             <Typography component="h5" sx={{ fontWeight: "bold" }}>
               {interlocutor?.fullName}
             </Typography>
-            <p>Last message</p>
+            <Styled.LastMessage>{lastMessage}</Styled.LastMessage>
           </div>
         </Styled.ChatSummary>
       </Styled.Link>

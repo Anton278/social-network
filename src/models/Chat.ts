@@ -12,4 +12,5 @@ export interface Chat {
   participants: ChatParticipant[];
   messages: Message[];
   id: string;
+  lastMessage: string;
 }

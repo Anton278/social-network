@@ -27,7 +27,7 @@ class ChatsService {
   }
 
   async create(participants: ChatParticipant[]) {
-    const chat: Chat = { id: "", messages: [], participants };
+    const chat = { messages: [], participants, lastMessage: "" };
     const chatDocRef = await addDoc(collection(db, "chats"), chat);
 
     const createdChat: Chat = {
@@ -45,7 +45,10 @@ class ChatsService {
 
   async addMessage({ id, message }: { id: string; message: Message }) {
     const docRef = doc(db, "chats", id);
-    await updateDoc(docRef, { messages: arrayUnion(message) });
+    await updateDoc(docRef, {
+      messages: arrayUnion(message),
+      lastMessage: message.message,
+    });
     return { id, message };
   }
 }

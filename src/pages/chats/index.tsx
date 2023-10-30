@@ -117,7 +117,11 @@ function Chats() {
               }
               return (
                 <li key={chat.id}>
-                  <ChatSummary id={chat.id} interlocutor={interlocutor} />
+                  <ChatSummary
+                    id={chat.id}
+                    interlocutor={interlocutor}
+                    lastMessage={chat.lastMessage}
+                  />
                 </li>
               );
             })}
