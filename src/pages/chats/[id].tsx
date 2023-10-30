@@ -74,7 +74,7 @@ function Chat() {
               <ChatMessages messages={chat.messages} />
               <ChatBottomBar
                 id={chat.id}
-                lastMessageId={chat.messages[chat.messages.length - 1]?.id}
+                lastMessageId={chat.messages[0]?.id}
               />
             </>
           )}

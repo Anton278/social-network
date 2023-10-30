@@ -13,7 +13,7 @@ function ChatMessages({ messages }: ChatMessagesProps) {
   return (
     <Styled.MessagesList>
       {messages.length ? (
-        messages.map((message) => (
+        messages.toReversed().map((message) => (
           <Styled.Message
             isUserMessage={message.authorId === userId}
             key={message.id}

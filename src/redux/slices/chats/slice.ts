@@ -35,7 +35,7 @@ const chatsSlice = createSlice({
         (chat) => chat.id === action.payload.id
       );
       if (chatIndex >= 0) {
-        state.chats[chatIndex].messages.push(action.payload.message);
+        state.chats[chatIndex].messages.unshift(action.payload.message);
       }
     });
   },
