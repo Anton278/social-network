@@ -4,6 +4,8 @@ import * as Styled from "./ChatMessages.styled";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { selectUserId } from "@/redux/slices/user/selectors";
 import { getTime } from "@/utils/getTime";
+import { getDay } from "@/utils/getDay";
+import { Fragment } from "react";
 
 type ChatMessagesProps = {
   messages: Message[];
@@ -11,25 +13,48 @@ type ChatMessagesProps = {
 
 function ChatMessages({ messages }: ChatMessagesProps) {
   const userId = useAppSelector(selectUserId);
+  const groupedMessages = messages.reduce<{ [key: string]: Message[] }>(
+    (acc, message) => {
+      const day = getDay(message.timeStamp * 1000);
+      if (day in acc) {
+        return { ...acc, [day]: [...acc[day], message] };
+      } else {
+        return { ...acc, [day]: [message] };
+      }
+    },
+    {}
+  );
+  const groupedMessagesEntries = Object.entries(groupedMessages);
+
+  if (!groupedMessagesEntries.length) {
+    return (
+      <Styled.MessagesList>
+        <Styled.NoMessages>No messages yet</Styled.NoMessages>
+      </Styled.MessagesList>
+    );
+  }
 
   return (
     <Styled.MessagesList>
-      {messages.length ? (
-        messages.toReversed().map((message) => {
-          const sentAt = getTime(message.timeStamp);
-          return (
-            <Styled.Message
-              isUserMessage={message.authorId === userId}
-              key={message.id}
-            >
-              <Typography style={{ margin: 0 }}>{message.message}</Typography>
-              <Styled.SentAt>({sentAt})</Styled.SentAt>
-            </Styled.Message>
-          );
-        })
-      ) : (
-        <Styled.NoMessages>No messages yet</Styled.NoMessages>
-      )}
+      {groupedMessagesEntries.map(([day, messages]) => (
+        <Fragment key={day}>
+          <Styled.DayDivider>
+            <Typography>{day}</Typography>
+          </Styled.DayDivider>
+          {messages.toReversed().map((message) => {
+            const sentAt = getTime(message.timeStamp * 1000);
+            return (
+              <Styled.Message
+                isUserMessage={message.authorId === userId}
+                key={message.id}
+              >
+                <Typography style={{ margin: 0 }}>{message.message}</Typography>
+                <Styled.SentAt>({sentAt})</Styled.SentAt>
+              </Styled.Message>
+            );
+          })}
+        </Fragment>
+      ))}
     </Styled.MessagesList>
   );
 }

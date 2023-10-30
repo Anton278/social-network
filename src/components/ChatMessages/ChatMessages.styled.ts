@@ -35,3 +35,5 @@ export const NoMessages = styled(Typography)({
   left: "50%",
   transform: "translate(-50%, -50%)",
 });
+
+export const DayDivider = styled.li({ alignSelf: "center", margin: "5px 0" });
