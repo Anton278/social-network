@@ -1,6 +1,7 @@
 import { Avatar, Typography, Button } from "@mui/material";
 import { useState } from "react";
 import { arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
+import { useRouter } from "next/router";
 
 import { stringToColor } from "@/utils/stringToColor";
 import { useAppSelector } from "@/hooks/useAppSelector";
@@ -21,6 +22,7 @@ interface UserSummaryProps {
   showActionButtons?: boolean;
   actionButtonsType?: "friends" | "create-chat";
   onCreatedChat?: () => void;
+  authedUserChats?: Chat[];
 }
 
 function UserSummary(props: UserSummaryProps) {
@@ -31,6 +33,7 @@ function UserSummary(props: UserSummaryProps) {
     showActionButtons = true,
     actionButtonsType = "friends",
     onCreatedChat = () => {},
+    authedUserChats = [],
   } = props;
 
   const user: Friend = {
@@ -39,6 +42,7 @@ function UserSummary(props: UserSummaryProps) {
     username,
   };
 
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const authedUser = useAppSelector((state) => state.user);
   const [isLoading, setIsLoading] = useState(false);
@@ -200,8 +204,16 @@ function UserSummary(props: UserSummaryProps) {
     }
   }
 
-  async function handleCreateChat(authedUserChats: string[]) {
+  async function handleCreateChat(authedUserChatIds: string[]) {
     setIsLoading(true);
+    const chatWithUser = authedUserChats.find(
+      (chat) =>
+        chat.participants[0].id === user.id ||
+        chat.participants[1].id === user.id
+    );
+    if (chatWithUser) {
+      return router.push(`/chats/${chatWithUser.id}`);
+    }
     let createdChat: Chat | undefined;
     const userDocRef = doc(db, "users", user.id);
     try {
@@ -216,7 +228,7 @@ function UserSummary(props: UserSummaryProps) {
         ])
       ).unwrap();
       await dispatch(
-        updateUser({ chats: [...authedUserChats, createdChat.id] })
+        updateUser({ chats: [...authedUserChatIds, createdChat.id] })
       ).unwrap();
       await updateDoc(userDocRef, { chats: arrayUnion(createdChat.id) });
       onCreatedChat();
@@ -225,7 +237,7 @@ function UserSummary(props: UserSummaryProps) {
         return setIsLoading(false);
       }
       await dispatch(deleteChat(createdChat.id));
-      await dispatch(updateUser({ chats: authedUserChats }));
+      await dispatch(updateUser({ chats: authedUserChatIds }));
     } finally {
       setIsLoading(false);
     }
