@@ -11,11 +11,11 @@ import { useRouter } from "next/router";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { Chat as ChatModel } from "@/models/Chat";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
-import { getChats } from "@/redux/slices/chats/thunks";
-import { RequestStatus } from "@/models/RequestStatus";
 import { ChatParticipant } from "@/models/ChatParticipant";
 import { selectUserId } from "@/redux/slices/user/selectors";
-import { sortMessages } from "@/utils/sortMessages";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "../_app";
+import { setChat } from "@/redux/slices/chats/slice";
 
 function Chat() {
   const router = useRouter();
@@ -23,23 +23,9 @@ function Chat() {
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
   const chats = useAppSelector((state) => state.chats.chats);
-  const [chat, setChat] = useState<ChatModel>();
-  const chatsStatus = useAppSelector((state) => state.chats.status);
+  const chat = chats.find((chat) => chat.id === id);
   const [interlocutor, setInterlocutor] = useState<ChatParticipant>();
-
-  useEffect(() => {
-    function getChat() {
-      const chat = chats.find((chat) => chat.id === id);
-      if (chat) {
-        const chatWithSortedMessages = sortMessages(chat);
-        setChat(chatWithSortedMessages);
-      } else {
-        dispatch(getChats());
-      }
-    }
-
-    getChat();
-  }, [id, chats]);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     function getInterlocutor() {
@@ -57,14 +43,38 @@ function Chat() {
     getInterlocutor();
   }, [chat]);
 
+  useEffect(() => {
+    if (typeof id !== "string") {
+      return;
+    }
+    const unsub = onSnapshot(
+      doc(db, "chats", id),
+      (doc) => {
+        if (doc.metadata.hasPendingWrites) {
+          return;
+        }
+        const chatSnap = { ...doc.data(), id: doc.id } as ChatModel;
+        chatSnap.messages.sort((a, b) => b.timeStamp - a.timeStamp);
+        dispatch(setChat(chatSnap));
+      },
+      (error) => {
+        setError("Failed to get chat");
+      }
+    );
+
+    return () => {
+      unsub();
+    };
+  }, []);
+
   return (
     <Layout
       layoutWrapperStyles={{ height: "100vh" }}
       mainNodeStyles={{ overflowY: "auto" }}
     >
-      {chatsStatus === RequestStatus.Error ? (
-        <Typography color={"error"}>Failed to load chat</Typography>
-      ) : chatsStatus === RequestStatus.Loading ? (
+      {error ? (
+        <Typography color="error">{error}</Typography>
+      ) : !chat ? (
         <Typography>loading...</Typography>
       ) : (
         <Styled.PageWrapper>
