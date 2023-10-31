@@ -14,8 +14,8 @@ function Friends() {
   const [activeBottomTab, setActiveBottomTab] = useState(0);
 
   const requestsTotal = useMemo(
-    () => user.receivedFriendsRequests.length + user.sentFriendsRequests.length,
-    [user.receivedFriendsRequests, user.sentFriendsRequests]
+    () => user.receivedFriendsRequests.length,
+    [user.receivedFriendsRequests]
   );
 
   return (
@@ -48,19 +48,7 @@ function Friends() {
             variant="fullWidth"
             sx={{ marginTop: "20px" }}
           >
-            <Tab
-              label={
-                <Styled.TabLabel>
-                  Sent{" "}
-                  <Badge
-                    max={100}
-                    color="secondary"
-                    badgeContent={user.sentFriendsRequests.length}
-                    sx={{ marginLeft: "15px" }}
-                  />
-                </Styled.TabLabel>
-              }
-            />
+            <Tab label={<Styled.TabLabel>Sent</Styled.TabLabel>} />
             <Tab
               label={
                 <Styled.TabLabel>
@@ -108,7 +96,7 @@ function Friends() {
                 ))
               ) : (
                 <Typography>
-                  You didn't send any friends requests.{" "}
+                  You didn&apos;t send any friends requests.{" "}
                   <Link href="/profiles">Find friend here</Link>
                 </Typography>
               )
