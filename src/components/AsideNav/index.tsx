@@ -18,6 +18,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import Link from "next/link";
 import { useMemo, memo } from "react";
 import { useAppSelector } from "@/hooks/useAppSelector";
+import * as Styled from "./AsideNav.styled";
 
 function AsideNav() {
   const router = useRouter();
@@ -30,7 +31,7 @@ function AsideNav() {
   );
 
   return (
-    <aside style={{ maxWidth: "320px", width: "100%" }}>
+    <Styled.Aside>
       <List>
         <ListItemButton
           component={Link}
@@ -102,7 +103,7 @@ function AsideNav() {
           <ListItemText primary="Settings" />
         </ListItemButton>
       </List>
-    </aside>
+    </Styled.Aside>
   );
 }
 

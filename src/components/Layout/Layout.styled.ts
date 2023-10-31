@@ -9,6 +9,7 @@ export const LayoutWrapper = styled.div({
 
 export const Main = styled(Container)({
   marginTop: "84px",
+  marginBottom: 20,
   display: "flex",
   columnGap: "30px",
   flexGrow: 1,

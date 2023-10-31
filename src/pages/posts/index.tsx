@@ -121,40 +121,38 @@ function Posts() {
 
   return (
     <Layout>
-      <>
-        <AddPost />
-        <div>
-          <Styled.PostsContainer>
-            {userAndFriendsPosts.map((post) => (
-              <Post
-                key={post.id}
-                author={post.author}
-                text={post.body}
-                date={post.timeStamp.seconds}
-                comments={post.comments}
-                isPrivate={post.isPrivate}
-                postId={post.id}
-                isEdited={post.isEdited}
-              />
-            ))}
-          </Styled.PostsContainer>
-          <FriendsPostsOver />
-          <Styled.PostsContainer>
-            {otherUsersPosts.map((post) => (
-              <Post
-                key={post.id}
-                author={post.author}
-                text={post.body}
-                date={post.timeStamp.seconds}
-                comments={post.comments}
-                isPrivate={post.isPrivate}
-                postId={post.id}
-                isEdited={post.isEdited}
-              />
-            ))}
-          </Styled.PostsContainer>
-        </div>
-      </>
+      <AddPost />
+      <Styled.Posts>
+        <Styled.PostsContainer>
+          {userAndFriendsPosts.map((post) => (
+            <Post
+              key={post.id}
+              author={post.author}
+              text={post.body}
+              date={post.timeStamp.seconds}
+              comments={post.comments}
+              isPrivate={post.isPrivate}
+              postId={post.id}
+              isEdited={post.isEdited}
+            />
+          ))}
+        </Styled.PostsContainer>
+        <FriendsPostsOver />
+        <Styled.PostsContainer>
+          {otherUsersPosts.map((post) => (
+            <Post
+              key={post.id}
+              author={post.author}
+              text={post.body}
+              date={post.timeStamp.seconds}
+              comments={post.comments}
+              isPrivate={post.isPrivate}
+              postId={post.id}
+              isEdited={post.isEdited}
+            />
+          ))}
+        </Styled.PostsContainer>
+      </Styled.Posts>
     </Layout>
   );
 }

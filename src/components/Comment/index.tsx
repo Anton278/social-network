@@ -11,6 +11,7 @@ import { selectUserId } from "@/redux/slices/user/selectors";
 import * as Styled from "./Comment.styled";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { deleteComment } from "@/redux/slices/posts/thunks";
+import { useWindowDimensions } from "@/hooks/useWindowDimensions";
 
 type CommentProps = {
   author: {
@@ -33,6 +34,7 @@ function Comment(props: CommentProps) {
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
+  const { width, isMobile } = useWindowDimensions();
 
   function stringAvatar(name: string) {
     return {
@@ -57,12 +59,16 @@ function Comment(props: CommentProps) {
           <Avatar {...stringAvatar(author.fullName)} />
           <h5>{author.username}</h5>
         </Styled.Author>
-        <span>·</span>
-        <span>{timeFromNow}</span>
-        {isEdited && (
+        {!isMobile && (
           <>
             <span>·</span>
-            <Styled.Marker>(Edited)</Styled.Marker>
+            <span>{timeFromNow}</span>
+            {isEdited && (
+              <>
+                <span>·</span>
+                <Styled.Marker>(Edited)</Styled.Marker>
+              </>
+            )}
           </>
         )}
         {author.id === userId && (
@@ -80,6 +86,17 @@ function Comment(props: CommentProps) {
         )}
       </Styled.TopLine>
       <p>{comment}</p>
+      {isMobile && (
+        <Styled.TimeAndEdited>
+          <span>{timeFromNow}</span>
+          {isEdited && (
+            <>
+              <span>·</span>
+              <Styled.Marker>Edited</Styled.Marker>
+            </>
+          )}
+        </Styled.TimeAndEdited>
+      )}
     </div>
   );
 }
