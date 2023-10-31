@@ -32,7 +32,6 @@ export function getNavItems(
         label: "Friends",
         badgeValue: friendsBadgeValue,
       },
-      { href: "/profiles", icon: <GroupsIcon />, label: "Users" },
     ],
     [{ href: "/settings", icon: <SettingsIcon />, label: "Settings" }],
   ];
