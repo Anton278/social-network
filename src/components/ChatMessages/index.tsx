@@ -14,20 +14,20 @@ type ChatMessagesProps = {
 
 function ChatMessages({ messages }: ChatMessagesProps) {
   const userId = useAppSelector(selectUserId);
-  const groupedMessages = messages.reduce<{ [key: string]: MessageModel[] }>(
-    (acc, message) => {
-      const day = getDay(message.timeStamp * 1000);
-      if (day in acc) {
-        return { ...acc, [day]: [...acc[day], message] };
-      } else {
-        return { ...acc, [day]: [message] };
-      }
-    },
-    {}
-  );
-  const groupedMessagesEntries = Object.entries(groupedMessages);
 
-  if (!groupedMessagesEntries.length) {
+  const groupedMessages = messages.reduce((acc, message) => {
+    const day = getDay(message.timeStamp * 1000);
+    const groupIndex = acc.findIndex((group) => group[0] === day);
+    if (groupIndex >= 0) {
+      acc[groupIndex][1].push(message);
+      return acc;
+    } else {
+      acc.unshift([day, [message]]);
+      return acc;
+    }
+  }, [] as [day: string, messages: MessageModel[]][]);
+
+  if (!groupedMessages.length) {
     return (
       <Styled.MessagesList>
         <Styled.NoMessages>No messages yet</Styled.NoMessages>
@@ -37,7 +37,7 @@ function ChatMessages({ messages }: ChatMessagesProps) {
 
   return (
     <Styled.MessagesList>
-      {groupedMessagesEntries.map(([day, messages]) => (
+      {groupedMessages.map(([day, messages]) => (
         <Fragment key={day}>
           <Styled.DayDivider>
             <Typography>{day}</Typography>
