@@ -42,17 +42,20 @@ function ChatMessages({ messages }: ChatMessagesProps) {
           <Styled.DayDivider>
             <Typography>{day}</Typography>
           </Styled.DayDivider>
-          {messages.toReversed().map((message) => {
-            const sentAt = getTime(message.timeStamp);
-            return (
-              <Message
-                isUserMessage={message.authorId === userId}
-                body={message.message}
-                sentAt={sentAt}
-                key={message.id}
-              />
-            );
-          })}
+          {messages
+            .slice()
+            .reverse()
+            .map((message) => {
+              const sentAt = getTime(message.timeStamp);
+              return (
+                <Message
+                  isUserMessage={message.authorId === userId}
+                  body={message.message}
+                  sentAt={sentAt}
+                  key={message.id}
+                />
+              );
+            })}
         </Fragment>
       ))}
     </Styled.MessagesList>
