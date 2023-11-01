@@ -5,6 +5,7 @@ export const Box = styled.div({
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
+  columnGap: 20,
 });
 
 export const User = styled(Link)({
