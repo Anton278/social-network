@@ -15,6 +15,7 @@ const initState = {
   friends: [],
   sentFriendsRequests: [],
   receivedFriendsRequests: [],
+  chats: [],
 };
 const user: User = {
   email: "johndoe@gmail.com",
@@ -24,6 +25,7 @@ const user: User = {
   friends: [],
   sentFriendsRequests: [],
   receivedFriendsRequests: [],
+  chats: [],
 };
 
 describe("user slice", () => {
