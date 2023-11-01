@@ -13,4 +13,5 @@ export interface Chat {
   messages: Message[];
   id: string;
   lastMessage: string;
+  createdAt: string;
 }

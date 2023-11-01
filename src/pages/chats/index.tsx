@@ -7,7 +7,6 @@ import ChatSummary from "@/components/ChatSummary";
 import { withProtected } from "@/hocs/withProtected";
 import FriendsDialog from "@/components/FriendsDialog";
 import { useAppSelector } from "@/hooks/useAppSelector";
-import { Chat } from "@/models/Chat";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getChats } from "@/redux/slices/chats/thunks";
 import { RequestStatus } from "@/models/RequestStatus";

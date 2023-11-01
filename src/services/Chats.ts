@@ -27,7 +27,12 @@ class ChatsService {
   }
 
   async create(participants: ChatParticipant[]) {
-    const chat = { messages: [], participants, lastMessage: "" };
+    const chat = {
+      messages: [],
+      participants,
+      lastMessage: "",
+      createdAt: new Date().toISOString(),
+    };
     const chatDocRef = await addDoc(collection(db, "chats"), chat);
 
     const createdChat: Chat = {

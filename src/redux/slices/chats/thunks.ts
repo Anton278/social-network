@@ -12,6 +12,9 @@ export const getChats = createAsyncThunk<Chat[], void, { state: RootState }>(
     const userChats = chats.filter((chat) =>
       state.user.chats.includes(chat.id)
     );
+    userChats.sort((a, b) =>
+      a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : 0
+    );
     return userChats;
   }
 );
