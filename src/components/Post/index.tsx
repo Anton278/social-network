@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Avatar, Button, IconButton } from "@mui/material";
 import { useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { grey } from "@mui/material/colors";
 
 import { stringToColor } from "@/utils/stringToColor";
 import CommentsDialog from "../CommentsDialog";
@@ -16,6 +17,7 @@ import MoreMenu from "../MoreMenu";
 import ConfirmDelete from "../ConfirmDelete";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { deletePost } from "@/redux/slices/posts/thunks";
+import { useWindowDimensions } from "@/hooks/useWindowDimensions";
 
 interface PostProps {
   author: { username: string; fullName: string; id: string };
@@ -37,6 +39,7 @@ function Post(props: PostProps) {
   const [showFullText, setShowFullText] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showConfirmDel, setShowConfirmDel] = useState(false);
+  const { isMobile } = useWindowDimensions();
 
   function stringAvatar(name: string) {
     return {
@@ -74,18 +77,22 @@ function Post(props: PostProps) {
             <Avatar {...stringAvatar(author.fullName)} />
             <h5>{author.username}</h5>
           </Link>
-          <span>·</span>
-          <span>{postDateFromNow}</span>
-          {isPrivate && (
+          {!isMobile && (
             <>
               <span>·</span>
-              <Styled.Marker>(Private)</Styled.Marker>
-            </>
-          )}
-          {isEdited && (
-            <>
-              <span>·</span>
-              <Styled.Marker>(Edited)</Styled.Marker>
+              <span>{postDateFromNow}</span>
+              {isPrivate && (
+                <>
+                  <span>·</span>
+                  <Styled.Marker>(Private)</Styled.Marker>
+                </>
+              )}
+              {isEdited && (
+                <>
+                  <span>·</span>
+                  <Styled.Marker>(Edited)</Styled.Marker>
+                </>
+              )}
             </>
           )}
           {author.id === userId && (
@@ -131,6 +138,30 @@ function Post(props: PostProps) {
           >
             Show less
           </Styled.ToggleFullTxtBtn>
+        )}
+        {isMobile && (
+          <p
+            style={{
+              display: "flex",
+              alignItems: "center",
+              color: grey[700],
+              columnGap: 6,
+            }}
+          >
+            <span>{postDateFromNow}</span>
+            {isPrivate && (
+              <>
+                <span>·</span>
+                <Styled.Marker>(Private)</Styled.Marker>
+              </>
+            )}
+            {isEdited && (
+              <>
+                <span>·</span>
+                <Styled.Marker>(Edited)</Styled.Marker>
+              </>
+            )}
+          </p>
         )}
         <Styled.CommentsBtnWrapper>
           <Button variant="outlined" onClick={() => setShowDialog(true)}>

@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Button, IconButton } from "@mui/material";
 import { useRouter } from "next/router";
 import CloseIcon from "@mui/icons-material/Close";
 import { useContext, useState, memo, useMemo } from "react";
@@ -12,6 +12,7 @@ import { deleteFriend } from "@/utils/profileActionsBar/deleteFriend";
 import { acceptFriendsRequest } from "@/utils/profileActionsBar/acceptFriendsRequest";
 import { cancelFriendsRequest } from "@/utils/profileActionsBar/cancelFriendsRequest";
 import { sendFriendsRequest } from "@/utils/profileActionsBar/sendFriendsRequest";
+import { useWindowDimensions } from "@/hooks/useWindowDimensions";
 
 import * as Styled from "./ProfileActionsBar.styled";
 
@@ -23,6 +24,7 @@ function ProfileActionsBar({}: Props) {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.user);
   const { profile, setProfile } = useContext(ProfileContext);
+  const { isMobile } = useWindowDimensions();
   const [isLoading, setIsLoading] = useState(false);
 
   const isFriend = useMemo(
@@ -126,7 +128,7 @@ function ProfileActionsBar({}: Props) {
           onClick={handleCancelFriendReq}
           disabled={isLoading}
         >
-          Cancel friend request
+          Cancel friends request
         </Button>
       ) : (
         <Button
@@ -138,9 +140,15 @@ function ProfileActionsBar({}: Props) {
           Add friend
         </Button>
       )}
-      <Button variant="outlined" startIcon={<MessageIcon />}>
-        Message
-      </Button>
+      {isMobile ? (
+        <IconButton color="primary" size="large">
+          <MessageIcon />
+        </IconButton>
+      ) : (
+        <Button variant="outlined" startIcon={<MessageIcon />}>
+          Message
+        </Button>
+      )}
     </Styled.ActionsBar>
   );
 }

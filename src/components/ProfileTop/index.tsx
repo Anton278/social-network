@@ -8,6 +8,7 @@ import { selectUserId } from "@/redux/slices/user/selectors";
 import ProfileActionsBar from "../ProfileActionsBar";
 import { ProfileContext } from "@/pages/profiles/[id]";
 import FriendsDialog from "../FriendsDialog";
+import { useWindowDimensions } from "@/hooks/useWindowDimensions";
 
 import * as Styled from "./ProfileTop.styled";
 
@@ -21,12 +22,13 @@ function ProfileTop({ postsCount }: ProfileTopProps) {
   const { profile } = useContext(ProfileContext);
   const userId = useAppSelector(selectUserId);
   const [showFriends, setShowFriends] = useState(false);
+  const { isMobile } = useWindowDimensions();
 
   return (
     <>
       <section>
         <Styled.TopBar>
-          <Avatar sizes={100} fullName={profile?.fullName} />
+          <Avatar sizes={isMobile ? 80 : 100} fullName={profile?.fullName} />
           <Styled.Counts>
             <Styled.PostsCount>
               <Typography sx={{ fontWeight: "bold", marginBottom: "5px" }}>
