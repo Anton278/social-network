@@ -19,49 +19,22 @@ function Chats() {
   const dispatch = useAppDispatch();
 
   const [showFriends, setShowFriends] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
   const userStatus = useAppSelector((state) => state.user.status);
   const userId = useAppSelector(selectUserId);
-  const chatIds = useAppSelector((state) => state.user.chats);
   const friends = useAppSelector((state) => state.user.friends);
-  const [userChats, setUserChats] = useState<Chat[]>([]);
   const chats = useAppSelector((state) => state.chats.chats);
   const chatsStatus = useAppSelector((state) => state.chats.status);
 
   useEffect(() => {
-    dispatch(getChats());
-  }, []);
-
-  useEffect(() => {
-    if (
-      userStatus !== RequestStatus.IDLE ||
-      chatsStatus !== RequestStatus.IDLE
-    ) {
-      return;
+    if (userStatus === RequestStatus.IDLE) {
+      dispatch(getChats());
     }
-    const userChats = chats.filter((chat) => chatIds.includes(chat.id));
-    setUserChats(userChats);
-    setIsLoading(false);
-  }, [chatIds, chats]);
+  }, [userStatus]);
 
-  if (userStatus === RequestStatus.Error) {
-    return (
-      <Layout>
-        <Styled.TopBar>
-          <Button
-            variant="outlined"
-            startIcon={<AddIcon />}
-            onClick={() => setShowFriends(true)}
-          >
-            New chat
-          </Button>
-        </Styled.TopBar>
-        <Typography color={"error"}>Failed to load user</Typography>
-      </Layout>
-    );
-  }
-  if (chatsStatus === RequestStatus.Error) {
+  if (
+    userStatus === RequestStatus.Error ||
+    chatsStatus === RequestStatus.Error
+  ) {
     return (
       <Layout>
         <Styled.TopBar>
@@ -77,7 +50,10 @@ function Chats() {
       </Layout>
     );
   }
-  if (isLoading) {
+  if (
+    chatsStatus === RequestStatus.Loading ||
+    userStatus === RequestStatus.Loading
+  ) {
     return (
       <Layout>
         <Styled.TopBar>
@@ -106,9 +82,9 @@ function Chats() {
             New chat
           </Button>
         </Styled.TopBar>
-        {userChats.length ? (
+        {chats.length ? (
           <Styled.ChatsList>
-            {userChats.map((chat) => {
+            {chats.map((chat) => {
               const interlocutor = chat.participants.find(
                 (participants) => participants.id !== userId
               );

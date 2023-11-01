@@ -10,8 +10,8 @@ import { updateUser } from "@/redux/slices/user/thunks";
 import { Friend } from "@/models/Friend";
 import { db } from "@/pages/_app";
 import { User } from "@/models/User";
-import { createChat, deleteChat } from "@/redux/slices/chats/thunks";
 import { Chat } from "@/models/Chat";
+import { createChat } from "@/utils/createChat";
 
 import * as Styled from "./UserSummary.styled";
 
@@ -204,40 +204,11 @@ function UserSummary(props: UserSummaryProps) {
     }
   }
 
-  async function handleCreateChat(authedUserChatIds: string[]) {
-    setIsLoading(true);
-    const chatWithUser = authedUserChats.find(
-      (chat) =>
-        chat.participants[0].id === user.id ||
-        chat.participants[1].id === user.id
-    );
-    if (chatWithUser) {
-      return router.push(`/chats/${chatWithUser.id}`);
-    }
-    let createdChat: Chat | undefined;
-    const userDocRef = doc(db, "users", user.id);
+  async function handleCreateChat() {
     try {
-      createdChat = await dispatch(
-        createChat([
-          user,
-          {
-            fullName: authedUser.fullName,
-            username: authedUser.username,
-            id: authedUser.id,
-          },
-        ])
-      ).unwrap();
-      await dispatch(
-        updateUser({ chats: [...authedUserChatIds, createdChat.id] })
-      ).unwrap();
-      await updateDoc(userDocRef, { chats: arrayUnion(createdChat.id) });
-      onCreatedChat();
-    } catch (e) {
-      if (!createdChat?.id) {
-        return setIsLoading(false);
-      }
-      await dispatch(deleteChat(createdChat.id));
-      await dispatch(updateUser({ chats: authedUserChatIds }));
+      setIsLoading(true);
+      await createChat(authedUser, user, authedUserChats, router, dispatch);
+    } catch (err) {
     } finally {
       setIsLoading(false);
     }
@@ -315,7 +286,7 @@ function UserSummary(props: UserSummaryProps) {
         ) : (
           <Button
             variant="contained"
-            onClick={() => handleCreateChat(authedUser.chats)}
+            onClick={handleCreateChat}
             disabled={isLoading}
           >
             Create chat

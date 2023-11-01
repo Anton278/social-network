@@ -1,13 +1,20 @@
-import { Message } from "@/models/Chat";
+import { Chat, Message } from "@/models/Chat";
 import { ChatParticipant } from "@/models/ChatParticipant";
 import { RootState } from "@/redux/store";
 import chatsService from "@/services/Chats";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-export const getChats = createAsyncThunk("chats/getChats", async () => {
-  const chats = await chatsService.getAll();
-  return chats;
-});
+export const getChats = createAsyncThunk<Chat[], void, { state: RootState }>(
+  "chats/getChats",
+  async (_, { getState }) => {
+    const state = getState();
+    const chats = await chatsService.getAll();
+    const userChats = chats.filter((chat) =>
+      state.user.chats.includes(chat.id)
+    );
+    return userChats;
+  }
+);
 
 export const createChat = createAsyncThunk(
   "chats/createChat",

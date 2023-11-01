@@ -1,7 +1,7 @@
 import { Button, IconButton } from "@mui/material";
 import { useRouter } from "next/router";
 import CloseIcon from "@mui/icons-material/Close";
-import { useContext, useState, memo, useMemo } from "react";
+import { useContext, useState, memo, useMemo, useEffect } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import MessageIcon from "@mui/icons-material/Message";
 
@@ -13,6 +13,9 @@ import { acceptFriendsRequest } from "@/utils/profileActionsBar/acceptFriendsReq
 import { cancelFriendsRequest } from "@/utils/profileActionsBar/cancelFriendsRequest";
 import { sendFriendsRequest } from "@/utils/profileActionsBar/sendFriendsRequest";
 import { useWindowDimensions } from "@/hooks/useWindowDimensions";
+import { createChat } from "@/utils/createChat";
+import { getChats } from "@/redux/slices/chats/thunks";
+import { RequestStatus } from "@/models/RequestStatus";
 
 import * as Styled from "./ProfileActionsBar.styled";
 
@@ -26,6 +29,9 @@ function ProfileActionsBar({}: Props) {
   const { profile, setProfile } = useContext(ProfileContext);
   const { isMobile } = useWindowDimensions();
   const [isLoading, setIsLoading] = useState(false);
+  const [isCreatingChat, setIsCreatingChat] = useState(false);
+  const chats = useAppSelector((state) => state.chats.chats);
+  const chatsStatus = useAppSelector((state) => state.chats.status);
 
   const isFriend = useMemo(
     () => Boolean(user.friends.find((friend) => friend.id === profileId)),
@@ -102,6 +108,33 @@ function ProfileActionsBar({}: Props) {
     }
   }
 
+  async function handleCreateChat() {
+    if (!profile) {
+      return;
+    }
+    try {
+      setIsCreatingChat(true);
+      await createChat(
+        user,
+        {
+          fullName: profile.fullName,
+          id: profile.id,
+          username: profile.username,
+        },
+        chats,
+        router,
+        dispatch
+      );
+    } catch (e) {
+    } finally {
+      setIsCreatingChat(false);
+    }
+  }
+
+  useEffect(() => {
+    dispatch(getChats());
+  }, []);
+
   return (
     <Styled.ActionsBar>
       {isFriend ? (
@@ -141,11 +174,21 @@ function ProfileActionsBar({}: Props) {
         </Button>
       )}
       {isMobile ? (
-        <IconButton color="primary" size="large">
+        <IconButton
+          color="primary"
+          size="large"
+          onClick={handleCreateChat}
+          disabled={isCreatingChat || chatsStatus !== RequestStatus.IDLE}
+        >
           <MessageIcon />
         </IconButton>
       ) : (
-        <Button variant="outlined" startIcon={<MessageIcon />}>
+        <Button
+          variant="outlined"
+          startIcon={<MessageIcon />}
+          disabled={isCreatingChat || chatsStatus !== RequestStatus.IDLE}
+          onClick={handleCreateChat}
+        >
           Message
         </Button>
       )}
