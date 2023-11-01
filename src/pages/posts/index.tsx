@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { Typography } from "@mui/material";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
+import Head from "next/head";
 
 import { withProtected } from "@/hocs/withProtected";
 import Layout from "@/components/Layout";
@@ -120,40 +121,45 @@ function Posts() {
   }
 
   return (
-    <Layout>
-      <AddPost />
-      <Styled.Posts>
-        <Styled.PostsContainer>
-          {userAndFriendsPosts.map((post) => (
-            <Post
-              key={post.id}
-              author={post.author}
-              text={post.body}
-              date={post.timeStamp.seconds}
-              comments={post.comments}
-              isPrivate={post.isPrivate}
-              postId={post.id}
-              isEdited={post.isEdited}
-            />
-          ))}
-        </Styled.PostsContainer>
-        <FriendsPostsOver />
-        <Styled.PostsContainer>
-          {otherUsersPosts.map((post) => (
-            <Post
-              key={post.id}
-              author={post.author}
-              text={post.body}
-              date={post.timeStamp.seconds}
-              comments={post.comments}
-              isPrivate={post.isPrivate}
-              postId={post.id}
-              isEdited={post.isEdited}
-            />
-          ))}
-        </Styled.PostsContainer>
-      </Styled.Posts>
-    </Layout>
+    <>
+      <Head>
+        <title>Posts</title>
+      </Head>
+      <Layout>
+        <AddPost />
+        <Styled.Posts>
+          <Styled.PostsContainer>
+            {userAndFriendsPosts.map((post) => (
+              <Post
+                key={post.id}
+                author={post.author}
+                text={post.body}
+                date={post.timeStamp.seconds}
+                comments={post.comments}
+                isPrivate={post.isPrivate}
+                postId={post.id}
+                isEdited={post.isEdited}
+              />
+            ))}
+          </Styled.PostsContainer>
+          <FriendsPostsOver />
+          <Styled.PostsContainer>
+            {otherUsersPosts.map((post) => (
+              <Post
+                key={post.id}
+                author={post.author}
+                text={post.body}
+                date={post.timeStamp.seconds}
+                comments={post.comments}
+                isPrivate={post.isPrivate}
+                postId={post.id}
+                isEdited={post.isEdited}
+              />
+            ))}
+          </Styled.PostsContainer>
+        </Styled.Posts>
+      </Layout>
+    </>
   );
 }
 
