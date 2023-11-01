@@ -3,17 +3,21 @@ import { Avatar as MUIAvatar } from "@mui/material";
 
 type AvatarProps = {
   fullName?: string;
+  sizes?: number;
 };
 
-function Avatar({ fullName = "" }: AvatarProps) {
+function Avatar({ fullName = "", sizes = 40 }: AvatarProps) {
   return (
     <MUIAvatar
       sx={{
         bgcolor: stringToColor(fullName),
+        width: sizes,
+        height: sizes,
       }}
     >
-      {fullName.split(" ")[0][0]}
-      {fullName.split(" ")[1][0]}
+      {fullName
+        ? `${fullName.split(" ")[0][0]}${fullName.split(" ")[1][0]}`
+        : null}
     </MUIAvatar>
   );
 }
