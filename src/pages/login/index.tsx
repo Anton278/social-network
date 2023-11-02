@@ -43,25 +43,41 @@ function Login() {
     const { emailOrUsername, password } = values;
 
     const isEmail = emailRegEx.test(emailOrUsername);
-    try {
-      if (isEmail) {
+    const clientErrors = [
+      "auth/invalid-email",
+      "auth/user-disabled",
+      "auth/user-not-found",
+      "auth/wrong-password",
+    ];
+    if (isEmail) {
+      try {
         await authService.login(emailOrUsername, password);
-      } else {
-        const users = await usersService.getAll();
-
-        const user = users.find((user) => user.username === emailOrUsername);
-        if (!user) {
-          return setError("Wrong username or password");
-        }
-
-        await authService.login(user.email, password);
+      } catch (err: any) {
+        setError(
+          clientErrors.includes(err.code)
+            ? "Wrong email or password"
+            : "Failed to login"
+        );
+      } finally {
+        setIsSubmitting(false);
+        return;
       }
-    } catch (e: any) {
-      if (["auth/user-not-found", "auth/wrong-password"].includes(e.code)) {
-        setError("Wrong email or password");
-      } else {
-        setError("Failed to login");
+    }
+    try {
+      const users = await usersService.getAll();
+
+      const user = users.find((user) => user.username === emailOrUsername);
+      if (!user) {
+        return setError("Wrong username or password");
       }
+
+      await authService.login(user.email, password);
+    } catch (err: any) {
+      setError(
+        clientErrors.includes(err.code)
+          ? "Wrong username or password"
+          : "Failed to login"
+      );
     } finally {
       setIsSubmitting(false);
     }
