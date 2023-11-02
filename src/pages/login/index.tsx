@@ -17,6 +17,7 @@ import { withPublic } from "@/hocs/withPublic";
 import authService from "@/services/Auth";
 import usersService from "@/services/Users";
 import Link from "next/link";
+import Head from "next/head";
 
 type FormValues = {
   emailOrUsername: string;
@@ -84,73 +85,78 @@ function Login() {
   };
 
   return (
-    <Layout>
-      <Styled.Wrapper>
-        <div>
-          <Typography
-            variant="h5"
-            sx={{ textAlign: "center", marginBottom: "20px" }}
-          >
-            Login
-          </Typography>
-          <Typography sx={{ textAlign: "center", marginBottom: "30px" }}>
-            Don&apos;t have an account?{" "}
-            <Link href="/register">Sign up here</Link>
-          </Typography>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <Styled.Inputs>
-              <TextField
-                label="Email or Username"
-                variant="outlined"
-                {...register("emailOrUsername", {
-                  required: true,
-                })}
-                error={Boolean(errors.emailOrUsername)}
-                helperText={errors.emailOrUsername && "Required"}
-              />
-              <TextField
-                error={Boolean(errors.password)}
-                label="Password"
-                variant="outlined"
-                type={showPassword ? "text" : "password"}
-                {...register("password", { required: true })}
-                helperText={errors.password && "Required"}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        edge="end"
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Styled.Inputs>
-            <Styled.ButtonWrapper>
-              <Button
-                variant="contained"
-                type="submit"
-                endIcon={isSubmitting ? <Spinner /> : null}
-                data-testid="login-btn"
-              >
-                Login
-              </Button>
-            </Styled.ButtonWrapper>
-          </form>
-          {error && (
-            <Styled.ErrorWrapper>
-              <Typography color="error" data-testid="error">
-                {error}
-              </Typography>
-            </Styled.ErrorWrapper>
-          )}
-        </div>
-      </Styled.Wrapper>
-    </Layout>
+    <>
+      <Head>
+        <title>Login</title>
+      </Head>
+      <Layout>
+        <Styled.Wrapper>
+          <div>
+            <Typography
+              variant="h5"
+              sx={{ textAlign: "center", marginBottom: "20px" }}
+            >
+              Login
+            </Typography>
+            <Typography sx={{ textAlign: "center", marginBottom: "30px" }}>
+              Don&apos;t have an account?{" "}
+              <Link href="/register">Sign up here</Link>
+            </Typography>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <Styled.Inputs>
+                <TextField
+                  label="Email or Username"
+                  variant="outlined"
+                  {...register("emailOrUsername", {
+                    required: true,
+                  })}
+                  error={Boolean(errors.emailOrUsername)}
+                  helperText={errors.emailOrUsername && "Required"}
+                />
+                <TextField
+                  error={Boolean(errors.password)}
+                  label="Password"
+                  variant="outlined"
+                  type={showPassword ? "text" : "password"}
+                  {...register("password", { required: true })}
+                  helperText={errors.password && "Required"}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Styled.Inputs>
+              <Styled.ButtonWrapper>
+                <Button
+                  variant="contained"
+                  type="submit"
+                  endIcon={isSubmitting ? <Spinner /> : null}
+                  data-testid="login-btn"
+                >
+                  Login
+                </Button>
+              </Styled.ButtonWrapper>
+            </form>
+            {error && (
+              <Styled.ErrorWrapper>
+                <Typography color="error" data-testid="error">
+                  {error}
+                </Typography>
+              </Styled.ErrorWrapper>
+            )}
+          </div>
+        </Styled.Wrapper>
+      </Layout>
+    </>
   );
 }
 
