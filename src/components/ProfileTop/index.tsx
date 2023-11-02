@@ -55,7 +55,9 @@ function ProfileTop({ postsCount }: ProfileTopProps) {
         {profileId !== userId && <ProfileActionsBar />}
       </section>
       <FriendsDialog
-        isOpen={showFriends}
+        isOpen={
+          profile ? (profile.friends.length ? showFriends : false) : false
+        }
         onClose={() => setShowFriends(false)}
         friends={profile?.friends || []}
       />
