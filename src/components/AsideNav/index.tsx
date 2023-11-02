@@ -96,6 +96,7 @@ function AsideNav() {
           component={Link}
           selected={router.pathname === "/settings"}
           href="/settings"
+          disabled={true}
         >
           <ListItemIcon>
             <SettingsIcon />

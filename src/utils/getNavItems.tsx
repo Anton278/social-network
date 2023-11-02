@@ -10,6 +10,7 @@ type NavItem = {
   icon: JSX.Element;
   label: string;
   badgeValue?: string | number;
+  isDisabled?: boolean;
 };
 
 export function getNavItems(
@@ -33,6 +34,13 @@ export function getNavItems(
         badgeValue: friendsBadgeValue,
       },
     ],
-    [{ href: "/settings", icon: <SettingsIcon />, label: "Settings" }],
+    [
+      {
+        href: "/settings",
+        icon: <SettingsIcon />,
+        label: "Settings",
+        isDisabled: true,
+      },
+    ],
   ];
 }

@@ -45,6 +45,7 @@ function Menu({ open, onClose }: MenuProps) {
                   selected={router.pathname.includes(navItem.href)}
                   href={navItem.href}
                   key={navItemIdx}
+                  disabled={navItem.isDisabled}
                 >
                   <ListItemIcon>{navItem.icon}</ListItemIcon>
                   <ListItemText primary={navItem.label} />
