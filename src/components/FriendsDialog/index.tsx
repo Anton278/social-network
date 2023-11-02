@@ -1,5 +1,6 @@
 import { Dialog, DialogTitle, DialogContent, Typography } from "@mui/material";
 import { useEffect } from "react";
+import Link from "next/link";
 
 import { Friend } from "@/models/Friend";
 
@@ -56,7 +57,7 @@ function FriendsDialog(props: FriendsDialogProps) {
             <Typography color={"error"}>Failed to load chats</Typography>
           ) : chatsStatus === RequestStatus.Loading ? (
             <Typography>loading...</Typography>
-          ) : (
+          ) : friends.length ? (
             friends.map((friend) => (
               <UserSummary
                 key={friend.id}
@@ -68,6 +69,10 @@ function FriendsDialog(props: FriendsDialogProps) {
                 authedUserChats={chats}
               />
             ))
+          ) : (
+            <Typography>
+              <Link href="/profiles">Add friend</Link> to create chat
+            </Typography>
           )
         ) : (
           friends.map((friend) => (
