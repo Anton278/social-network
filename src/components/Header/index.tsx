@@ -37,7 +37,7 @@ function Header() {
   return (
     <AppBar>
       <Toolbar sx={{ columnGap: "10px" }}>
-        <div>
+        <div style={{ display: "flex", alignItems: "center" }}>
           {isAuthed && (
             <Styled.MenuButton size="large" onClick={() => setOpen(true)}>
               <MenuIcon />
