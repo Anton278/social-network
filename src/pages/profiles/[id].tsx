@@ -90,7 +90,7 @@ function Profile() {
           <div>loading...</div>
         ) : (
           <ProfileContext.Provider value={{ profile, setProfile }}>
-            <ProfileTop postsCount={1} />
+            <ProfileTop postsCount={profilePosts.length} />
           </ProfileContext.Provider>
         )}
         <Divider sx={{ marginTop: "30px", marginBottom: "30px" }} />
