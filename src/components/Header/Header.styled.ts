@@ -10,8 +10,8 @@ export const MenuButton = styled(IconButton)({
   "@media(min-width: 900px)": { display: "none" },
 });
 
-export const LoginButton = styled(Button)(
-  ({ active }: { active?: boolean }) => ({
+export const LoginButton = styled(Button)<{ active?: boolean }>(
+  ({ active }) => ({
     color: "#fff",
     borderColor: active ? grey[100] : blue[700],
     marginRight: "10px",
@@ -20,8 +20,8 @@ export const LoginButton = styled(Button)(
   })
 );
 
-export const SignupButton = styled(Button)(
-  ({ active }: { active?: boolean }) => ({
+export const SignupButton = styled(Button)<{ active?: boolean }>(
+  ({ active }) => ({
     color: "#fff",
     borderColor: active ? grey[100] : blue[700],
 
