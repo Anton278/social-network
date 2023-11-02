@@ -12,6 +12,8 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import RouterLink from "next/link";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
+import LoginIcon from "@mui/icons-material/Login";
+import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 
 import { selectIsAuthed } from "@/redux/slices/auth/selectors";
 import authService from "@/services/Auth";
@@ -34,14 +36,16 @@ function Header() {
 
   return (
     <AppBar>
-      <Toolbar>
-        {isAuthed && (
-          <Styled.MenuButton size="large" onClick={() => setOpen(true)}>
-            <MenuIcon />
-          </Styled.MenuButton>
-        )}
-        <Menu open={open} onClose={() => setOpen(false)} />
-        <Typography variant="h5">Social Network</Typography>
+      <Toolbar sx={{ columnGap: "10px" }}>
+        <div>
+          {isAuthed && (
+            <Styled.MenuButton size="large" onClick={() => setOpen(true)}>
+              <MenuIcon />
+            </Styled.MenuButton>
+          )}
+          <Menu open={open} onClose={() => setOpen(false)} />
+          <Typography variant="h5">Social Network</Typography>
+        </div>
         <Box sx={{ ml: "auto" }}>
           {isAuthed ? (
             width ? (
@@ -61,7 +65,7 @@ function Header() {
               )
             ) : null
           ) : (
-            <div data-testid="register-or-login-box">
+            <Styled.RegisterOrLoginBox data-testid="register-or-login-box">
               <Styled.LoginButton
                 variant="outlined"
                 // @ts-expect-error
@@ -69,7 +73,10 @@ function Header() {
                 href="/login"
                 active={router.pathname === "/login"}
               >
-                Login
+                <Styled.ButtonIcon>
+                  <LoginIcon />
+                </Styled.ButtonIcon>
+                <Styled.Buttontext>Login</Styled.Buttontext>
               </Styled.LoginButton>
               <Styled.SignupButton
                 variant="outlined"
@@ -79,9 +86,12 @@ function Header() {
                 href="/register"
                 active={router.pathname === "/register"}
               >
-                Signup
+                <Styled.ButtonIcon>
+                  <AppRegistrationIcon />
+                </Styled.ButtonIcon>
+                <Styled.Buttontext>Signup</Styled.Buttontext>
               </Styled.SignupButton>
-            </div>
+            </Styled.RegisterOrLoginBox>
           )}
         </Box>
       </Toolbar>

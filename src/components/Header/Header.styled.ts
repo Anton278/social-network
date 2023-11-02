@@ -28,3 +28,23 @@ export const SignupButton = styled(Button)(
     "&:hover": { borderColor: active ? grey[100] : blue[700] },
   })
 );
+
+export const RegisterOrLoginBox = styled.div({
+  display: "flex",
+});
+
+export const ButtonIcon = styled.span({
+  display: "inline-flex",
+
+  "@media(min-width: 600px)": {
+    display: "none",
+  },
+});
+
+export const Buttontext = styled.span({
+  display: "none",
+
+  "@media(min-width: 600px)": {
+    display: "inline-flex",
+  },
+});
