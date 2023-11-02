@@ -240,7 +240,8 @@ function UserSummary(props: UserSummaryProps) {
           <Typography>{fullName}</Typography>
         </div>
       </Styled.User>
-      {showActionButtons &&
+      {authedUser.id !== user.id &&
+        showActionButtons &&
         (actionButtonsType === "friends" ? (
           isFriend ? (
             <Button
