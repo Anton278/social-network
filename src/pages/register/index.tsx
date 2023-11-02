@@ -17,6 +17,7 @@ import { withPublic } from "@/hocs/withPublic";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import usersService from "@/services/Users";
 import authService from "@/services/Auth";
+import Link from "next/link";
 
 type FormValues = {
   email: string;
@@ -87,6 +88,15 @@ function Register() {
   return (
     <Layout>
       <Styled.Wrapper>
+        <Typography
+          variant="h5"
+          sx={{ textAlign: "center", marginBottom: "20px" }}
+        >
+          Sign Up
+        </Typography>
+        <Typography sx={{ textAlign: "center", marginBottom: "30px" }}>
+          Already have an account? <Link href="/login">Log in here</Link>
+        </Typography>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Styled.Inputs>
             <TextField
