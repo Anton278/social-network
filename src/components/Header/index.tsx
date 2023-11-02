@@ -62,22 +62,25 @@ function Header() {
             ) : null
           ) : (
             <div data-testid="register-or-login-box">
-              <Button
-                variant="text"
+              <Styled.LoginButton
+                variant="outlined"
+                // @ts-expect-error
                 component={RouterLink}
-                sx={{ color: "#fff", mr: "10px" }}
                 href="/login"
+                active={router.pathname === "/login"}
               >
                 Login
-              </Button>
-              <Button
-                variant="text"
+              </Styled.LoginButton>
+              <Styled.SignupButton
+                variant="outlined"
+                // @ts-expect-error
                 component={RouterLink}
                 sx={{ color: "#fff" }}
                 href="/register"
+                active={router.pathname === "/register"}
               >
                 Signup
-              </Button>
+              </Styled.SignupButton>
             </div>
           )}
         </Box>
