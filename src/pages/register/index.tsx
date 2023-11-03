@@ -73,6 +73,8 @@ function Register() {
       setError(
         e.code === "auth/email-already-in-use"
           ? "Error: Email already in use"
+          : e.code === "auth/weak-password"
+          ? "The password is too weak."
           : "Failed to create user"
       );
       return setIsSubmitting(false);
