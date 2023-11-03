@@ -1,9 +1,8 @@
-import { arrayUnion, doc } from "firebase/firestore";
+import { arrayUnion } from "firebase/firestore";
 import { useRouter } from "next/router";
 
 import { Chat } from "@/models/Chat";
 import { ChatParticipant } from "@/models/ChatParticipant";
-import { db } from "@/pages/_app";
 import {
   createChat as createChatThunk,
   deleteChat,
@@ -29,7 +28,6 @@ export async function createChat(
     return router.push(`/chats/${chat.id}`);
   }
   let createdChat: Chat | undefined;
-  const interlocutorDocRef = doc(db, "users", interlocutor.id);
   try {
     createdChat = await dispatch(
       createChatThunk([

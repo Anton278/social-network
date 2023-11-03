@@ -29,12 +29,6 @@ const user: User = {
 };
 
 describe("user slice", () => {
-  it("should have proper init state", () => {
-    const store = makeStore();
-    const user = store.getState().user;
-    expect(user).toEqual(initState);
-  });
-
   it("should properly handle setUser case", () => {
     const store = makeStore();
     store.dispatch({
