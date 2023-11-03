@@ -14,8 +14,8 @@ class UsersService {
     return users;
   }
 
-  async create(email: string, username: string, fullName: string) {
-    const user = {
+  async create(email: string, username: string, fullName: string, id: string) {
+    const user: User = {
       email,
       username,
       fullName,
@@ -23,10 +23,10 @@ class UsersService {
       sentFriendsRequests: [],
       receivedFriendsRequests: [],
       chats: [],
+      id,
     };
-    const userDocRef = await addDoc(collection(db, "users"), user);
-    const createdUser = { ...user, id: userDocRef.id } as User;
-    return createdUser;
+    await addDoc(collection(db, "users"), user);
+    return user;
   }
 }
 

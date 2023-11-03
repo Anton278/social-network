@@ -64,23 +64,21 @@ function Register() {
         return;
       }
 
-      await authService.register(email, password);
-    } catch (e: any) {
-      if (e.code === "auth/email-already-in-use") {
-        setError("Error: Email already in use");
-      } else {
-        setError("Failed to create user");
-      }
-
-      return setIsSubmitting(false);
-    }
-
-    try {
-      const createdUser = await usersService.create(email, username, fullName);
+      const registeredUser = await authService.register(email, password);
+      const createdUser = await usersService.create(
+        email,
+        username,
+        fullName,
+        registeredUser.user.uid
+      );
       dispatch({ type: "user/setUser", payload: createdUser });
     } catch (e: any) {
-      setError("Failed to create user");
       await authService.delete();
+      setError(
+        e.code === "auth/email-already-in-use"
+          ? "Error: Email already in use"
+          : "Failed to create user"
+      );
     } finally {
       setIsSubmitting(false);
     }
