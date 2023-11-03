@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Layout from "@/components/Layout";
 import {
   TextField,
   InputAdornment,
@@ -10,15 +9,18 @@ import {
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useForm, SubmitHandler } from "react-hook-form";
-import * as Styled from "@/styles/Register.styled";
+import Link from "next/link";
+import Head from "next/head";
+
+import Layout from "@/components/Layout";
 import Spinner from "@/components/Spinner";
 import { emailRegEx } from "@/utils/consts";
 import { withPublic } from "@/hocs/withPublic";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import usersService from "@/services/Users";
 import authService from "@/services/Auth";
-import Link from "next/link";
-import Head from "next/head";
+
+import * as Styled from "@/styles/Register.styled";
 
 type FormValues = {
   email: string;
@@ -50,6 +52,7 @@ function Register() {
     setError("");
 
     const { email, password, username, fullName } = values;
+    let registeredUserId: string | undefined;
 
     try {
       const users = await usersService.getAll();
@@ -65,20 +68,27 @@ function Register() {
       }
 
       const registeredUser = await authService.register(email, password);
-      const createdUser = await usersService.create(
-        email,
-        username,
-        fullName,
-        registeredUser.user.uid
-      );
-      dispatch({ type: "user/setUser", payload: createdUser });
+      registeredUserId = registeredUser.user.uid;
     } catch (e: any) {
-      await authService.delete();
       setError(
         e.code === "auth/email-already-in-use"
           ? "Error: Email already in use"
           : "Failed to create user"
       );
+      return setIsSubmitting(false);
+    }
+
+    try {
+      const createdUser = await usersService.create(
+        email,
+        username,
+        fullName,
+        registeredUserId
+      );
+      dispatch({ type: "user/setUser", payload: createdUser });
+    } catch (e: any) {
+      setError("Failed to create user");
+      await authService.delete();
     } finally {
       setIsSubmitting(false);
     }

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import Register from "../../src/pages/register";
 import { User } from "@/models/User";
 import { renderWithRedux } from "@/utils/renderWithRedux";
@@ -30,11 +30,18 @@ const existingUser: User = {
   receivedFriendsRequests: [],
   sentFriendsRequests: [],
   username: "john123",
+  chats: [],
 };
 // @ts-expect-error
 usersService.getAll.mockResolvedValue([existingUser]);
 // @ts-expect-error
-usersService.create.mockImplementation(() => Promise.reject(""));
+usersService.create.mockImplementation(() => {
+  return Promise.reject("");
+});
+// @ts-expect-error
+authService.register.mockImplementation(() => {
+  return Promise.resolve({ user: { uid: "" } });
+});
 
 describe("register page form", () => {
   it("should return error if username taken", async () => {
