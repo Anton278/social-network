@@ -18,6 +18,7 @@ import { useAppSelector } from "@/hooks/useAppSelector";
 import ProfileTop from "@/components/ProfileTop";
 
 import * as Styled from "@/styles/Profile.styled";
+import usersService from "@/services/Users";
 
 type ProfileContextValue = {
   profile: User | null;
@@ -56,18 +57,8 @@ function Profile() {
         return;
       }
 
-      const docRef = doc(db, "users", profileId);
       try {
-        const userDoc = await getDoc(docRef);
-
-        if (!userDoc) {
-          return setProfileError("Failed to load profile");
-        }
-
-        const profile = {
-          ...userDoc.data(),
-          id: userDoc.id,
-        } as User;
+        const profile = await usersService.getOne(profileId);
         setProfile(profile);
       } catch (e) {
         setProfileError("Failed to get user");
