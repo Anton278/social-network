@@ -89,7 +89,7 @@ function Register() {
   return (
     <>
       <Head>
-        <title>Signup</title>
+        <title>Signup | Social Network</title>
       </Head>
       <Layout>
         <Styled.Wrapper>

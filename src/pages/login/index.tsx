@@ -87,7 +87,7 @@ function Login() {
   return (
     <>
       <Head>
-        <title>Login</title>
+        <title>Login | Social Network</title>
       </Head>
       <Layout>
         <Styled.Wrapper>
