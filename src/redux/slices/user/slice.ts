@@ -33,6 +33,7 @@ const userSlice = createSlice({
       state.status = RequestStatus.Error;
     });
 
+    // @ts-expect-error
     builder.addCase(updateUser.fulfilled, (state, action) => {
       return { ...state, ...action.payload };
     });
