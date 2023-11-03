@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Layout from "../../components/Layout";
 import {
   TextField,
   InputAdornment,
@@ -10,14 +9,17 @@ import {
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useForm, SubmitHandler } from "react-hook-form";
-import * as Styled from "@/styles/Login.styled";
+import Link from "next/link";
+import Head from "next/head";
+
+import Layout from "../../components/Layout";
 import Spinner from "@/components/Spinner";
 import { emailRegEx } from "@/utils/consts";
 import { withPublic } from "@/hocs/withPublic";
 import authService from "@/services/Auth";
 import usersService from "@/services/Users";
-import Link from "next/link";
-import Head from "next/head";
+
+import * as Styled from "@/styles/Login.styled";
 
 type FormValues = {
   emailOrUsername: string;
