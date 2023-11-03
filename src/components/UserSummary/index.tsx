@@ -1,6 +1,6 @@
 import { Avatar, Typography, Button } from "@mui/material";
 import { useState } from "react";
-import { arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
+import { arrayUnion } from "firebase/firestore";
 import { useRouter } from "next/router";
 
 import { stringToColor } from "@/utils/stringToColor";
@@ -8,10 +8,9 @@ import { useAppSelector } from "@/hooks/useAppSelector";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { updateUser } from "@/redux/slices/user/thunks";
 import { Friend } from "@/models/Friend";
-import { db } from "@/pages/_app";
-import { User } from "@/models/User";
 import { Chat } from "@/models/Chat";
 import { createChat } from "@/utils/createChat";
+import usersService from "@/services/Users";
 
 import * as Styled from "./UserSummary.styled";
 
@@ -74,14 +73,16 @@ function UserSummary(props: UserSummaryProps) {
     }
 
     try {
-      const recipientDocRef = doc(db, "users", user.id);
-      await updateDoc(recipientDocRef, {
-        receivedFriendsRequests: arrayUnion({
-          username: authedUser.username,
-          fullName: authedUser.fullName,
-          id: authedUser.id,
-        }),
-      });
+      await usersService.update(
+        {
+          receivedFriendsRequests: arrayUnion({
+            username: authedUser.username,
+            fullName: authedUser.fullName,
+            id: authedUser.id,
+          }),
+        },
+        user.id
+      );
     } catch (e) {
       await dispatch(
         updateUser({
@@ -114,20 +115,21 @@ function UserSummary(props: UserSummaryProps) {
     }
 
     try {
-      const senderDocRef = doc(db, "users", user.id);
-      const senderDoc = await getDoc(senderDocRef);
-      const sender = senderDoc.data() as User;
+      const sender = await usersService.getOne(user.id);
       const updatedSentFriendsRequests = sender.sentFriendsRequests.filter(
         (sentFriendsRequest) => sentFriendsRequest.id !== authedUser.id
       );
-      await updateDoc(senderDocRef, {
-        sentFriendsRequests: updatedSentFriendsRequests,
-        friends: arrayUnion({
-          id: authedUser.id,
-          fullName: authedUser.fullName,
-          username: authedUser.username,
-        }),
-      });
+      await usersService.update(
+        {
+          sentFriendsRequests: updatedSentFriendsRequests,
+          friends: arrayUnion({
+            id: authedUser.id,
+            fullName: authedUser.fullName,
+            username: authedUser.username,
+          }),
+        },
+        sender.id
+      );
     } catch (e) {
       await dispatch(
         updateUser({
@@ -156,17 +158,18 @@ function UserSummary(props: UserSummaryProps) {
     }
 
     try {
-      const recepientDocRef = doc(db, "users", user.id);
-      const recepientDoc = await getDoc(recepientDocRef);
-      const recepient = recepientDoc.data() as User;
+      const recepient = await usersService.getOne(user.id);
       const updatedReceivedFriendsRequests =
         recepient.receivedFriendsRequests.filter(
           (receivedFriendsRequest) =>
             receivedFriendsRequest.id !== authedUser.id
         );
-      await updateDoc(recepientDocRef, {
-        receivedFriendsRequests: updatedReceivedFriendsRequests,
-      });
+      await usersService.update(
+        {
+          receivedFriendsRequests: updatedReceivedFriendsRequests,
+        },
+        user.id
+      );
     } catch (e) {
       await dispatch(
         updateUser({ sentFriendsRequests: authedUserSentFriendsRequests })
@@ -188,15 +191,16 @@ function UserSummary(props: UserSummaryProps) {
     }
 
     try {
-      const friendDocRef = doc(db, "users", user.id);
-      const friendDoc = await getDoc(friendDocRef);
-      const friend = friendDoc.data() as User;
+      const friend = await usersService.getOne(user.id);
       const updatedFriends = friend.friends.filter(
         (friend) => friend.id !== authedUser.id
       );
-      await updateDoc(friendDocRef, {
-        friends: updatedFriends,
-      });
+      await usersService.update(
+        {
+          friends: updatedFriends,
+        },
+        user.id
+      );
     } catch (e) {
       await dispatch(updateUser({ friends: authedUserFriends }));
     } finally {

@@ -1,6 +1,14 @@
 import { User } from "@/models/User";
+import { UpdateUser } from "@/models/requests/UpdateUser";
 import { db } from "@/pages/_app";
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 
 class UsersService {
   async getAll() {
@@ -11,6 +19,29 @@ class UsersService {
       users.push(user);
     });
     return users;
+  }
+
+  async getOne(id: string) {
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("id", "==", id));
+    const userDocs = (await getDocs(q)).docs;
+    if (!userDocs[0]) {
+      return Promise.reject("user with given id not found");
+    }
+    const user = userDocs[0].data() as User;
+    return user;
+  }
+
+  async update(user: UpdateUser, id: string) {
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("id", "==", id));
+    const userDocs = (await getDocs(q)).docs;
+    const userDoc = userDocs[0];
+    if (!userDoc) {
+      return Promise.reject("user with given id not found");
+    }
+    await updateDoc(userDoc.ref, { ...user });
+    return user;
   }
 
   async create(email: string, username: string, fullName: string, id: string) {

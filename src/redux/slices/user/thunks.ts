@@ -1,8 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { doc, updateDoc } from "firebase/firestore";
-
 import { UpdateUser } from "@/models/requests/UpdateUser";
-import { db } from "@/pages/_app";
 import { RootState } from "@/redux/store";
 import usersService from "@/services/Users";
 
@@ -12,11 +9,7 @@ export const getUser = createAsyncThunk(
     if (!id) {
       return rejectWithValue("id is not provided!");
     }
-    const users = await usersService.getAll();
-    const user = users.find((user) => user.id === id);
-    if (!user) {
-      return rejectWithValue("error/user-not-found");
-    }
+    const user = await usersService.getOne(id);
     return user;
   }
 );
@@ -27,9 +20,6 @@ export const updateUser = createAsyncThunk<
   { state: RootState }
 >("user/updateUser", async (user: UpdateUser, { getState }) => {
   const userId = getState().user.id;
-  const docRef = doc(db, "users", userId);
-
-  await updateDoc(docRef, { ...user });
-
+  await usersService.update(user, userId);
   return user;
 });
