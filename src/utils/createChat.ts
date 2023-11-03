@@ -1,4 +1,4 @@
-import { arrayUnion, doc, updateDoc } from "firebase/firestore";
+import { arrayUnion, doc } from "firebase/firestore";
 import { useRouter } from "next/router";
 
 import { Chat } from "@/models/Chat";
@@ -11,6 +11,7 @@ import {
 import { AppDispatch } from "@/redux/store";
 import { User } from "@/models/User";
 import { updateUser } from "@/redux/slices/user/thunks";
+import usersService from "@/services/Users";
 
 export async function createChat(
   user: User,
@@ -43,7 +44,10 @@ export async function createChat(
     await dispatch(
       updateUser({ chats: [...user.chats, createdChat.id] })
     ).unwrap();
-    await updateDoc(interlocutorDocRef, { chats: arrayUnion(createdChat.id) });
+    await usersService.update(
+      { chats: arrayUnion(createdChat.id) },
+      interlocutor.id
+    );
     router.push(`/chats/${createdChat.id}`);
   } catch (e) {
     if (!createdChat?.id) {

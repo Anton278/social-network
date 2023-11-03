@@ -7,5 +7,5 @@ export interface UpdateUser {
   friends?: Friend[] | ReturnType<typeof arrayUnion>;
   sentFriendsRequests?: Friend[];
   receivedFriendsRequests?: Friend[] | ReturnType<typeof arrayUnion>;
-  chats?: string[];
+  chats?: string[] | ReturnType<typeof arrayUnion>;
 }
