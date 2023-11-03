@@ -37,7 +37,7 @@ export default function App({ Component, pageProps }: AppProps) {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         store.dispatch(setIsAuthed(true));
-        store.dispatch(getUserThunk(user.email));
+        store.dispatch(getUserThunk(user.uid));
       } else {
         store.dispatch(setIsAuthed(false));
       }

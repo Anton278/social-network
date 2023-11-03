@@ -8,12 +8,12 @@ import usersService from "@/services/Users";
 
 export const getUser = createAsyncThunk(
   "user/getUser",
-  async (email: string | null, { rejectWithValue }) => {
-    if (!email) {
-      return rejectWithValue("email is not provided!");
+  async (id: string, { rejectWithValue }) => {
+    if (!id) {
+      return rejectWithValue("id is not provided!");
     }
     const users = await usersService.getAll();
-    const user = users.find((user) => user.email === email);
+    const user = users.find((user) => user.id === id);
     if (!user) {
       return rejectWithValue("error/user-not-found");
     }

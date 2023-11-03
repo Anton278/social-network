@@ -7,8 +7,7 @@ class UsersService {
     const users: User[] = [];
     const usersDocs = await getDocs(collection(db, "users"));
     usersDocs.forEach((userDoc) => {
-      const userWithoutId = userDoc.data();
-      const user = { ...userWithoutId, id: userDoc.id } as User;
+      const user = userDoc.data() as User;
       users.push(user);
     });
     return users;
