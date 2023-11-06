@@ -182,6 +182,7 @@ function Post(props: PostProps) {
         open={showEditModal}
         onClose={() => setShowEditModal(false)}
         originalText={text}
+        originalIsPrivate={isPrivate}
         postId={postId}
       />
       <ConfirmDelete

@@ -24,11 +24,18 @@ type EditPostProps = {
   open: boolean;
   onClose?: () => void;
   originalText?: string;
+  originalIsPrivate: boolean;
   postId: string;
 };
 
 function EditPost(props: EditPostProps) {
-  const { open, onClose = () => {}, originalText = "", postId } = props;
+  const {
+    open,
+    onClose = () => {},
+    originalText = "",
+    postId,
+    originalIsPrivate,
+  } = props;
 
   const dispatch = useAppDispatch();
   const [text, setText] = useState(originalText);
@@ -36,7 +43,7 @@ function EditPost(props: EditPostProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasError, setHasError] = useState(false);
 
-  const isNotEdited = originalText === text;
+  const isNotEdited = originalText === text && isPrivate === originalIsPrivate;
 
   async function onSaveClick() {
     setHasError(false);
