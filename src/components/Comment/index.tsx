@@ -7,6 +7,7 @@ import { getTimeFromNow } from "@/utils/getTimeFromNow";
 import MoreMenu from "../MoreMenu";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { selectUserId } from "@/redux/slices/user/selectors";
+import { Comment as CommentModel } from "@/models/Comment";
 
 import * as Styled from "./Comment.styled";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
@@ -14,27 +15,18 @@ import { deleteComment } from "@/redux/slices/posts/thunks";
 import { useWindowDimensions } from "@/hooks/useWindowDimensions";
 
 type CommentProps = {
-  author: {
-    fullName: string;
-    username: string;
-    id: string;
-  };
-  timestamp: number;
-  comment: string;
   postId: string;
-  id: number;
-  onEditClick: (id: number) => void;
-  isEdited: boolean;
+  onEditClick: (comment: CommentModel) => void;
+  comment: CommentModel;
 };
 
 function Comment(props: CommentProps) {
-  const { author, timestamp, comment, postId, id, onEditClick, isEdited } =
-    props;
+  const { comment, postId, onEditClick } = props;
 
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
-  const { width, isMobile } = useWindowDimensions();
+  const { isMobile } = useWindowDimensions();
 
   function stringAvatar(name: string) {
     return {
@@ -46,24 +38,24 @@ function Comment(props: CommentProps) {
     };
   }
 
-  const timeFromNow = getTimeFromNow(timestamp);
+  const timeFromNow = getTimeFromNow(comment.timestamp);
 
   function handleDelete() {
-    dispatch(deleteComment({ postId, commentId: id }));
+    dispatch(deleteComment({ postId, commentId: comment.id }));
   }
 
   return (
     <div>
       <Styled.TopLine>
-        <Styled.Author href={`/profiles/${author.id}`}>
-          <Avatar {...stringAvatar(author.fullName)} />
-          <h5>{author.username}</h5>
+        <Styled.Author href={`/profiles/${comment.author.id}`}>
+          <Avatar {...stringAvatar(comment.author.fullName)} />
+          <h5>{comment.author.username}</h5>
         </Styled.Author>
         {!isMobile && (
           <>
             <span>·</span>
             <span>{timeFromNow}</span>
-            {isEdited && (
+            {comment.isEdited && (
               <>
                 <span>·</span>
                 <Styled.Marker>(Edited)</Styled.Marker>
@@ -71,7 +63,7 @@ function Comment(props: CommentProps) {
             )}
           </>
         )}
-        {author.id === userId && (
+        {comment.author.id === userId && (
           <>
             <IconButton
               onClick={(e) => setMenuAnchorEl(e.currentTarget)}
@@ -83,16 +75,16 @@ function Comment(props: CommentProps) {
               anchorEl={menuAnchorEl}
               onClose={() => setMenuAnchorEl(null)}
               onDeleteClick={handleDelete}
-              onEditClick={() => onEditClick(id)}
+              onEditClick={() => onEditClick(comment)}
             />
           </>
         )}
       </Styled.TopLine>
-      <p>{comment}</p>
+      <p>{comment.comment}</p>
       {isMobile && (
         <Styled.TimeAndEdited>
           <span>{timeFromNow}</span>
-          {isEdited && (
+          {comment.isEdited && (
             <>
               <span>·</span>
               <Styled.Marker>Edited</Styled.Marker>

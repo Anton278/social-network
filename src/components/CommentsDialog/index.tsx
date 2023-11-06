@@ -1,22 +1,16 @@
-import SendIcon from "@mui/icons-material/Send";
 import {
-  Button,
   Dialog,
   DialogTitle,
   DialogContent,
   Typography,
   DialogActions,
-  TextField,
 } from "@mui/material";
-import { useEffect, useState } from "react";
-import CloseIcon from "@mui/icons-material/Close";
-import SaveIcon from "@mui/icons-material/Save";
+import { useState } from "react";
 
-import { useAppDispatch } from "@/hooks/useAppDispatch";
-import { useAppSelector } from "@/hooks/useAppSelector";
 import { Comment as CommentModel } from "@/models/Comment";
-import { updatePost } from "@/redux/slices/posts/thunks";
 import Comment from "../Comment";
+import AddComment from "../AddComment";
+import EditComment from "../EditComment";
 
 type CommentsDialogProps = {
   open: boolean;
@@ -31,75 +25,15 @@ function CommentsDialog({
   comments,
   postId,
 }: CommentsDialogProps) {
-  const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => state.user);
-  const [comment, setComment] = useState("");
-  const [isSending, setsIsSending] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [origComment, setOrigComment] = useState("");
-  const [editingComment, setEditingComment] = useState("");
-  const [editingCommentId, setEditingCommentId] = useState(-1);
-  const [isUpdating, setIsUpdating] = useState(false);
-
-  async function onSendClick() {
-    setsIsSending(true);
-
-    const lastComment = comments[comments.length - 1];
-    const newComment: CommentModel = {
-      comment,
-      author: {
-        fullName: user.fullName,
-        id: user.id,
-        username: user.username,
-      },
-      id: lastComment ? lastComment.id + 1 : 1,
-      timestamp: Math.ceil(Date.now() / 1000),
-      isEdited: false,
-    };
-
-    await dispatch(
-      updatePost({ id: postId, comments: [...comments, newComment] })
-    );
-
-    setsIsSending(false);
-    setComment("");
-  }
+  const [editingComment, setEditingComment] = useState<CommentModel | null>(
+    null
+  );
 
   function handleCancelEditing() {
     setIsEditing(false);
-    setEditingCommentId(-1);
+    setEditingComment(null);
   }
-
-  async function handleUpdateComment() {
-    setIsUpdating(true);
-
-    const updatedComments = comments.map((comment) =>
-      comment.id === editingCommentId
-        ? { ...comment, comment: editingComment, isEdited: true }
-        : comment
-    );
-
-    await dispatch(updatePost({ id: postId, comments: updatedComments }));
-
-    setIsEditing(false);
-    setOrigComment("");
-    setEditingComment("");
-    setEditingCommentId(-1);
-
-    setIsUpdating(false);
-  }
-
-  useEffect(() => {
-    if (!isEditing) {
-      return;
-    }
-    const comment = comments.find((comment) => comment.id === editingCommentId);
-    if (!comment) {
-      return;
-    }
-    setOrigComment(comment.comment);
-    setEditingComment(comment.comment);
-  }, [isEditing, editingCommentId]);
 
   return (
     <Dialog
@@ -116,17 +50,13 @@ function CommentsDialog({
         {comments.length ? (
           comments.map((comment) => (
             <Comment
+              comment={comment}
               key={comment.id}
-              author={comment.author}
-              timestamp={comment.timestamp}
-              comment={comment.comment}
               postId={postId}
-              id={comment.id}
-              onEditClick={(id: number) => {
+              onEditClick={(comment) => {
                 setIsEditing(true);
-                setEditingCommentId(id);
+                setEditingComment(comment);
               }}
-              isEdited={comment.isEdited}
             />
           ))
         ) : (
@@ -141,59 +71,17 @@ function CommentsDialog({
           alignItems: isEditing ? "flex-end" : "center",
         }}
       >
-        {isEditing ? (
-          <>
-            <TextField
-              multiline
-              maxRows={4}
-              fullWidth
-              label={isEditing ? "Edit" : "Add comment"}
-              value={editingComment}
-              onChange={(e) => setEditingComment(e.target.value)}
-            />
-            <p>
-              <Button
-                variant="text"
-                endIcon={<CloseIcon />}
-                onClick={handleCancelEditing}
-                sx={{ marginRight: "20px" }}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="contained"
-                endIcon={<SaveIcon />}
-                disabled={
-                  !editingComment.trim().length ||
-                  isUpdating ||
-                  origComment === editingComment
-                }
-                onClick={handleUpdateComment}
-              >
-                Save
-              </Button>
-            </p>
-          </>
+        {isEditing && editingComment !== null ? (
+          <EditComment
+            comment={editingComment.comment}
+            commentId={editingComment.id}
+            comments={comments}
+            postId={postId}
+            onCancel={handleCancelEditing}
+            onUpdated={handleCancelEditing}
+          />
         ) : (
-          <>
-            <TextField
-              multiline
-              maxRows={4}
-              fullWidth
-              label="Add comment"
-              sx={{ marginRight: "12px" }}
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-            />
-            <Button
-              variant="contained"
-              endIcon={<SendIcon />}
-              disabled={!comment.trim().length || isSending}
-              onClick={onSendClick}
-            >
-              Send
-            </Button>
-          </>
+          <AddComment comments={comments} postId={postId} />
         )}
       </DialogActions>
     </Dialog>
