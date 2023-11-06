@@ -57,6 +57,7 @@ function EditComment({
           endIcon={<CloseIcon />}
           onClick={onCancel}
           sx={{ marginRight: "20px" }}
+          data-testid="cancel-btn"
         >
           Cancel
         </Button>
@@ -65,6 +66,7 @@ function EditComment({
           endIcon={<SaveIcon />}
           disabled={!value.trim().length || isUpdating || comment === value}
           onClick={handleUpdateComment}
+          data-testid="save-btn"
         >
           Save
         </Button>
