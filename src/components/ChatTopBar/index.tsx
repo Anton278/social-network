@@ -51,7 +51,10 @@ function ChatTopBar({ interlocutor }: ChatTopBarProps) {
   return (
     <Styled.TopBar>
       <Styled.TopBarLeft>
-        <IconButton onClick={() => router.push("/chats")}>
+        <IconButton
+          onClick={() => router.push("/chats")}
+          data-testid="back-btn"
+        >
           <ArrowBackIcon />
         </IconButton>
         <UserSummary
@@ -61,7 +64,10 @@ function ChatTopBar({ interlocutor }: ChatTopBarProps) {
           showActionButtons={false}
         />
       </Styled.TopBarLeft>
-      <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
+      <IconButton
+        onClick={(e) => setAnchorEl(e.currentTarget)}
+        data-testid="more-btn"
+      >
         <MoreVertIcon />
       </IconButton>
       <Menu
