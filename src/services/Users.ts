@@ -52,7 +52,6 @@ class UsersService {
       friends: [],
       sentFriendsRequests: [],
       receivedFriendsRequests: [],
-      chats: [],
       id,
     };
     await addDoc(collection(db, "users"), user);
