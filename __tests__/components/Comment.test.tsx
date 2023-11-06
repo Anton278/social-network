@@ -17,13 +17,15 @@ describe("Comment", () => {
   it("should call delete comment thunk", async () => {
     renderWithRedux(
       <Comment
-        author={{ id: "author-id", fullName: "John Doe", username: "" }}
-        comment=""
-        id={1}
-        isEdited={false}
+        comment={{
+          author: { id: "author-id", fullName: "John Doe", username: "" },
+          comment: "",
+          id: 1,
+          isEdited: false,
+          timestamp: 0,
+        }}
         onEditClick={() => {}}
         postId="post-id"
-        timestamp={0}
       />,
       {
         user: {
@@ -51,13 +53,15 @@ describe("Comment", () => {
   it("not display more button if comment author different", async () => {
     renderWithRedux(
       <Comment
-        author={{ id: "author-id", fullName: "John Doe", username: "" }}
-        comment=""
-        id={1}
-        isEdited={false}
+        comment={{
+          author: { id: "author-id", fullName: "John Doe", username: "" },
+          comment: "",
+          id: 1,
+          isEdited: false,
+          timestamp: 0,
+        }}
         onEditClick={() => {}}
         postId="post-id"
-        timestamp={0}
       />,
       {
         user: {
