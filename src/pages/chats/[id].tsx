@@ -54,6 +54,10 @@ function Chat() {
           return;
         }
         const chatSnap = { ...doc.data(), id: doc.id } as ChatModel;
+        if (Object.keys(chatSnap).length === 1) {
+          return;
+        }
+
         chatSnap.messages.sort((a, b) => b.timeStamp - a.timeStamp);
         dispatch(setChat(chatSnap));
       },
