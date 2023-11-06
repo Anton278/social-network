@@ -58,6 +58,7 @@ function AddComment({ comments, postId }: AddCommentProps) {
         endIcon={<SendIcon />}
         disabled={!comment.trim().length || isSending}
         onClick={onSendClick}
+        data-testid="send-btn"
       >
         Send
       </Button>
