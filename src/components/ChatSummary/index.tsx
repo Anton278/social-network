@@ -34,9 +34,6 @@ function ChatSummary(props: ChatSummaryProps) {
   }
 
   async function handleDeleteChat() {
-    if (isDeleting) {
-      return;
-    }
     setIsDeleting(true);
     try {
       await dispatch(deleteChat(id));
@@ -59,7 +56,10 @@ function ChatSummary(props: ChatSummaryProps) {
           </div>
         </Styled.ChatSummary>
       </Styled.Link>
-      <Styled.MoreButton onClick={(e) => setAnchorEl(e.currentTarget)}>
+      <Styled.MoreButton
+        onClick={(e) => setAnchorEl(e.currentTarget)}
+        data-testid="more-menu-btn"
+      >
         <MoreVertIcon />
       </Styled.MoreButton>
       <Menu
@@ -67,7 +67,11 @@ function ChatSummary(props: ChatSummaryProps) {
         open={Boolean(anchorEl)}
         onClose={handleCloseMenu}
       >
-        <MenuItem onClick={handleDeleteChat}>
+        <MenuItem
+          onClick={handleDeleteChat}
+          data-testid="delete-btn"
+          disabled={isDeleting}
+        >
           <ListItemIcon>
             <DeleteIcon fontSize="small" />
           </ListItemIcon>
