@@ -15,7 +15,6 @@ const initState = {
   friends: [],
   sentFriendsRequests: [],
   receivedFriendsRequests: [],
-  chats: [],
 };
 const user: User = {
   email: "johndoe@gmail.com",
@@ -25,7 +24,6 @@ const user: User = {
   friends: [],
   sentFriendsRequests: [],
   receivedFriendsRequests: [],
-  chats: [],
 };
 
 describe("user slice", () => {
@@ -44,9 +42,9 @@ describe("user slice", () => {
   it("should properly handle successed getUser case", async () => {
     const store = makeStore();
 
-    usersService.getAll
+    usersService.getOne
       // @ts-expect-error
-      .mockImplementationOnce(() => Promise.resolve([user]));
+      .mockImplementationOnce(() => Promise.resolve(user));
 
     await store.dispatch(getUser("johndoe@gmail.com"));
 
@@ -59,9 +57,9 @@ describe("user slice", () => {
   it("should properly handle failed getUser case", async () => {
     const store = makeStore();
 
-    usersService.getAll
+    usersService.getOne
       // @ts-expect-error
-      .mockImplementationOnce(() => Promise.resolve([]));
+      .mockImplementationOnce(() => Promise.reject(""));
 
     await store.dispatch(getUser("johndoe@gmail.com"));
 
