@@ -36,6 +36,7 @@ describe("Add post", () => {
         sentFriendsRequests: [],
         status: RequestStatus.IDLE,
         username: "john001",
+        chats: [],
       },
     });
 
