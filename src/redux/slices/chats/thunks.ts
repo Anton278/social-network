@@ -7,10 +7,11 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 export const getChats = createAsyncThunk<Chat[], void, { state: RootState }>(
   "chats/getChats",
   async (_, { getState }) => {
-    const state = getState();
+    const userId = getState().user.id;
     const chats = await chatsService.getAll();
-    const userChats = chats.filter((chat) =>
-      state.user.chats.includes(chat.id)
+    const userChats = chats.filter(
+      (chat) =>
+        chat.participants[0].id === userId || chat.participants[1].id === userId
     );
     userChats.sort((a, b) =>
       a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : 0

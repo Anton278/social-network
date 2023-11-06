@@ -1,25 +1,19 @@
-import { arrayUnion } from "firebase/firestore";
 import { useRouter } from "next/router";
 
 import { Chat } from "@/models/Chat";
 import { ChatParticipant } from "@/models/ChatParticipant";
-import {
-  createChat as createChatThunk,
-  deleteChat,
-} from "@/redux/slices/chats/thunks";
+import { createChat as createChatThunk } from "@/redux/slices/chats/thunks";
 import { AppDispatch } from "@/redux/store";
 import { User } from "@/models/User";
-import { updateUser } from "@/redux/slices/user/thunks";
-import usersService from "@/services/Users";
 
 export async function createChat(
   user: User,
   interlocutor: ChatParticipant,
-  userChats: Chat[],
+  chats: Chat[],
   router: ReturnType<typeof useRouter>,
   dispatch: AppDispatch
 ) {
-  const chat = userChats.find(
+  const chat = chats.find(
     (chat) =>
       chat.participants[0].id === interlocutor.id ||
       chat.participants[1].id === interlocutor.id
@@ -28,31 +22,15 @@ export async function createChat(
     return router.push(`/chats/${chat.id}`);
   }
   let createdChat: Chat | undefined;
-  try {
-    createdChat = await dispatch(
-      createChatThunk([
-        interlocutor,
-        {
-          fullName: user.fullName,
-          username: user.username,
-          id: user.id,
-        },
-      ])
-    ).unwrap();
-    await dispatch(
-      updateUser({ chats: [...user.chats, createdChat.id] })
-    ).unwrap();
-    await usersService.update(
-      { chats: arrayUnion(createdChat.id) },
-      interlocutor.id
-    );
-    router.push(`/chats/${createdChat.id}`);
-  } catch (e) {
-    if (!createdChat?.id) {
-      return Promise.reject(e);
-    }
-    await dispatch(deleteChat(createdChat.id));
-    await dispatch(updateUser({ chats: user.chats }));
-    return Promise.reject(e);
-  }
+  createdChat = await dispatch(
+    createChatThunk([
+      interlocutor,
+      {
+        fullName: user.fullName,
+        username: user.username,
+        id: user.id,
+      },
+    ])
+  ).unwrap();
+  router.push(`/chats/${createdChat.id}`);
 }
