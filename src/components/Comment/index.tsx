@@ -73,7 +73,10 @@ function Comment(props: CommentProps) {
         )}
         {author.id === userId && (
           <>
-            <IconButton onClick={(e) => setMenuAnchorEl(e.currentTarget)}>
+            <IconButton
+              onClick={(e) => setMenuAnchorEl(e.currentTarget)}
+              data-testid="more-btn"
+            >
               <MoreVertIcon />
             </IconButton>
             <MoreMenu

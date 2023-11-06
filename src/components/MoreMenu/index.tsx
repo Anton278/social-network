@@ -35,6 +35,7 @@ function MoreMenu(props: MoreMenuProps) {
           onDeleteClick();
           onClose();
         }}
+        data-testid="delete-btn"
       >
         <ListItemIcon>
           <DeleteIcon fontSize="small" />
