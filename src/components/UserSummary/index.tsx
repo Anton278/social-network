@@ -10,6 +10,7 @@ import { updateUser } from "@/redux/slices/user/thunks";
 import { Friend } from "@/models/Friend";
 import { createChat } from "@/utils/createChat";
 import usersService from "@/services/Users";
+import { sendFriendsRequest } from "@/utils/sendFriendsRequest";
 
 import * as Styled from "./UserSummary.styled";
 
@@ -58,35 +59,11 @@ function UserSummary(props: UserSummaryProps) {
     )
   );
 
-  async function handleAddFriend(authedUserSentFriendsRequests: Friend[]) {
-    setIsLoading(true);
+  async function handleAddFriend() {
     try {
-      await dispatch(
-        updateUser({
-          sentFriendsRequests: [...authedUserSentFriendsRequests, user],
-        })
-      ).unwrap();
-    } catch (e) {
-      return setIsLoading(false);
-    }
-
-    try {
-      await usersService.update(
-        {
-          receivedFriendsRequests: arrayUnion({
-            username: authedUser.username,
-            fullName: authedUser.fullName,
-            id: authedUser.id,
-          }),
-        },
-        user.id
-      );
-    } catch (e) {
-      await dispatch(
-        updateUser({
-          sentFriendsRequests: authedUserSentFriendsRequests,
-        })
-      );
+      setIsLoading(true);
+      await sendFriendsRequest(authedUser, user, dispatch);
+    } catch (err) {
     } finally {
       setIsLoading(false);
     }
@@ -280,7 +257,7 @@ function UserSummary(props: UserSummaryProps) {
           ) : (
             <Button
               variant="contained"
-              onClick={() => handleAddFriend(authedUser.sentFriendsRequests)}
+              onClick={handleAddFriend}
               disabled={isLoading}
             >
               Add friend

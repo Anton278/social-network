@@ -8,7 +8,7 @@ import usersService from "@/services/Users";
 
 export async function sendFriendsRequest(
   user: User,
-  profile: User,
+  profile: Friend,
   dispatch: AppDispatch
 ) {
   try {

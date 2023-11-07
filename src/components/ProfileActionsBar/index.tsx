@@ -11,7 +11,7 @@ import { ProfileContext } from "@/pages/profiles/[id]";
 import { deleteFriend } from "@/utils/profileActionsBar/deleteFriend";
 import { acceptFriendsRequest } from "@/utils/profileActionsBar/acceptFriendsRequest";
 import { cancelFriendsRequest } from "@/utils/profileActionsBar/cancelFriendsRequest";
-import { sendFriendsRequest } from "@/utils/profileActionsBar/sendFriendsRequest";
+import { sendFriendsRequest } from "@/utils/sendFriendsRequest";
 import { useWindowDimensions } from "@/hooks/useWindowDimensions";
 import { createChat } from "@/utils/createChat";
 import { getChats } from "@/redux/slices/chats/thunks";
