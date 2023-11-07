@@ -1,10 +1,10 @@
-import { arrayUnion, doc, updateDoc } from "firebase/firestore";
+import { arrayUnion } from "firebase/firestore";
 
-import { db } from "@/pages/_app";
 import { Friend } from "@/models/Friend";
 import { User } from "@/models/User";
 import { updateUser } from "@/redux/slices/user/thunks";
 import { AppDispatch } from "@/redux/store";
+import usersService from "@/services/Users";
 
 export async function sendFriendsRequest(
   user: User,
@@ -29,15 +29,16 @@ export async function sendFriendsRequest(
   }
 
   try {
-    const profileDocRef = doc(db, "users", profile.id);
-
-    await updateDoc(profileDocRef, {
-      receivedFriendsRequests: arrayUnion({
-        fullName: user.fullName,
-        id: user.id,
-        username: user.username,
-      }),
-    });
+    await usersService.update(
+      {
+        receivedFriendsRequests: arrayUnion({
+          fullName: user.fullName,
+          id: user.id,
+          username: user.username,
+        }),
+      },
+      profile.id
+    );
   } catch (e) {
     // removing profile from sent friends requests
     const updatedSentFriendsRequests: Friend[] =
