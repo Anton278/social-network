@@ -36,16 +36,7 @@ function Chats() {
   ) {
     return (
       <Layout>
-        <Styled.TopBar>
-          <Button
-            variant="outlined"
-            startIcon={<AddIcon />}
-            onClick={() => setShowFriends(true)}
-          >
-            New chat
-          </Button>
-        </Styled.TopBar>
-        <Typography color={"error"}>Failed to load chats</Typography>
+        <Typography color="error">Failed to load chats</Typography>
       </Layout>
     );
   }
@@ -55,15 +46,6 @@ function Chats() {
   ) {
     return (
       <Layout>
-        <Styled.TopBar>
-          <Button
-            variant="outlined"
-            startIcon={<AddIcon />}
-            onClick={() => setShowFriends(true)}
-          >
-            New chat
-          </Button>
-        </Styled.TopBar>
         <Typography>Loading...</Typography>
       </Layout>
     );
@@ -109,7 +91,7 @@ function Chats() {
         isOpen={showFriends}
         friends={friends}
         onClose={() => setShowFriends(false)}
-        userSummaryActionButtonsType="create-chat"
+        buttonsType="create-chat"
         onCreatedChat={() => setShowFriends(false)}
       />
     </>

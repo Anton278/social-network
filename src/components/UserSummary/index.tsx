@@ -8,7 +8,6 @@ import { useAppSelector } from "@/hooks/useAppSelector";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { updateUser } from "@/redux/slices/user/thunks";
 import { Friend } from "@/models/Friend";
-import { Chat } from "@/models/Chat";
 import { createChat } from "@/utils/createChat";
 import usersService from "@/services/Users";
 
@@ -21,7 +20,6 @@ interface UserSummaryProps {
   showActionButtons?: boolean;
   actionButtonsType?: "friends" | "create-chat";
   onCreatedChat?: () => void;
-  authedUserChats?: Chat[];
 }
 
 function UserSummary(props: UserSummaryProps) {
@@ -32,7 +30,6 @@ function UserSummary(props: UserSummaryProps) {
     showActionButtons = true,
     actionButtonsType = "friends",
     onCreatedChat = () => {},
-    authedUserChats = [],
   } = props;
 
   const user: Friend = {
@@ -44,6 +41,7 @@ function UserSummary(props: UserSummaryProps) {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const authedUser = useAppSelector((state) => state.user);
+  const authedUserChats = useAppSelector((state) => state.chats.chats);
   const [isLoading, setIsLoading] = useState(false);
 
   const isFriend = Boolean(

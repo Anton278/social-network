@@ -1,21 +1,16 @@
 import { Dialog, DialogTitle, DialogContent, Typography } from "@mui/material";
-import { useEffect } from "react";
 import Link from "next/link";
 
 import { Friend } from "@/models/Friend";
+import UserSummary from "../UserSummary";
 
 import * as Styled from "./FriendsDialog.styled";
-import UserSummary from "../UserSummary";
-import { useAppSelector } from "@/hooks/useAppSelector";
-import { useAppDispatch } from "@/hooks/useAppDispatch";
-import { getChats } from "@/redux/slices/chats/thunks";
-import { RequestStatus } from "@/models/RequestStatus";
 
 type FriendsDialogProps = {
   isOpen: boolean;
   onClose?: () => void;
   friends: Friend[];
-  userSummaryActionButtonsType?: "friends" | "create-chat";
+  buttonsType?: "friends" | "create-chat";
   onCreatedChat?: () => void;
 };
 
@@ -24,23 +19,9 @@ function FriendsDialog(props: FriendsDialogProps) {
     isOpen,
     onClose,
     friends,
-    userSummaryActionButtonsType,
+    buttonsType,
     onCreatedChat = () => {},
   } = props;
-
-  const dispatch = useAppDispatch();
-  const chats = useAppSelector((state) => state.chats.chats);
-  const chatsStatus = useAppSelector((state) => state.chats.status);
-
-  useEffect(() => {
-    if (userSummaryActionButtonsType === "friends") {
-      return;
-    }
-    if (!chats.length) {
-      return;
-    }
-    dispatch(getChats());
-  }, []);
 
   return (
     <Dialog
@@ -52,39 +33,21 @@ function FriendsDialog(props: FriendsDialogProps) {
     >
       <DialogTitle>Friends</DialogTitle>
       <DialogContent dividers>
-        {userSummaryActionButtonsType === "create-chat" ? (
-          chatsStatus === RequestStatus.Error ? (
-            <Typography color={"error"}>Failed to load chats</Typography>
-          ) : chatsStatus === RequestStatus.Loading ? (
-            <Typography>loading...</Typography>
-          ) : friends.length ? (
-            friends.map((friend) => (
-              <UserSummary
-                key={friend.id}
-                fullName={friend.fullName}
-                id={friend.id}
-                username={friend.username}
-                actionButtonsType={userSummaryActionButtonsType}
-                onCreatedChat={onCreatedChat}
-                authedUserChats={chats}
-              />
-            ))
-          ) : (
-            <Typography>
-              <Link href="/profiles">Add friend</Link> to create chat
-            </Typography>
-          )
-        ) : (
+        {friends.length ? (
           friends.map((friend) => (
             <UserSummary
               key={friend.id}
               fullName={friend.fullName}
               id={friend.id}
               username={friend.username}
-              actionButtonsType={userSummaryActionButtonsType}
+              actionButtonsType={buttonsType}
               onCreatedChat={onCreatedChat}
             />
           ))
+        ) : (
+          <Typography>
+            <Link href="/profiles">Add friend</Link> to create chat
+          </Typography>
         )}
       </DialogContent>
     </Dialog>
