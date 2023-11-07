@@ -1,9 +1,7 @@
 import { AppDispatch } from "@/redux/store";
-import { doc, updateDoc } from "firebase/firestore";
-
 import { User } from "@/models/User";
 import { updateUser } from "@/redux/slices/user/thunks";
-import { db } from "@/pages/_app";
+import usersService from "@/services/Users";
 
 export async function deleteFriend(
   user: User,
@@ -21,15 +19,16 @@ export async function deleteFriend(
   }
 
   try {
-    const profileDocRef = doc(db, "users", profile.id);
-
     const updatedFriends = profile.friends.filter(
       (friend) => friend.id !== user.id
     );
 
-    await updateDoc(profileDocRef, {
-      friends: updatedFriends,
-    });
+    await usersService.update(
+      {
+        friends: updatedFriends,
+      },
+      profile.id
+    );
 
     setProfile({ ...profile, friends: updatedFriends });
   } catch (e) {
