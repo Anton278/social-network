@@ -22,7 +22,6 @@ afterEach(() => {
 
 describe("createChat util", () => {
   const user: User = {
-    chats: [],
     email: "johndoe@gmail.com",
     friends: [],
     fullName: "John Doe",
