@@ -5,6 +5,7 @@ import { User } from "@/models/User";
 import { db } from "@/pages/_app";
 import { updateUser } from "@/redux/slices/user/thunks";
 import { AppDispatch } from "@/redux/store";
+import usersService from "@/services/Users";
 
 export async function acceptFriendsRequest(
   user: User,
@@ -34,8 +35,6 @@ export async function acceptFriendsRequest(
   }
 
   try {
-    const profileDocRef = doc(db, "users", profile.id);
-
     const updatedSentFriendsRequests: Friend[] =
       profile.sentFriendsRequests.filter((friend) => friend.id !== user.id);
     const updatedFriends: Friend[] = [
@@ -47,10 +46,13 @@ export async function acceptFriendsRequest(
       },
     ];
 
-    await updateDoc(profileDocRef, {
-      sentFriendsRequests: updatedSentFriendsRequests,
-      friends: updatedFriends,
-    });
+    await usersService.update(
+      {
+        sentFriendsRequests: updatedSentFriendsRequests,
+        friends: updatedFriends,
+      },
+      profile.id
+    );
 
     setProfile({
       ...profile,
