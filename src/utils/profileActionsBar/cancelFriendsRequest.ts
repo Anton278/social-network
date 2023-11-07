@@ -5,6 +5,7 @@ import { User } from "@/models/User";
 import { db } from "@/pages/_app";
 import { updateUser } from "@/redux/slices/user/thunks";
 import { AppDispatch } from "@/redux/store";
+import usersService from "@/services/Users";
 
 export async function cancelFriendsRequest(
   user: User,
@@ -26,14 +27,14 @@ export async function cancelFriendsRequest(
   }
 
   try {
-    const profileDocRef = doc(db, "users", profile.id);
-
     const updatedReceivedFriendsReqs: Friend[] =
       profile.receivedFriendsRequests.filter((friend) => friend.id !== user.id);
-
-    await updateDoc(profileDocRef, {
-      receivedFriendsRequests: updatedReceivedFriendsReqs,
-    });
+    await usersService.update(
+      {
+        receivedFriendsRequests: updatedReceivedFriendsReqs,
+      },
+      profile.id
+    );
   } catch (e) {
     await dispatch(
       updateUser({
