@@ -77,7 +77,7 @@ function EditPost(props: EditPostProps) {
       <DialogTitle>Edit</DialogTitle>
       <DialogContent dividers>
         <TextField
-          label="Edit"
+          label="Edit post"
           multiline
           maxRows={8}
           fullWidth
@@ -105,6 +105,7 @@ function EditPost(props: EditPostProps) {
           onClick={onSaveClick}
           disabled={!text.trim().length || isSubmitting || isNotEdited}
           endIcon={isSubmitting ? <Spinner /> : <SaveIcon />}
+          data-testid="save-btn"
         >
           Save
         </Button>
